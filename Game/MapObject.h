@@ -506,7 +506,8 @@ public:
   void FindTarget()        { return Thunk<0x485100, &$::FindTarget>();        }
   int  CalculateStrength() { return Thunk<0x45D2F0, &$::CalculateStrength>(); }
 
-  void DrawUIOverlay() { return Thunk<0x43EA60, &$::DrawUIOverlay>(); }
+  void DrawUIOverlay(uint32 drawFlags, Viewport* pViewport, uint32 counter = UINT32_MAX)
+    { return Thunk<0x43EA60, &$::DrawUIOverlay>(drawFlags, pViewport, counter); }
 
   // Object size = 0x48?
 };

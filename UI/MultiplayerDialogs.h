@@ -39,7 +39,7 @@ public:
   // ** TODO 0x45F420
 
   static int FASTCALL PopulateMissionDropdown(
-    HWND hCBWnd, int maxPlayers, API::MissionType maxMissionType, API::MissionType minMissionType)
+    HWND hCBWnd, int maxPlayers, TethysAPI::MissionType maxMissionType, TethysAPI::MissionType minMissionType)
       { return OP2Thunk<0x497780, &$::PopulateMissionDropdown>(hCBWnd, maxPlayers, maxMissionType, minMissionType); }
 
 public:
@@ -61,8 +61,9 @@ public:
   ibool gameStarting_;
   int   time_;
   int   hostPlayerNetID_;
-  int   missionType1_;
-  int   missionType2_;
+
+  TethysAPI::MissionType maxMissionType_;
+  TethysAPI::MissionType minMissionType_;
 };
 
 } // Tethys
