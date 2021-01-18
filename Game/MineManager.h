@@ -25,7 +25,7 @@ enum class OreYield : int {
 /// Mining beacon yield variant type (minor impact on ore output).
 enum class OreVariant : int {
   Random = -1,  ///< Even chance to pick any variant upon creation.
-  High   = 0,   ///< Rated by best minimum yield, then total # of truckloads.  (Internal:  1 bar = #0,  2/3 bar = #2)
+  High   =  0,  ///< Rated by best minimum yield, then total # of truckloads.  (Internal:  1 bar = #0,  2/3 bar = #2)
   Mid,          ///< Rated by best peak yield, then total # of truckloads.     (Internal:  1 bar = #1,  2/3 bar = #0)
   Low,          ///< Neither of the above.                                     (Internal:  1 bar = #2,  2/3 bar = #1)
   Count
@@ -35,9 +35,6 @@ enum class OreVariant : int {
 /// Internal mine yield stats manager class.
 class MineManager : public OP2Class<MineManager> {
 public:
-  struct TruckLoadInfo;
-  struct YieldPercentInfo;
-
   ibool LoadMinesFile() { return Thunk<0x44B010, &$::LoadMinesFile>(); }  ///< Load mines.txt from sheets.
 
   /// Calculates a mine's output ore quantity based on its yield, variantNum, and number of truck loads thus far.
@@ -58,7 +55,7 @@ public:
   /// @note Supplying OreYield::Random will always output -1 for any OreVariant.
   int GetVariantNum(OreYield yield, OreVariant variant) const;
 
-  /// Gets the OreVariant corresponding to the given OreYield and variant number, or MineVariant::Count if not found.
+  /// Gets the OreVariant corresponding to the given OreYield and variant number, or OreVariant::Count if not found.
   /// @note Supplying OreYield::Random will always output OreVariant::Count for any variantNum.
   OreVariant GetOreVariant(OreYield yield, int variantNum) const {
     OreVariant out{0};

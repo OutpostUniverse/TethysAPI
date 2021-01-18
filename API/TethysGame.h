@@ -218,9 +218,9 @@ public:
       false, start.x, start.y, duration, end.x, end.y, immediate);
   }
 
-  /// Creates (or removes) Blight.  Always immediate.
-  static void FASTCALL CreateBlight(Location where, ibool blightPresent = true)
-    { return OP2Thunk<0x476EA0, &$::CreateBlight>(where, blightPresent); }
+  /// Creates the Blight.  Always immediate.  @note Use spreadSpeed = -1 to retain the current spread speed.
+  static void CreateBlight(Location where, int spreadSpeed = -1)
+    { if (spreadSpeed >= 0) SetBlightSpeed(spreadSpeed); OP2Thunk<0x476EA0, void FASTCALL(Location, ibool)>(where, 1); }
 
   /// Sets lava spread speed.  @note This also gets set by eruptions when triggered.
   static void SetLavaSpeed(int   spreadSpeed) { LavaManager::GetInstance()->SetLavaSpeed(spreadSpeed);     }

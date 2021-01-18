@@ -15,14 +15,13 @@ public:
   static MapImpl* GetImpl() { return MapImpl::GetInstance(); }
 
   ///@{ Helpers to access and set tile data.
-  static int FASTCALL GetTile(Location           where) { return OP2Thunk<0x476D00, &$::GetTile>(where);    }
-  static CellType     GetCellType(Location       where) { return CellType(GetImpl()->Tile(where).cellType); }
-  static Unit         GetUnitOnTile(Location     where) { return Unit(GetImpl()->Tile(where).unitIndex);    }
-  static bool         GetLavaPresent(Location    where) { return GetImpl()->Tile(where).lava;               }
-  static bool         GetLavaPossible(Location   where) { return GetImpl()->Tile(where).lavaPossible;       }
-  static bool         GetExpand(Location         where) { return GetImpl()->Tile(where).expand;             }
-  static bool         GetMicrobe(Location        where) { return GetImpl()->Tile(where).microbe;            }
-  static bool         GetWallOrBuilding(Location where) { return GetImpl()->Tile(where).wallOrBuilding;     }
+  static int      GetTile(Location           where) { return OP2Thunk<0x476D00, int FASTCALL(Location)>(where); }
+  static CellType GetCellType(Location       where) { return CellType(GetImpl()->Tile(where).cellType);         }
+  static Unit     GetUnitOnTile(Location     where) { return Unit(GetImpl()->Tile(where).unitIndex);            }
+  static bool     GetLavaPresent(Location    where) { return GetImpl()->Tile(where).lava;                       }
+  static bool     GetLavaPossible(Location   where) { return GetImpl()->Tile(where).lavaPossible;               }
+  static bool     GetMicrobe(Location        where) { return GetImpl()->Tile(where).microbe;                    }
+  static bool     GetWallOrBuilding(Location where) { return GetImpl()->Tile(where).wallOrBuilding;             }
 
   static void InitialSetTile(Location   where, int tileIndex) { return GetImpl()->InitialSetTile(where, tileIndex); }
   static void FASTCALL SetTile(Location where, int tileIndex)
@@ -33,11 +32,12 @@ public:
   static void SetCellType(Location       where, CellType type)    { GetImpl()->Tile(where).cellType  = uint32(type); }
   static void SetUnitOnTile(Location     where, Unit     unit)    { GetImpl()->Tile(where).unitIndex = unit.id_;     }
   static void SetLavaPresent(Location    where, bool     lava)    { GetImpl()->Tile(where).lava      = lava;         }
-  static void SetExpand(Location         where, bool     expand)  { GetImpl()->Tile(where).expand    = expand;       }
-  static void SetMicrobe(Location        where, bool     microbe) { GetImpl()->Tile(where).microbe   = microbe;      }
   static void SetWallOrBuilding(Location where, bool     wallOrBuilding)
     { GetImpl()->Tile(where).wallOrBuilding = wallOrBuilding; }
   ///@}
+
+  /// Removes Blight at the specified map tile coordinates.  @note To create Blight, @see TethysGame::CreateBlight().
+  static void UnsetBlight(Location where) { return OP2Thunk<0x476EA0, void FASTCALL(Location, ibool)>(where, 0); }
 
   /// Sets the daylight position on the map.
   static void FASTCALL SetInitialLightLevel(int lightPosition)
