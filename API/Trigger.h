@@ -1,3 +1,9 @@
+/**
+ ***********************************************************************************************************************
+ * @file  Trigger.h
+ * @brief Contains the definitions of the Trigger classes and factory functions to create them.
+ ***********************************************************************************************************************
+ */
 
 #pragma once
 
@@ -139,6 +145,15 @@ inline Trigger CreateCountTrigger(
 {
   return OP2Thunk<0x479110, Trigger FASTCALL(ibool, ibool, int, MapID, MapID, int, CompareMode, const char*)>(
     enabled, oneShot, playerNum, unitType, cargoOrWeapon, refCount, compare, pTriggerFunction);
+}
+
+/// Creates a count trigger for Cargo Trucks with the specified cargo type.
+inline Trigger CreateCountTrigger(
+  CargoType truckCargoType, CompareMode compare, int refCount,
+  const char* pTriggerFunction = nullptr, int playerNum = AllPlayers, bool oneShot = false, bool enabled = true)
+{
+  return OP2Thunk<0x479110, Trigger FASTCALL(ibool, ibool, int, MapID, CargoType, int, CompareMode, const char*)>(
+    enabled, oneShot, playerNum, MapID::CargoTruck, truckCargoType, refCount, compare, pTriggerFunction);
 }
 
 /// Used for Last One Standing failure condition and converting Land Rush to Last One Standing (when CC becomes active).

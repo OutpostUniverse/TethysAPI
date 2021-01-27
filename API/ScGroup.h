@@ -1,3 +1,9 @@
+/**
+ ***********************************************************************************************************************
+ * @file  ScGroup.h
+ * @brief Contains the definitions of all the AI unit group-related classes and the Pinwheel strategy manager class.
+ ***********************************************************************************************************************
+ */
 
 #pragma once
 

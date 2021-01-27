@@ -1,24 +1,34 @@
+/**
+ ***********************************************************************************************************************
+ * @file  Mission.h
+ * @brief Contains the definitions for mission-related enums, API callbacks, and helper macros to define mission info.
+ ***********************************************************************************************************************
+ */
 
-/// Mission DLLs should include this header.
-/// Mission DLLs are required to export mission description data, which can be done with either of the following macros:
-///   EXPORT_OP2_MULTIPLAYER_SCRIPT("Mission Name", missionType, numHumans, "map_file.map", "tech_file.txt"(, numAIs))
-///     ** OR **
-///   EXPORT_OP2_MISSION_SCRIPT("Mission Name", missionType, numPlayers, "map_file.map", "tech_file.txt", maxTechLevel,
-///                             isUnitMission(, numMultiplayerAIs))
-/// 
-/// Mission DLLs may (optionally) define the follow functions to interface with the game:
-///   MISSION_API ibool InitProc() { return 1; }          // Set up bases, triggers, etc. here.  Return false = error
-///   MISSION_API void  AIProc()   {           }          // Gets called every 4 ticks during gameplay.
-///   MISSION_API void  GetSaveRegions(SaveRegion* pSave) // Single-player maps set pSave to point at a buffer to save.
-///     { pSave->pData = nullptr;  pSave->size = 0; }
-/// 
-/// The following are extended APIs introduced in OPU mod 1.4.0+:
-///   MISSION_API ibool OnLoad(const   OnLoadArgs&   args) { return 1; } // Called on DLL load.    Return false = error
-///   MISSION_API ibool OnUnload(const OnUnloadArgs& args) { return 1; } // Called on DLL unload.  Return false = error
-///   MISSION_API void  OnEnd(const    OnEndArgs&    args) {           } // Called on mission end (not on restart).
-///   MISSION_API void  OnChat(const   OnChatArgs&   args) {           } // Called when any player sends a chat message.
-///   MISSION_API void  OnCreateUnit(const  OnCreateUnitArgs& args) {  } // Called when a unit or entity is created.
-///   MISSION_API void  OnDestroyUnit(const OnCreateUnitArgs& args) {  } // Called when a unit or entity is destroyed.
+/**
+ ***********************************************************************************************************************
+ * Mission DLLs should include this header.
+ * Mission DLLs are required to export mission description data, which can be done with either of the following macros:
+ *   EXPORT_OP2_MULTIPLAYER_SCRIPT("Mission Name", missionType, numHumans, "map_file.map", "tech_file.txt"(, numAIs))
+ *     ** OR **
+ *   EXPORT_OP2_MISSION_SCRIPT("Mission Name", missionType, numPlayers, "map_file.map", "tech_file.txt", maxTechLevel,
+ *                             isUnitMission(, numMultiplayerAIs))
+ * 
+ * Mission DLLs may (optionally) define the follow functions to interface with the game:
+ *   MISSION_API ibool InitProc() { return 1; }          // Set up bases, triggers, etc. here.  Return false = error
+ *   MISSION_API void  AIProc()   {           }          // Gets called every 4 ticks during gameplay.
+ *   MISSION_API void  GetSaveRegions(SaveRegion* pSave) // Single-player maps set pSave to point at a buffer to save.
+ *     { pSave->pData = nullptr;  pSave->size = 0; }
+ * 
+ * The following are extended APIs introduced in OPU mod 1.4.0+:
+ *   MISSION_API ibool OnLoad(const   OnLoadArgs&   args) { return 1; } // Called on DLL load.    Return false = error
+ *   MISSION_API ibool OnUnload(const OnUnloadArgs& args) { return 1; } // Called on DLL unload.  Return false = error
+ *   MISSION_API void  OnEnd(const    OnEndArgs&    args) {           } // Called on mission end (not on restart).
+ *   MISSION_API void  OnChat(const   OnChatArgs&   args) {           } // Called when any player sends a chat message.
+ *   MISSION_API void  OnCreateUnit(const  OnCreateUnitArgs& args) {  } // Called when a unit or entity is created.
+ *   MISSION_API void  OnDestroyUnit(const OnCreateUnitArgs& args) {  } // Called when a unit or entity is destroyed.
+ ***********************************************************************************************************************
+ */
 
 #pragma once
 
