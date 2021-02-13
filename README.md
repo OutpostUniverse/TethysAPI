@@ -4,6 +4,11 @@ TethysAPI is a C++17 library providing access to Outpost 2's public API as well 
 
 Compared to Outpost2DLL, the public API exposed in TethysAPI has been changed to be more modern and tidier, and with better const-correctness in order to properly support MSVC in C++20 mode. TethysAPI essentially supercedes the Outpost2DLL, HFL/OP2Types, and OP2Internal libraries, although it should not be considered a drop-in replacement for them due to interface changes. TethysAPI can be used alongside these legacy libraries, which is helpful when transitioning an existing project to it.
 
+# Requirements
+
+* Outpost 2 v1.2.7 or newer
+* C++17
+
 # Usage
 
 TethysAPI is intended to be added as a Git submodule to projects. It must reside in a subdirectory called `Tethys`.
@@ -22,8 +27,3 @@ The public mission APIs are within the `TethysAPI` namespace, while everything e
 
 ## Version 0.8
 * Initial release.
-
-# Requirements
-
-* Outpost 2 v1.2.7 or newer
-* C++17
