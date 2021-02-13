@@ -142,7 +142,7 @@ public:
   void DoTransfer(int toPlayerNum);                                        ///< Transfer unit to another player.
 
   ///@{ Gets the Unit's command or action status.
-	CommandType GetCommand()     const { return CommandType(IsValid() ? GetMapObject()->command_ : 0);        }
+   CommandType GetCommand()     const { return CommandType(IsValid() ? GetMapObject()->command_ : 0);        }
   ActionType  GetAction()      const { return IsValid() ?  GetMapObject()->action_      : ActionType::Done; }
   int         GetActionTimer() const { return IsValid() ?  GetMapObject()->actionTimer_ : 0;                }
   bool        IsBusy()         const { return IsValid() && GetMapObject()->isBusy_;                         }
@@ -265,14 +265,14 @@ public:
   void DoBuild(Location  bottomRight);                                        ///< [ConVec] Build a structure.
   void DoDeploy(Location center);                                             ///< [Robo-Miner, GeoCon] Deploy building.
   void DoDismantle(Unit what);                                                ///< [ConVec] Dismantle a structure.
-	void DoRepair(Unit    what)                                                 ///< Repair a structure or vehicle.
+   void DoRepair(Unit    what)                                                 ///< Repair a structure or vehicle.
     { if (IsLive()) { GetMapObject()->CmdRepair(what.id_); }    }
-	void DoReprogram(Unit what)                                                 ///< [Spider] Reprogram a vehicle.
+   void DoReprogram(Unit what)                                                 ///< [Spider] Reprogram a vehicle.
     { if (IsLive()) { GetMapObject()->CmdReprogram(what.id_); } }
   void DoBuildWall(MapID tubeWallType, MapRect area);                         ///< [Earthworker] Build walls in an area.
   void DoRemoveWall(MapRect area);                                            ///< [Earthworker] Remove walls in an area
   void DoDoze(MapRect area);                                                  ///< [Robo-Dozer]  Bulldoze an area.
-	void DoSalvage(MapRect area, Unit gorf);                                    ///< [Cargo Truck] Salvage rubble.
+   void DoSalvage(MapRect area, Unit gorf);                                    ///< [Cargo Truck] Salvage rubble.
   void DoDumpCargo()   { if (IsLive()) { GetMapObject()->CmdDumpCargo(); } }  ///< [Cargo Truck] Dispose of cargo.
   void DoLoadCargo()   { DoSimpleCommand(CommandType::LoadCargo);          }  ///< [Cargo Truck] Load truck cargo.
   void DoUnloadCargo() { DoSimpleCommand(CommandType::UnloadCargo);        }  ///< [Cargo Truck] Unload truck cargo.
@@ -354,8 +354,8 @@ public:
   void DoLaunch(Location target = { }, bool forceEnable = false);  ///< [Spaceport] Launch the rocket on launch pad.
   void DoTransferCargo(int bay)                                    ///< [Factory, Garage] Move cargo to a bay.
     { if (IsLive()) { GetMapObject()->CmdTransferCargo(bay); } }
-	void DoResearch(int techID, int numScientists);                  ///< [Lab] Begin researching a technology.
-	void DoTrainScientists(int numToTrain);                          ///< [University] Begin training new scientists.
+   void DoResearch(int techID, int numScientists);                  ///< [Lab] Begin researching a technology.
+   void DoTrainScientists(int numToTrain);                          ///< [University] Begin training new scientists.
 
 protected:
   bool ProcessCommandPacket(const CommandPacket& packet) const
