@@ -2,6 +2,8 @@
  ***********************************************************************************************************************
  * @file  Trigger.h
  * @brief Contains the definitions of the Trigger classes and factory functions to create them.
+ * @note  Passing nullptr for trigger function requires OP2 v1.4.1+.
+ * @note  The Trigger API will be changed substantially.  The current interface should be considered a placeholder.
  ***********************************************************************************************************************
  */
 
