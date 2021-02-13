@@ -147,7 +147,7 @@ inline Trigger CreateCountTrigger(
     enabled, oneShot, playerNum, unitType, cargoOrWeapon, refCount, compare, pTriggerFunction);
 }
 
-/// Creates a count trigger for Cargo Trucks with the specified cargo type.
+/// Creates a count trigger for Cargo Trucks with the specified cargo type.  @param refCount = number of Cargo Trucks.
 inline Trigger CreateCountTrigger(
   CargoType truckCargoType, CompareMode compare, int refCount,
   const char* pTriggerFunction = nullptr, int playerNum = AllPlayers, bool oneShot = false, bool enabled = true)
