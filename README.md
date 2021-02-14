@@ -13,6 +13,8 @@ Compared to Outpost2DLL, the public API exposed in TethysAPI has been changed to
 
 # Usage
 
+**ATTENTION: TethysAPI is a work in progress. You should expect breaking major interface changes between releases prior to 1.0.**
+
 TethysAPI is intended to be added as a Git submodule to projects. It must reside in a subdirectory called `Tethys` (not "TethysAPI"!)
 
 The public mission API headers are located under the `API` directory. For your convenience, you may use `#include "Tethys/API/API.h"` to include all public API headers, but you are also free to include individual headers. `Tethys/API/Mission.h` documents how to interface a mission with the game.
