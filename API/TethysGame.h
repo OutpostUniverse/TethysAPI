@@ -16,6 +16,7 @@
 #include "Tethys/API/Location.h"
 #include "Tethys/API/Player.h"
 #include "Tethys/API/Unit.h"
+#include <string_view>
 
 namespace Tethys {
 
@@ -101,18 +102,18 @@ public:
     { SoundManager::GetInstance()->AddMapSound(location.GetPixelX(), location.GetPixelY(), soundID); }
 
   /// Outputs a game message at the specified map pixel coordinates.  @note (0, -1) = no associated coordinates.
-  static void AddMessage(const char* pMsg, SoundID soundID, int toPlayerNum = -1, int pixelX = 0, int pixelY = -1) {
+  static void AddMessage(std::string_view msg, SoundID soundID, int toPlayerNum = -1, int pixelX = 0, int pixelY = -1) {
     ((toPlayerNum == AllPlayers) || (toPlayerNum == LocalPlayer())) ?
-    MessageLog::GetInstance()->AddMessage(pixelX, pixelY, pMsg, soundID) : 0;
+    MessageLog::GetInstance()->AddMessage(pixelX, pixelY, msg.data(), soundID) : 0;
   }
 
   /// Outputs a game message at the specified map tile location.
-  static void AddMessage(const char* pMsg, SoundID soundID, int toPlayerNum, Location tile)
-    { AddMessage(pMsg, soundID, toPlayerNum, tile.GetPixelX(), tile.GetPixelY()); }
+  static void AddMessage(std::string_view msg, SoundID soundID, int toPlayerNum, Location tile)
+    { AddMessage(msg.data(), soundID, toPlayerNum, tile.GetPixelX(), tile.GetPixelY()); }
 
   /// Outputs a game message at the specified Unit's location.
-  static void AddMessage(const char* pMsg, SoundID soundID, int toPlayerNum, Unit owner)
-    { const auto px = owner.GetPixel();  AddMessage(pMsg, soundID, toPlayerNum, px.x, px.y); }
+  static void AddMessage(std::string_view msg, SoundID soundID, int toPlayerNum, Unit owner)
+    { const auto px = owner.GetPixel();  AddMessage(msg.data(), soundID, toPlayerNum, px.x, px.y); }
 
   /// Creates a Unit on the map.
   static Unit CreateUnit(
@@ -135,16 +136,18 @@ public:
   {
     const MapID mapID = (type == MineType::MagmaVent) ? MapID::MagmaVent :
                         (type == MineType::Fumarole)  ? MapID::Fumarole  : MapID::MiningBeacon;
-    yield = ((mapID == MapID::MiningBeacon) && (yield == OreYield::Random)) ? OreYield(TethysGame::GetRand(3)) : yield;
+    yield = ((mapID == MapID::MiningBeacon) && (yield == OreYield::Random) && (variant != OreVariant::Random)) ?
+            OreYield(GetRand(3)) : yield;
     const int varNum = MineManager::GetInstance()->GetVariantNum(yield, variant);
     return OP2Thunk<0x478940, ibool FASTCALL(MapID, int, int, MineType, OreYield, int)>(
-      mapID, location.x, location.y, max(type, MineType::RandomOre), yield, varNum) ? Player[6].GetBeacons() : Unit();
+      mapID, location.x, location.y, max(type, MineType::RandomOre), yield, varNum) ?
+      *(_Player::GetInstance(6)->GetBeacons()) : Unit();
   }
 
   /// Creates wreckage that grants the given tech ID when turned in at a spaceport.  Tech ID must be within 8000-12095.
   static Unit CreateWreckage(Location location, int techID, bool isDiscovered = false) {
     return ((techID >= 8000) && (techID <= 12095) && OP2Thunk<0x4789F0, ibool FASTCALL(int, int, int, ibool)>(
-      location.x, location.y, techID, isDiscovered)) ? Player[6].GetBeacons() : Unit();
+      location.x, location.y, techID, isDiscovered)) ? *(_Player::GetInstance(6)->GetBeacons()) : Unit();
   }
 
   /// Places a marker decal on the map.
@@ -162,7 +165,7 @@ public:
   /// Let morale vary according to colony state & events for the specified player.  @note toPlayerNum: -1 = all players
   static void FreeMoraleLevel(int player = AllPlayers) { SetGameOpt(GameOpt::FreeMoraleLevel, player); }
   /// Forces morale level for the specified player.  @note toPlayerNum: -1 = all players
-  static void ForceMorale(MoraleLevel moraleLevel, int player = AllPlayers)
+  static void ForceMoraleLevel(MoraleLevel moraleLevel, int player = AllPlayers)
     { SetGameOpt(GameOpt(uint16(GameOpt::ForceMoraleExcellent) + uint16(moraleLevel)), player); }
 
   static void SetSeed(uint32 randNumSeed) { Random::GetInstance()->SetSeed(randNumSeed); } ///< Set random number seed.
@@ -174,13 +177,15 @@ public:
   static int  GetLocalRand(int    range)       { return Random::GetLocalInstance()->Rand(range);   }
 
   /// Load saved game.  @note Saved game names default to: "SGAME?.OP2" file name format.
-  static void LoadGame(const char* pSavedGameName)
-    { return GameFrame::GetInstance()->PostDelayedLoadMessage(pSavedGameName); }
+  static void LoadGame(std::string_view savedGameName)
+    { return GameFrame::GetInstance()->PostDelayedLoadMessage(savedGameName.data()); }
 
+  ///@{ Sets the game music play list.  @see SongID
   static void SetMusicPlayList(int numSongs, int repeatStartIndex, const SongID* pSongIDList)
     { return MusicManager::GetInstance()->SetMusicPlaylist(numSongs, repeatStartIndex, pSongIDList); }
-  template <size_t N>  static void SetMusicPlayList(const SongID (&songIDList)[N], int repeatStartIndex = 0)
-    { return SetMusicPlaylist(int(N), repeatStartIndex, &songIDList[0]); }
+  static void SetMusicPlayList(TethysUtil::Span<SongID> songIDList, int repeatStartIndex = 0)
+    { return SetMusicPlayList(songIDList.Length(), repeatStartIndex, songIDList.Data()); }
+  ///@}
 
   /// Search aligned 8x8 blocks, for the block with the greatest weight.
   /// @note The target location is at the block center (+3, +3)
@@ -227,6 +232,8 @@ public:
   /// Creates the Blight.  Always immediate.  @note Use spreadSpeed = -1 to retain the current spread speed.
   static void CreateBlight(Location where, int spreadSpeed = -1)
     { if (spreadSpeed >= 0) SetBlightSpeed(spreadSpeed); OP2Thunk<0x476EA0, void FASTCALL(Location, ibool)>(where, 1); }
+  /// Removes Blight at the specified map tile coordinates.
+  static void UnsetBlight(Location where) { return OP2Thunk<0x476EA0, void FASTCALL(Location, ibool)>(where, 0); }
 
   /// Sets lava spread speed.  @note This also gets set by eruptions when triggered.
   static void SetLavaSpeed(int   spreadSpeed) { LavaManager::GetInstance()->SetLavaSpeed(spreadSpeed);     }
@@ -267,7 +274,7 @@ public:
   static void SetGameOpt(GameOpt variableID, uint16 param1 = 0, uint16 param2 = 0) {
     CommandPacket packet{ CommandType::GameOpt, sizeof(GameOptCommand) };
     packet.data.gameOpt = { 0, variableID, param1, param2 };
-    Player[TethysGame::LocalPlayer()].ProcessCommandPacket(packet);
+    _Player::GetInstance(LocalPlayer())->ProcessCommandPacket(packet);
     DismissCheatedGameAlert();
   }
 
@@ -279,9 +286,7 @@ private:
   template <uintptr Address, typename Fn, typename... Args>
   static Unit DisasterThunk(bool immediate, Args... args) {
     auto*const pUnit = OP2Thunk<Address, Fn>(args...);
-    if ((pUnit != nullptr) && immediate) {
-      pUnit->StartDisaster();
-    }
+    if ((pUnit != nullptr) && immediate) pUnit->StartDisaster();
     return Unit(pUnit);
   }
 

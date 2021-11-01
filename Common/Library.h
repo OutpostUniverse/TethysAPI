@@ -10,8 +10,12 @@ namespace Tethys::TethysUtil {
 class Library {
   template <typename T>  using FnToPfn = TethysImpl::FnToPfn<T>;
 public:
-   Library(const char* pModuleName, bool load = true)
+   Library(const char*    pModuleName, bool load = true)
      : hModule_((load && pModuleName) ? LoadLibraryA(pModuleName) : GetModuleHandleA(pModuleName)), ownHandle_(load) { }
+   Library(const wchar_t* pModuleName, bool load = true)
+     : hModule_((load && pModuleName) ? LoadLibraryW(pModuleName) : GetModuleHandleW(pModuleName)), ownHandle_(load) { }
+   Library(HMODULE        hModule,     bool takeOwnership = true)
+     : hModule_(hModule), ownHandle_(takeOwnership) { }
   ~Library() {
     if (ownHandle_ && (hModule_ != NULL)) {
       FreeLibrary(hModule_);

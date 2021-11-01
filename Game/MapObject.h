@@ -148,8 +148,8 @@ public:
 
   virtual MapObjectType* GetType() const { return Thunk<0x439A00, &$::GetType>(); }
 
-  virtual void  ProcessForGameCycle()       { return Thunk<0x43ADA0, &$::ProcessForGameCycle>();       }
-  virtual int   ProcessTimers()             { return Thunk<0x43DF60, &$::ProcessTimers>();             }
+  virtual void  ProcessCommands()           { return Thunk<0x43ADA0, &$::ProcessCommands>();           }
+  virtual int   ProcessActions()            { return Thunk<0x43DF60, &$::ProcessActions>();            }
   virtual ibool CheckSpontaneouslyExplode() { return Thunk<0x4017E0, &$::CheckSpontaneouslyExplode>(); }
 
   virtual int  FireWeapon() { return Thunk<0x4017F0, &$::FireWeapon>(); }
@@ -196,7 +196,7 @@ public:
   virtual ibool IsSelectable() { return Thunk<0x4018E0, &$::IsSelectable>(); }
 
 #define OP2_MO_MAPOBJECT_VTBL($)                                                                             \
-  $(GetType)  $(ProcessForGameCycle)  $(ProcessTimers)  $(CheckSpontaneouslyExplode)  $(FireWeapon)          \
+  $(GetType)  $(ProcessCommands)  $(ProcessActions)  $(CheckSpontaneouslyExplode)  $(FireWeapon)             \
   $(SelectTurretGraphic)  $(Draw)  $(LightUpVisibleRange)  $(MarkForRedraw) $(IsVisible)  $(IsVisibleY)      \
   $(GetAnimationIndex)  $(GetSelectionBoxSize)  $(GetSelectionBoxPos)  $(MouseOver)  $(GetMouseOverStr)      \
   $(GetSelectionStr)  $(IsMouseOver)  $(Func_18)  $(Destroy)  $(DoEvent)  $(OnSave)  $(OnLoad)  $(SetEMPed)  \
@@ -226,7 +226,8 @@ public:
   // ** TODO Cmd??? 0x42AB80
   // ** TODO Cmd??? 0x42AF50
 
-  void DoDeath(int timer = 1) { return Thunk<0x43A990, &$::DoDeath>(timer); }
+  void DoDeath(int timer = 1) { return Thunk<0x43A990, &$::DoDeath>(timer);   }
+  void DoSelfDestruct()       { return Thunk<0x43A7A0, &$::DoSelfDestruct>(); }
 
   void SetCreator(uint8 creatorID) { return Thunk<0x43A090, &$::SetCreator>(creatorID); }
 
@@ -476,6 +477,8 @@ public:
 class Projectile : public MapChildEntity {
   using $ = Projectile;
 public:
+  OP2_MO_GET_INSTANCE_IMPL();
+
   using MapChildEntity::MapChildEntity;
 
   void Draw(Viewport* pViewport)    override { return Thunk<0x4A2E20, &$::Draw>(pViewport);              }
@@ -568,7 +571,7 @@ public:
   Building()                  : LandUnit(UseInternalCtorChain) { InternalCtor<0x482EF0>(); }
   Building(InternalCtorChain) : LandUnit(UseInternalCtorChain) {                           }
 
-  int   ProcessTimers()                        override { return Thunk<0x408A00, &$::ProcessTimers>();              }
+  int   ProcessActions()                       override { return Thunk<0x408A00, &$::ProcessActions>();             }
   ibool CheckSpontaneouslyExplode()            override { return Thunk<0x409400, &$::CheckSpontaneouslyExplode>();  }
   void  Draw(Viewport*              pViewport) override { return Thunk<0x408EA0, &$::Draw>(pViewport);              }
   void  MarkForRedraw(Viewport*     pViewport) override { return Thunk<0x408E20, &$::MarkForRedraw>(pViewport);     }
@@ -1204,7 +1207,7 @@ public:
   Wreckage() : MapChildEntity(UseInternalCtorChain) { InternalCtor<0x405AF0>(); }
 
   Type* GetType()            const override { return Thunk<0x405E50, &$::GetType>();        }
-  int   ProcessTimers()            override { return Thunk<0x405CF0, &$::ProcessTimers>();  }
+  int   ProcessActions()           override { return Thunk<0x405CF0, &$::ProcessActions>(); }
   void  Draw(Viewport* pViewport)  override { return Thunk<0x405B50, &$::Draw>(pViewport);  }
   void* Destroy(ibool freeMem = 0) override { return Thunk<0x405B20, &$::Destroy>(freeMem); }
 

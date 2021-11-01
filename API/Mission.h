@@ -37,6 +37,7 @@
 namespace Tethys {
 
 struct MissionResults;
+class  StreamIO;
 
 namespace TethysAPI {
 
@@ -127,20 +128,35 @@ struct SaveRegion {
 
 // Args used by extended mission callbacks.  Requires OPU mod 1.4.0+.
 
-/// Info passed to OnLoad() user callback.
-struct OnLoadArgs {
+/// Info passed to trigger callbacks.  @see Trigger.h.
+struct OnTriggerArgs;
+
+/// Info passed to OnLoadMission() user callback.
+struct OnLoadMissionArgs {
   size_t structSize;  ///< Size of this structure.
 };
 
-/// Info passed to OnUnload() user callback.
-struct OnUnloadArgs {
+/// Info passed to OnUnloadMission() user callback.
+struct OnUnloadMissionArgs {
   size_t structSize;  ///< Size of this structure.
 };
 
-/// Info passed to OnEnd() user callback.
-struct OnEndArgs {
+/// Info passed to OnEndMission() user callback.
+struct OnEndMissionArgs {
   size_t          structSize;       ///< Size of this structure.
   MissionResults* pMissionResults;  ///< Mission results info.
+};
+
+/// Info passed to OnSaveGame() user callback.
+struct OnSaveGameArgs {
+  size_t    structSize;  ///< Size of this structure.
+  StreamIO* pSavedGame;  ///< Saved game file write stream, positioned at the end of normal data.
+};
+
+/// Info passed to OnLoadSavedGame() user callback.
+struct OnLoadSavedGameArgs {
+  size_t    structSize;  ///< Size of this structure.
+  StreamIO* pSavedGame;  ///< Saved game file read stream, positioned at the end of normal data.
 };
 
 /// Info passed to OnChat() user callback.
@@ -157,25 +173,29 @@ struct OnCreateUnitArgs;
 /// Info passed to OnDestroyUnit() user callback.  @see Unit.h.
 struct OnDestroyUnitArgs;
 
-/// Info passed to trigger callbacks.  @see Trigger.h.
-struct OnTriggerArgs;
+/// Info passed to OnDamageUnit() user callback.  @see Unit.h.
+struct OnDamageUnitArgs;
 
 
 ///@{ Type aliases showing the function signature for each mission API callback.
 using PfnInitProc        = ibool(CDECL*)();
-using PfnAIProc          = void(CDECL*)();
-using PfnGetSaveRegions  = void(CDECL*)(SaveRegion* pSave);
-using PfnLegacyOnTrigger = void(CDECL*)();
+using PfnAIProc          =  void(CDECL*)();
+using PfnGetSaveRegions  =  void(CDECL*)(SaveRegion* pSave);
+using PfnLegacyOnTrigger =  void(CDECL*)();
 
-// The following require OPU mod 1.4.0+.
-using PfnOnLoad        = ibool(CDECL*)(OnLoadArgs*);
-using PfnOnUnload      = ibool(CDECL*)(OnUnloadArgs*);
-using PfnOnEnd         =  void(CDECL*)(OnEndArgs*);
-using PfnOnChat        =  void(CDECL*)(OnChatArgs*);
-using PfnOnCreateUnit  =  void(CDECL*)(OnCreateUnitArgs*);
-using PfnOnDestroyUnit =  void(CDECL*)(OnDestroyUnitArgs*);
+// The following require OPU mod 1.4.0.
+using PfnOnTrigger       =  void(CDECL*)(OnTriggerArgs*);
+using PfnOnLoadMission   = ibool(CDECL*)(OnLoadMissionArgs*);
+using PfnOnUnloadMission = ibool(CDECL*)(OnUnloadMissionArgs*);
+using PfnOnEndMission    =  void(CDECL*)(OnEndMissionArgs*);
+using PfnOnChat          =  void(CDECL*)(OnChatArgs*);
+using PfnOnCreateUnit    =  void(CDECL*)(OnCreateUnitArgs*);
+using PfnOnDestroyUnit   =  void(CDECL*)(OnDestroyUnitArgs*);
 
-using PfnOnTrigger = void(CDECL*)(OnTriggerArgs*);
+// The following requires OPU mod 1.4.2.
+using PfnOnSaveGame      = ibool(CDECL*)(OnSaveGameArgs*);
+using PfnOnLoadSavedGame = ibool(CDECL*)(OnLoadSavedGameArgs*);
+using PfnOnDamageUnit    =  void(CDECL*)(OnDamageUnitArgs*);
 ///@}
 
 } // TethysAPI

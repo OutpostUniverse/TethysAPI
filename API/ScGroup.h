@@ -11,12 +11,30 @@
 #include "Tethys/API/Location.h"
 #include "Tethys/API/ScStub.h"
 #include "Tethys/API/Unit.h"
+#include "Tethys/API/Enumerators.h"
 
 namespace Tethys::TethysAPI {
 
 class UnitBlock;
 
-/// Exported interface for UI unit groups (wraps ScGroupImpl).  @see @ref GroupEnumerator.
+/// Iterates over units in a ScGroup (FightGroup, MiningGroup, BuildingGroup).
+class GroupIterator : public TethysImpl::UnitIteratorBase {
+public:
+  using iterator_category = std::bidirectional_iterator_tag;
+
+  explicit GroupIterator(const ScGroupImpl::UnitNode* pNode = nullptr) : pNode_(pNode) { }
+  GroupIterator& operator++() { pNode_ = (pNode_ != nullptr) ? pNode_->pNext : nullptr;  return *this; }
+  GroupIterator& operator--() { pNode_ = (pNode_ != nullptr) ? pNode_->pPrev : nullptr;  return *this; }
+  bool operator==(GroupIterator other) const { return pNode_ == other.pNode_; }
+  bool operator!=(GroupIterator other) const { return !(*this == other);      }
+  operator bool()  const { return (pNode_ != nullptr); }
+  Unit operator*() const { return Unit(pNode_->pUnit); }
+
+private:
+  const ScGroupImpl::UnitNode* pNode_;
+};
+
+/// Exported interface for UI unit groups (wraps ScGroupImpl).
 class ScGroup : public ScStub {
   using $ = ScGroup;
 public:
@@ -59,6 +77,9 @@ public:
   Unit GetFirstOfType(MapID unitType, MapID cargoOrWeapon) const
     { Unit u;  Thunk<0x479A60, int(Unit*, MapID, MapID)>(&u, unitType, cargoOrWeapon);  return u; }
   ///@}
+
+  auto begin() { return GroupIterator(GetImpl()->pUnitListHead_); }  ///< Iterator to the first unit of this ScGroup.
+  auto end()   { return GroupIterator(nullptr);                   }  ///< Iterator past the last unit of this ScGroup.
 
   int GetOwner() const { return GetImpl()->ownerPlayerNum_; }  ///< Gets the owner player ID of this ScGroup.
 };
@@ -186,17 +207,17 @@ public:
   void SendWaveNow(int a)                      { return Thunk<0x47AA40, &$::SendWaveNow>(a);                  }
   void SetWavePeriod(int minTime, int maxTime) { return Thunk<0x47A970, &$::SetWavePeriod>(minTime, maxTime); }
 
-  void SetGuardComp(int  minUnits, int maxUnits, const MrRec* pMrRecList)
-    { return Thunk<0x47A9E0, &$::SetGuardComp>(minUnits,  maxUnits, pMrRecList); }
-  void SetAttackComp(int minUnits, int maxUnits, const MrRec* pMrRecList)
-    { return Thunk<0x47A9B0, &$::SetAttackComp>(minUnits, maxUnits, pMrRecList); }
-  void SetSapperComp(int minUnits, int maxUnits, const MrRec* pMrRecList)
-    { return Thunk<0x47AA10, &$::SetSapperComp>(minUnits, maxUnits, pMrRecList); }
+  void SetGuardComp(int  minUnits, int maxUnits, TethysUtil::Span<MrRec> mrRecList)
+    { return Thunk<0x47A9E0, void(int, int, const MrRec*)>(minUnits, maxUnits, mrRecList.Data()); }
+  void SetAttackComp(int minUnits, int maxUnits, TethysUtil::Span<MrRec> mrRecList)
+    { return Thunk<0x47A9B0, void(int, int, const MrRec*)>(minUnits, maxUnits, mrRecList.Data()); }
+  void SetSapperComp(int minUnits, int maxUnits, TethysUtil::Span<MrRec> mrRecList)
+    { return Thunk<0x47AA10, void(int, int, const MrRec*)>(minUnits, maxUnits, mrRecList.Data()); }
 
-  void SetAttackFraction(int attackFraction) { return Thunk<0x47AA60, &$::SetAttackFraction>(attackFraction); }
-  void SetContactDelay(int delay)            { return Thunk<0x47A990, &$::SetContactDelay>(delay);            }
-  void SetNoRange(int a, int b)              { return Thunk<0x47A950, &$::SetNoRange>(a, b);                  }
-  void SetPoints(const PWDef* pPwDefList)    { return Thunk<0x47A8B0, &$::SetPoints>(pPwDefList);             }
+  void SetAttackFraction(int attackFraction)        { return Thunk<0x47AA60, &$::SetAttackFraction>(attackFraction); }
+  void SetContactDelay(int delay)                   { return Thunk<0x47A990, &$::SetContactDelay>(delay);            }
+  void SetNoRange(int a, int b)                     { return Thunk<0x47A950, &$::SetNoRange>(a, b);                  }
+  void SetPoints(TethysUtil::Span<PWDef> pwDefList) { return Thunk<0x47A8B0, void(const PWDef*)>(pwDefList.Data());  }
 };
 
 } // Tethys::TethysAPI

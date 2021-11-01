@@ -21,12 +21,18 @@ public:
 
   virtual ibool Flush()                                 { return Thunk<0x4AB3D0, &$::Flush>();              }
   virtual ibool Write(size_t size, const void* pBuffer) { return Thunk<0x4AB3E0, &$::Write>(size, pBuffer); }
-  virtual ibool Read(size_t size, void* pBuffer)        { return Thunk<0x4AB3F0, &$::Read>(size, pBuffer);  }
+  virtual ibool Read(size_t  size,       void* pBuffer) { return Thunk<0x4AB3F0, &$::Read>(size,  pBuffer); }
 
   virtual void Close() { return Thunk<0x4AB3A0, &$::Close>(); }
 
 #define OP2_STREAMIO_VTBL($)  $(GetStatus)  $(Destroy)  $(Tell)  $(Seek)  $(F1)  $(Flush)  $(Write)  $(Read)  $(Close)
-  DEFINE_VTBL_TYPE(OP2_STREAMIO_VTBL)  // ** TODO vtbl address
+  DEFINE_VTBL_TYPE(OP2_STREAMIO_VTBL, 0x4D74FC);
+
+  ibool WriteString(const char* pString) { return OP2Thunk<0x49DB40, ibool FASTCALL($*, const char*)>(this, pString); }
+  const char* ReadString()               { return    Thunk<0x49DBC0, &$::ReadString>();                               }
+
+  template <typename T>  ibool WriteValue(const T&  data) { return Write(sizeof(T), &data); }
+  template <typename T>  ibool ReadValue(T*        pData) { return  Read(sizeof(T), pData); }
 
 public:
   size_t position_;

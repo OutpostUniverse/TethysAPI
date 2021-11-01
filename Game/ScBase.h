@@ -136,8 +136,25 @@ public:
   int            field_14;
   TriggerImpl*   pNext_;
   ibool          isOneShot_;
-  int            playerVectorHasFired_;
+  PlayerBitmask  playerVectorHasFired_;
   FuncReference* pFuncRef_;
+};
+
+/// Internal implementation class for victory conditions.
+class VictoryConditionImpl : public TriggerImpl {
+  using $ = VictoryConditionImpl;
+public:
+  void*          Destroy(ibool freeMem)     override { return Thunk<0x495800, &$::Destroy>(freeMem);   }
+  ScStubFactory* GetScStubFactory()         override { return Thunk<0x4957F0, &$::GetScStubFactory>(); }
+  void           Save(StreamIO* pSavedGame) override { return Thunk<0x4958E0, &$::Save>(pSavedGame);   }
+  ibool          Load(StreamIO* pSavedGame) override { return Thunk<0x495960, &$::Load>(pSavedGame);   }
+  ibool          HasFired()                 override { return Thunk<0x495890, &$::HasFired>();         }
+
+public:
+  int          field_24;
+  int          field_2C;
+  const char*  pObjectiveText_;
+  int          victoryTriggerIndex_;
 };
 
 
@@ -227,10 +244,10 @@ struct RecordedMine {
 };
 
 struct RecordedTubeWall {
-  uint16 tileX;
-  uint16 tileY;
-  int    cellType;  ///< 0x17 = Wall, 0x18 = MicrobeWall, 0x19 = LavaWall, 0x1A = Tube
-  int    field_08;
+  uint16   tileX;
+  uint16   tileY;
+  CellType cellType;
+  int      field_08;
 };
 
 struct RecordedVehGroup {

@@ -3,6 +3,7 @@
 
 #include "Tethys/Common/Types.h"
 
+#include <initializer_list>
 #include <cstdlib>
 #include <cstdio>
 
@@ -51,5 +52,34 @@ inline bool GetNextBit(
 
   return result;
 }
+
+/// Type erasure reference accessor class for immutable, possibly temporary, array-like types.
+template <typename T>
+class Span {
+public:
+  constexpr Span(std::nullptr_t = nullptr)               : Span(nullptr,             0)                   { }
+  constexpr Span(const T* pSrc, size_t length)           : pData_(pSrc),             length_(length)      { }
+  constexpr Span(std::initializer_list<T> list)          : Span(list.begin(),        list.size())         { }
+  template <size_t N>  constexpr Span(const T (&arr)[N]) : Span(&arr[0],             N)                   { }
+  template
+    <typename U, typename = std::enable_if_t<std::is_same<decltype(std::declval<const U>().data()), const T*>::value>>
+  constexpr Span(const U& stlContainer)                  : Span(stlContainer.data(), stlContainer.size()) { }
+
+  constexpr const T* begin()  const { return pData_;           }
+  constexpr const T* cbegin() const { return pData_;           }
+  constexpr const T* end()    const { return pData_ + length_; }
+  constexpr const T* cend()   const { return pData_ + length_; }
+
+  constexpr const T* Data()     const { return pData_; }
+  constexpr operator const T*() const { return pData_; }
+  template <typename I>  constexpr const T& operator[](I index) const { return *(pData_ + static_cast<size_t>(index)); }
+
+  constexpr size_t Length()  const { return length_;        }
+  constexpr bool   IsEmpty() const { return (length_ == 0); }
+
+private:
+  const T*  pData_;
+  size_t    length_;
+};
 
 } // Tethys::TethysUtil

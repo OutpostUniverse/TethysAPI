@@ -275,7 +275,7 @@ struct LaunchCommand : public SingleUnitSimpleCommand {
 
 /// Used with ctMoRepairObj, ctMoReprogram, ctMoDismantle
 struct RepairCommand : public SimpleCommand {
-  uint16        unknown1;      ///< 0
+  uint16        unknown1;    ///< 0
   CommandTarget target;
 };
 
@@ -445,7 +445,7 @@ OP2_CMD_PACKET_DATA_FOR_DEF(CommandType::Ally,            AllyCommand);
 OP2_CMD_PACKET_DATA_FOR_DEF(CommandType::GoAI,            void);
 OP2_CMD_PACKET_DATA_FOR_DEF(CommandType::MachineSettings, MachineSettingsCommand);
 OP2_CMD_PACKET_DATA_FOR_DEF(CommandType::InvalidCommand,  void);
-}  // Impl
+}  // TethysImpl
 
 /// Template alias to get the command packet data class associated with the given CommandType.
 template <CommandType Command>  using CmdPacketDataFor = typename TethysImpl::CmdPacketDataForImpl<Command>::Type;

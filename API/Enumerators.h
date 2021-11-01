@@ -1,118 +1,231 @@
 /**
  ***********************************************************************************************************************
  * @file  Enumerators.h
- * @brief Defines the unit enumerator classes used to search for or traverse a list of Units.
- * @note  The Enumerator API will be changed substantially to work more like std::iterator.  The current interface
- *        should be considered a placeholder.
+ * @brief Defines the unit enumerator and iterator classes used to search for or traverse a list of Units.
  ***********************************************************************************************************************
  */
 
 #pragma once
 
-#include "Tethys/API/Location.h"
-#include "Tethys/API/ScGroup.h"
 #include "Tethys/API/Unit.h"
+#include "Tethys/API/Location.h"
+#include "Tethys/Game/GameImpl.h"
+#include <iterator>
 
-namespace Tethys::TethysAPI {
+namespace Tethys {
 
-/// Group (enumerate all units in a ScGroup)
-class GroupEnumerator : public OP2Class<GroupEnumerator> {
+namespace TethysImpl {
+
+/// @internal  Base class providing necessary STL std::iterator traits for most unit iterator types.
+class UnitIteratorBase {
 public:
-  explicit GroupEnumerator(const ScGroup& group) { InternalCtor<0x47A830, const ScGroup&>(group); }
-
-  ibool GetNext(Unit& currentUnit) { return Thunk<0x47A850, &$::GetNext>(currentUnit); }
-  
-public:
-  struct UnitNode {
-    UnitNode*  pPrev;  // ?
-    UnitNode*  pNext;
-    MapObject* pUnit;
-  };
-
-  UnitNode* pCurrentUnitNode_;
+  using iterator_category = std::forward_iterator_tag;
+  using difference_type   = void;
+  using value_type        = TethysAPI::Unit;
+  using pointer           = const TethysAPI::Unit*;
+  using reference         = TethysAPI::Unit;
 };
 
-/// Vehicles (enumerate all vehicles for a certain player)
-class PlayerVehicleEnum : public OP2Class<PlayerVehicleEnum> {
+/// @internal  Template CRTP base class providing necessary STL std::iterator functionality for map area iterators.
+template <typename Iterator, typename Result = TethysAPI::Unit>
+class AreaIteratorBase : public OP2Class<Iterator> {
 public:
-  explicit PlayerVehicleEnum(int playerNum) { InternalCtor<0x47A480, int>(playerNum); }
+  using iterator_category = std::forward_iterator_tag;
+  using difference_type   = void;
+  using value_type        = Result;
+  using pointer           = const Result*;
+  using reference         = Result;
 
-  ibool GetNext(Unit& currentUnit) { return Thunk<0x47A4B0, &$::GetNext>(currentUnit); }
-  
-public:
+  Iterator& operator++() { auto& e = static_cast<Iterator&>(*this); result_ = { }; e.GetNext(result_); return e; }
+  bool operator==(const AreaIteratorBase& other) const { return result_ == other.result_; }
+  bool operator!=(const AreaIteratorBase& other) const { return !(*this == other);        }
+  operator bool()      const { return (result_ != Result{}); }
+  Result   operator*() const { return  result_;              }
+
+private:
   MapObject* pCurrentUnit_;
+
+  int field_04;
+  int field_08;
+  int field_0C;
+  int field_10;
+  int field_14;
+  int field_18;
+  int field_1C;
+  int field_20;
+  int field_24;
+  int field_28;
+  int field_2C;
+  int field_30;
+
+  Result result_ = { };
 };
 
-/// Buildings (enumerate all buildings of a certain type for a certain player)
-class PlayerBuildingEnum : public OP2Class<PlayerBuildingEnum> {
-public:
-  PlayerBuildingEnum(int playerNum, MapID buildingType = MapID::None)
-    { InternalCtor<0x47A4E0, int, MapID>(playerNum, buildingType); }
+} // TethysImpl
 
-  ibool GetNext(Unit& currentUnit) { return Thunk<0x47A510, &$::GetNext>(currentUnit); }
-  
+namespace TethysAPI {
+
+ /// Iterates over a player's unit list.
+class PlayerUnitIterator : public TethysImpl::UnitIteratorBase {
 public:
-  MapObject* pCurrentUnit_;
-  MapID      buildingType_;
+  explicit PlayerUnitIterator(MapObject* pMo = nullptr) : pMo_(pMo) { }
+  explicit PlayerUnitIterator(Unit u) : pMo_(u.GetMapObject()) { }
+
+  PlayerUnitIterator& operator++() { pMo_ = (pMo_ != nullptr) ? pMo_->pPlayerNext_ : nullptr;  return *this; }
+  bool operator==(const PlayerUnitIterator& other) const { return (pMo_ == other.pMo_); }
+  bool operator!=(const PlayerUnitIterator& other) const { return !(*this == other);    }
+  operator bool()  const { return (pMo_ != nullptr); }
+  Unit operator*() const { return Unit(pMo_);        }
+
+protected:
+  MapObject* pMo_;
 };
 
-/// Units (enumerate all units of a certain player)
-class PlayerUnitEnum : public OP2Class<PlayerUnitEnum> {
+/// Iterates over a player's units of the specified type.
+class FilterPlayerUnitIterator : public PlayerUnitIterator {
 public:
-  explicit PlayerUnitEnum(int playerNum) { InternalCtor<0x47A580, int>(playerNum); }
+  explicit FilterPlayerUnitIterator(MapObject* pMo = nullptr, MapID type = MapID::Any)
+    : FilterPlayerUnitIterator(PlayerUnitIterator(pMo), type) { }
+  explicit FilterPlayerUnitIterator(Unit u, MapID type = MapID::Any)
+    : FilterPlayerUnitIterator(PlayerUnitIterator(u), type) { }
+  explicit FilterPlayerUnitIterator(PlayerUnitIterator src, MapID type = MapID::Any)
+    : PlayerUnitIterator(src), type_(type)
+      { if (pMo_ && (type_ != MapID::Any) && (pMo_->GetTypeID() != type_)) { ++(*this); } }
 
-  ibool GetNext(Unit& currentUnit) { return Thunk<0x47A5B0, &$::GetNext>(currentUnit); }
-  
-public:
-  MapObject* pCurrentUnit_;
-  int        playerNum_;
+  FilterPlayerUnitIterator& operator++() {
+    if (type_ == MapID::Any) PlayerUnitIterator::operator++();
+    else do PlayerUnitIterator::operator++(); while (pMo_ && (pMo_->GetTypeID() != type_));
+    return *this;
+  }
+
+private:
+  MapID type_;
 };
 
-/// InRange (enumerate all units within a given distance of a given location)
+} // TethysAPI
+
+namespace TethysImpl {
+/// @internal  Base class for player unit enumerators (e.g. PlayerVehicleEnum, PlayerBuildingEnum, PlayerEntityEnum).
+class PlayerUnitEnumBase {
+public:
+  using Iterator = TethysAPI::FilterPlayerUnitIterator;
+
+  explicit PlayerUnitEnumBase(int playerNum, MapID type = MapID::Any) : playerNum_(playerNum), type_(type) { }
+
+  Iterator begin() { return Iterator(nullptr, type_); }
+  Iterator end()   { return Iterator(nullptr, type_); }
+
+protected:
+  int   playerNum_;
+  MapID type_;
+};
+} // TethysImpl
+
+namespace TethysAPI {
+
+/// Enumerates all vehicles (of the specified type) belonging to the specified player.
+class PlayerVehicleEnum : public TethysImpl::PlayerUnitEnumBase {
+public:
+  using PlayerUnitEnumBase::PlayerUnitEnumBase;
+  Iterator begin() { return Iterator(GameImpl::GetInstance()->GetPlayer(playerNum_)->pVehicleList_, type_); }
+};
+
+/// Enumerates all buildings (of the specified type) belonging to the specified player.
+class PlayerBuildingEnum : public TethysImpl::PlayerUnitEnumBase {
+public: 
+  using PlayerUnitEnumBase::PlayerUnitEnumBase;
+  Iterator begin() { return Iterator(GameImpl::GetInstance()->GetPlayer(playerNum_)->pBuildingList_, type_); }
+};
+
+/// Enumerates all entities (of the specified type) belonging to the specified player.
+class PlayerEntityEnum : public TethysImpl::PlayerUnitEnumBase {
+public:
+  using PlayerUnitEnumBase::PlayerUnitEnumBase;
+  explicit PlayerEntityEnum() : PlayerUnitEnumBase(6) { }
+  Iterator begin() { return Iterator(GameImpl::GetInstance()->GetPlayer(playerNum_)->pEntityList_, type_); }
+};
+
+/// Enumerates all units within a given distance of a given location.
 class InRangeEnumerator : public OP2Class<InRangeEnumerator> {
 public:
-  InRangeEnumerator(const Location& centerPoint, int maxTileDistance)
-    { InternalCtor<0x47A740, const Location&, int>(centerPoint, maxTileDistance); }
+  class Iterator : public TethysImpl::AreaIteratorBase<Iterator> {
+  public:
+    using AreaIteratorBase::AreaIteratorBase;
+    Iterator(const Location& centerPoint, int maxTileDistance)
+      { InternalCtor<0x47A740, const Location&, int>(centerPoint, maxTileDistance);  ++(*this); }
+    ibool GetNext(Unit& currentUnit) { return Thunk<0x47A780, &$::GetNext>(currentUnit); };
+  };
 
-  ibool GetNext(Unit& currentUnit) { return Thunk<0x47A780, &$::GetNext>(currentUnit); }
-  
-public:
-  MapObject* pCurrentUnit_;
-  int        field_04[12];
+  InRangeEnumerator(const Location& centerPoint, int maxTileDistance)
+    : centerPoint_(centerPoint), maxTileDistance_(maxTileDistance) { }
+
+  Iterator begin() { return Iterator(centerPoint_, maxTileDistance_); }
+  Iterator end()   { return Iterator();                               }
+
+private:
+  Location centerPoint_;
+  int      maxTileDistance_;
 };
 
-/// InRect (enumerate all units within a given rectangle)
+/// Eenumerates all units within a given rectangle.
 class InRectEnumerator : public OP2Class<InRectEnumerator> {
 public:
-  explicit InRectEnumerator(const MapRect& rect) { InternalCtor<0x47A610, const MapRect&>(rect); }
+  class Iterator : public TethysImpl::AreaIteratorBase<Iterator> {
+  public:
+    using AreaIteratorBase::AreaIteratorBase;
+    explicit Iterator(const MapRect& rect) { InternalCtor<0x47A610, const MapRect&>(rect);  ++(*this); }
+    ibool GetNext(Unit& currentUnit) { return Thunk<0x47A6A0, &$::GetNext>(currentUnit); }
+  };
 
-  ibool GetNext(Unit& currentUnit) { return Thunk<0x47A6A0, &$::GetNext>(currentUnit); }
-  
-public:
-  int field_00[13];
+  explicit InRectEnumerator(const MapRect& rect) : rect_(rect) { }
+
+  Iterator begin() { return Iterator(rect_); }
+  Iterator end()   { return Iterator();      }
+
+private:
+  MapRect rect_;
 };
 
-/// Location (enumerate all units at a given location)
+/// Enumerates all units at a given location.
 class LocationEnumerator : public OP2Class<LocationEnumerator> {
 public:
-  explicit LocationEnumerator(const Location& location) { InternalCtor<0x47A6D0, const Location&>(location); }
+  class Iterator : public TethysImpl::AreaIteratorBase<Iterator> {
+  public:
+    using AreaIteratorBase::AreaIteratorBase;
+    explicit Iterator(const Location& location) { InternalCtor<0x47A6D0, const Location&>(location);  ++(*this); }
+    ibool GetNext(Unit& currentUnit) { return Thunk<0x47A710, &$::GetNext>(currentUnit); }
+  };
 
-  ibool GetNext(Unit& currentUnit) { return Thunk<0x47A710, &$::GetNext>(currentUnit); }
-  
-public:
-  int field_00[13];
+  explicit LocationEnumerator(const Location& location) : location_(location) { }
+
+  Iterator begin() { return Iterator(location_); }
+  Iterator end()   { return Iterator();          }
+
+private:
+  Location location_;
 };
 
-/// Closest (enumerate all units ordered by their distance to a given location)
+/// Enumerates all units ordered by their distance to a given location.
 class ClosestEnumerator : public OP2Class<ClosestEnumerator> {
 public:
-  explicit ClosestEnumerator(const Location& location) { InternalCtor<0x47A7B0, const Location&>(location); }
+  using Result = std::pair<Unit, uint32>;  ///< Mapping of unit : distance
 
-  ibool GetNext(Unit& currentUnit, uint32& pixelDistance)
-    { return Thunk<0x47A7F0, &$::GetNext>(currentUnit, pixelDistance); }
-  
-public:
-  int field_00[13];
+  class Iterator : public TethysImpl::AreaIteratorBase<Iterator, Result> {
+  public:
+    using AreaIteratorBase::AreaIteratorBase;
+    explicit Iterator(const Location& location) { InternalCtor<0x47A7B0, const Location&>(location);  ++(*this); }
+    ibool GetNext(Result& result) { return Thunk<0x47A7F0, ibool(Unit&, uint32&)>(result.first, result.second); }
+  };
+
+  explicit ClosestEnumerator(const Location& location) : location_(location) { }
+
+  Iterator begin() { return Iterator(location_); }
+  Iterator end()   { return Iterator();          }
+
+private:
+  Location location_;
 };
+
+} // TethysAPI
 
 } // Tethys

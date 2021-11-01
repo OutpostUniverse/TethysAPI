@@ -12,6 +12,7 @@
 #include "Tethys/Game/MapObjectType.h"
 #include "Tethys/API/ScGroup.h"
 #include "Tethys/API/Unit.h"
+#include <string_view>
 
 namespace Tethys::TethysAPI {
 
@@ -58,17 +59,23 @@ public:
 };
 
 
-/// Info passed to trigger callbacks.  (1.4.0)
+/// Info passed to trigger callbacks.  (1.4.0+)
 struct OnTriggerArgs {
-  size_t  structSize;  ///< Size of this structure.
-  Trigger trigger;     ///< Trigger that was fired.
+  size_t        structSize;       ///< Size of this structure.
+  Trigger       trigger;          ///< Trigger that was fired.
+  
+  // The following fields require OPU mod 1.4.2.
+  PlayerBitmask triggeredBy;      ///< Bitmask of players currently activating this trigger.
+  PlayerBitmask prevTriggeredBy;  ///< Bitmask of players that previously activated this trigger.
 };
 
 
 /// Creates a victory condition (wraps another Trigger).
-inline Trigger CreateVictoryCondition(Trigger condition, const char* pText, bool oneShot = false, bool enabled = true) {
+inline Trigger CreateVictoryCondition(
+  Trigger condition, std::string_view text, bool oneShot = false, bool enabled = true)
+{
   return OP2Thunk<0x479930, Trigger FASTCALL(ibool, ibool, const Trigger&, const char*)>(
-    enabled, oneShot, condition, pText);
+    enabled, oneShot, condition, text.data());
 }
 
 /// Creates a failure condition (wraps another Trigger).

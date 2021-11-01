@@ -10,10 +10,12 @@
 #include "Tethys/Common/Memory.h"
 #include "Tethys/API/Location.h"
 #include "Tethys/API/ScGroup.h"
+#include "Tethys/API/Enumerators.h"
 #include "Tethys/Game/GameStartInfo.h"
 #include "Tethys/Game/Research.h"
 #include "Tethys/Game/GameImpl.h"
 #include "Tethys/Game/PlayerImpl.h"
+#include <string_view>
 
 namespace Tethys::TethysAPI {
 
@@ -23,7 +25,7 @@ class _Player : public OP2Class<_Player> {
 public:
   _Player(int playerNum) : id_(playerNum), check_() { }
 
-  bool IsValid()  const { return (id_ >= 0) && (id_ < MaxPlayers); }
+  bool IsValid()  const { return (id_ >= 0) && (id_ < MaxPlayers); }  ///< Is this player instance valid?
   operator bool() const { return IsValid(); }
 
   bool IsEden()     const { return IsValid() &&  GetImpl()->isEden_;           }  ///< Player is Eden?
@@ -41,15 +43,15 @@ public:
   DifficultyLevel GetDifficulty()    const { return IsValid() ? GetImpl()->difficulty_     : DifficultyLevel::Count; }
   ///@}
 
-  ///@{ Gets or sets the player's name.
-  const char* GetPlayerName() const            { return IsValid() ? GetImpl()->GetPlayerName() : nullptr; }
-  void        SetPlayerName(const char* pName) { if (IsValid()) { GetImpl()->SetPlayerName(pName);      } }
-  ///@}
+  /// Get the player's name.
+  std::string_view GetPlayerName() const    { return IsValid() ? GetImpl()->GetPlayerName() : "";       }
+  /// Set the player's name.  @note Max 12 characters.
+  void SetPlayerName(std::string_view name) { if (IsValid()) { GetImpl()->SetPlayerName(name.data()); } }
 
-  ///@{ Gets or sets the player's color.
+  /// Get the player's color.
   PlayerColor GetColor() const            { return IsValid() ? GetImpl()->colorType_ : PlayerColor::Count; }
-  void        SetColor(PlayerColor color) { if (IsValid()) { GetImpl()->colorType_ = color;              } }
-  ///@}
+  /// Set the player's color.
+  void        SetColor(PlayerColor color) { if (IsValid()) { GetImpl()->colorType_ = color; }              }
 
   ///@{ Gets or sets the player's population or resources.
   int  GetPopulation()            const { return GetKids() + GetWorkers() + GetScientists();               }
@@ -69,7 +71,6 @@ public:
 
   /// Gets the player's net food production trend.
   FoodStatus  GetFoodSupply()  const { return IsValid() ? GetImpl()->moraleState_.foodSupply  : FoodStatus::Count;  }
-
   /// Gets the player's morale category.
   MoraleLevel GetMoraleLevel() const { return IsValid() ? GetImpl()->moraleState_.moraleLevel : MoraleLevel::Count; }
 
@@ -87,13 +88,14 @@ public:
   /// Gives all techs with techID <= (techLevel * 1000), and all free subsequent techs.
   void  SetTechLevel(int techLevel)            { Research::GetInstance()->SetTechLevel(id_, techLevel * 1000); }
 
-  ///@{ Gets or sets player's ally status.
-  bool IsAlliedTo(int       playerNum) const { return IsValid() && (GetImpl()->GetAlliedTo()[playerNum]);   }
-  bool IsAlliedBy(int       playerNum) const { return IsValid() && (GetImpl()->alliedBy_[playerNum]);       }
-  bool IsAlly(int           playerNum) const { return IsValid() &&  GetImpl()->IsAlly(playerNum);           }
-  void AllyWith(int         playerNum)       { return Thunk<0x4774C0, &$::AllyWith>(playerNum);             }
-  void MutuallyAllyWith(int playerNum)       { AllyWith(playerNum);  GetInstance(playerNum)->AllyWith(id_); }
-  ///@}
+  bool IsAlliedTo(int playerNum) const { return IsValid() && (GetImpl()->GetAlliedTo()[playerNum]); } ///< Allied to?
+  bool IsAlliedBy(int playerNum) const { return IsValid() && (GetImpl()->alliedBy_[playerNum]);     } ///< Allied by?
+  bool IsAlly(int     playerNum) const { return IsValid() &&  GetImpl()->IsAlly(playerNum);         } ///< Fully allied?
+
+  /// Allies with the specified player (one-way).
+  void AllyWith(int         playerNum) { return Thunk<0x4774C0, &$::AllyWith>(playerNum);             }
+  /// Allies with the specified player (two-way).
+  void MutuallyAllyWith(int playerNum) { AllyWith(playerNum);  GetInstance(playerNum)->AllyWith(id_); }
 
   ///@{ Sets the view for this Player (does nothing if player is not the local player).
   void CenterViewOn(Location location) const { return Thunk<0x477490, void(Location)>(location); }
@@ -145,12 +147,11 @@ public:
   /// Changes the default ScGroup units will be added to (for AI players).
   void SetDefaultGroup(const ScGroup& newDefaultGroup) { return Thunk<0x4775A0, &$::SetDefaultGroup>(newDefaultGroup); }
 
-  ///@{ Player-owned Unit lists by type, sorted by newest to oldest.
-  ///   Call unit.GetPlayerNext() to traverse the list while unit.IsValid().
-  Unit GetBuildings() const { return Unit(IsValid() ? GetImpl()->GetBuildings() : nullptr); }
-  Unit GetVehicles()  const { return Unit(IsValid() ? GetImpl()->GetVehicles()  : nullptr); }
-  Unit GetBeacons()   const { return Unit(IsValid() ? GetImpl()->GetBeacons()   : nullptr); }
-  Unit GetEntities()  const { return Unit(IsValid() ? GetImpl()->GetEntities()  : nullptr); }
+  ///@{ Iterators over player-owned Unit lists by type, sorted by newest to oldest.
+  auto GetBuildings() const { return PlayerUnitIterator(IsValid() ? GetImpl()->GetBuildings() : nullptr); }
+  auto GetVehicles()  const { return PlayerUnitIterator(IsValid() ? GetImpl()->GetVehicles()  : nullptr); }
+  auto GetBeacons()   const { return PlayerUnitIterator(IsValid() ? GetImpl()->GetBeacons()   : nullptr); }
+  auto GetEntities()  const { return PlayerUnitIterator(IsValid() ? GetImpl()->GetEntities()  : nullptr); }
   ///@}
 
   /// Kills the specified number of player's colonists.

@@ -22,7 +22,7 @@ struct WplInfo {
 inline const TethysUtil::Library& GetOdasl() { static TethysUtil::Library odaslLib("odasl.dll");  return odaslLib; }
 
 inline int  STDCALL wplInit(WplInfo* pInfo) { return GetOdasl().Get<&wplInit>(__func__)(pInfo); } ///< Initialize ODASL.
-inline void STDCALL wplExit()               { return GetOdasl().Get<&wplExit>(__func__)(); }      ///< Deinit ODASL.
+inline void STDCALL wplExit()               { return GetOdasl().Get<&wplExit>(__func__)();      } ///< Deinit ODASL.
 
 inline void STDCALL wplEnable()  { return GetOdasl().Get<&wplEnable>(__func__)();  } ///< Begin paint UI with skinning.
 inline void STDCALL wplDisable() { return GetOdasl().Get<&wplDisable>(__func__)(); } ///< End paint UI with skinning.
