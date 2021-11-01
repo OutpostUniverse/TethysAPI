@@ -16,8 +16,6 @@
 
 namespace Tethys::TethysAPI {
 
-// ** TODO The Trigger API will be changed substantially.  The current interface should be considered a placeholder.
-
 /// Comparison modes used by various trigger creation functions.
 enum class CompareMode : int {
   Equal = 0,
