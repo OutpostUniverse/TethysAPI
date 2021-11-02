@@ -385,6 +385,14 @@ struct OnDamageUnitArgs {
   int    damage;      ///< Amount of damage (or EMP time) applied.
 };
 
+/// Info passed to OnTransferUnit() user callback.  (1.4.2)
+struct OnTransferUnitArgs {
+  size_t structSize;     ///< Size of this structure.
+  Unit   unit;           ///< Unit being transferred.
+  int    fromPlayerNum;  ///< Original owner player number.
+  int    toPlayerNum;    ///< New owner player number.
+};
+
 
 // =====================================================================================================================
 inline void Unit::DoSimpleCommand(

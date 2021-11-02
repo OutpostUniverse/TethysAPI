@@ -22,11 +22,11 @@ BEGIN_PACKED
 
 /// Command packet types.  @note int in some contexts (CommandPacket), uint8 in others (MapObject)
 enum class CommandType : int {
-  Nop = 0x00,       ///< 'ctNop'
+  Nop = 0x00,       ///< 'ctNop';  Sent by human players every game cycle if no other command is sent
   Doze,             ///< 'ctMoDoze'
   Move,             ///< 'ctMoMove'
   Dock,             ///< 'ctMoDock'
-  DockEG,           ///< 'ctMoDockEG';  Garage-specific dock command.
+  DockEG,           ///< 'ctMoDockEG';  Garage-specific dock command
   Stop,             ///< 'ctMoStop'
   Build,            ///< 'ctMoBuild'
   BuildWall,        ///< 'ctMoBuildWall'
@@ -63,19 +63,19 @@ enum class CommandType : int {
   StandGround,      ///< 'ctMoStandGround'
   CargoRoute,       ///< 'ctMoCargoRoute'
   Patrol,           ///< 'ctMoPatrol'
-  MapChange,        ///< 'ctMapChange';  Unused.
+  MapChange,        ///< 'ctMapChange';  Unused
   Poof,             ///< 'ctMoPoof'
   GameOpt,          ///< 'ctGameOpt'
-  GodWeapon,        ///< 'ctGodWeapon';  Unused.
-  ChatText,         ///< 'ctChatText';   Unused.
-  ChatSFX,          ///< 'ctChatSFX';    Unused.
+  GodWeapon,        ///< 'ctGodWeapon';  Unused
+  ChatText,         ///< 'ctChatText';   Unused
+  ChatSFX,          ///< 'ctChatSFX';    Unused
   Death,            ///< 'ctMoDeath'
   Chat,             ///< 'ctChat'
   Quit,             ///< 'ctQuit'
   Ally,             ///< 'ctAlly'
   GoAI,             ///< 'ctGoAI'
   MachineSettings,  ///< 'ctMachineSettings'
-  InvalidCommand,   ///< 'ctInvalidCommand'
+  InvalidCommand,   ///< 'ctInvalidCommand';  Sent by AI players every game cycle if no other command is sent
 
   Count
 };
@@ -379,7 +379,7 @@ union CommandPacketData {
 
 struct CommandPacket {
   CommandType       type;        ///< Type of command
-  uint16            dataLength;  ///< Length of dataBuff
+  uint16            dataLength;  ///< Length of message data
   int               timeStamp;   ///< Game tick (only used for network traffic)
   int               netID;       ///< Player net ID (only used for network traffic)
   CommandPacketData data;        ///< Message data, dependent on type
