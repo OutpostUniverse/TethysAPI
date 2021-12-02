@@ -148,10 +148,10 @@ public:
   void SetDefaultGroup(const ScGroup& newDefaultGroup) { return Thunk<0x4775A0, &$::SetDefaultGroup>(newDefaultGroup); }
 
   ///@{ Iterators over player-owned Unit lists by type, sorted by newest to oldest.
-  auto GetBuildings() const { return PlayerUnitIterator(IsValid() ? GetImpl()->GetBuildings() : nullptr); }
-  auto GetVehicles()  const { return PlayerUnitIterator(IsValid() ? GetImpl()->GetVehicles()  : nullptr); }
-  auto GetBeacons()   const { return PlayerUnitIterator(IsValid() ? GetImpl()->GetBeacons()   : nullptr); }
-  auto GetEntities()  const { return PlayerUnitIterator(IsValid() ? GetImpl()->GetEntities()  : nullptr); }
+  auto GetBuildings() const { return PlayerUnitIterator(nullptr, IsValid() ? GetImpl()->GetBuildings() : nullptr); }
+  auto GetVehicles()  const { return PlayerUnitIterator(nullptr, IsValid() ? GetImpl()->GetVehicles()  : nullptr); }
+  auto GetBeacons()   const { return PlayerUnitIterator(nullptr, IsValid() ? GetImpl()->GetBeacons()   : nullptr); }
+  auto GetEntities()  const { return PlayerUnitIterator(nullptr, IsValid() ? GetImpl()->GetEntities()  : nullptr); }
   ///@}
 
   /// Kills the specified number of player's colonists.

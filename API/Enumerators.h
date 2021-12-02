@@ -11,6 +11,7 @@
 #include "Tethys/API/Location.h"
 #include "Tethys/Game/GameImpl.h"
 #include <iterator>
+#include <list>
 
 namespace Tethys {
 
@@ -20,10 +21,10 @@ namespace TethysImpl {
 class UnitIteratorBase {
 public:
   using iterator_category = std::forward_iterator_tag;
-  using difference_type   = void;
+  using difference_type   = std::ptrdiff_t;
   using value_type        = TethysAPI::Unit;
-  using pointer           = const TethysAPI::Unit*;
-  using reference         = TethysAPI::Unit;
+  using pointer           = TethysAPI::Unit*;
+  using reference         = TethysAPI::Unit&;
 };
 
 /// @internal  Template CRTP base class providing necessary STL std::iterator functionality for map area iterators.
@@ -31,10 +32,10 @@ template <typename Iterator, typename Result = TethysAPI::Unit>
 class AreaIteratorBase : public OP2Class<Iterator> {
 public:
   using iterator_category = std::forward_iterator_tag;
-  using difference_type   = void;
+  using difference_type   = std::ptrdiff_t;
   using value_type        = Result;
-  using pointer           = const Result*;
-  using reference         = Result;
+  using pointer           = Result*;
+  using reference         = Result&;
 
   Iterator& operator++() { auto& e = static_cast<Iterator&>(*this); result_ = { }; e.GetNext(result_); return e; }
   bool operator==(const AreaIteratorBase& other) const { return result_ == other.result_; }
@@ -68,26 +69,36 @@ namespace TethysAPI {
  /// Iterates over a player's unit list.
 class PlayerUnitIterator : public TethysImpl::UnitIteratorBase {
 public:
-  explicit PlayerUnitIterator(MapObject* pMo = nullptr) : pMo_(pMo) { }
-  explicit PlayerUnitIterator(Unit u) : pMo_(u.GetMapObject()) { }
+  explicit PlayerUnitIterator(std::list<Unit>* pUnitCache, MapObject* pMo = nullptr)
+    : pMo_(pMo), pUnitCache_(pUnitCache) {
+    if (pUnitCache == nullptr) {
+      pUnitCache_ = new std::list<Unit>;
+      freeCache_ = true;
+    }
+  }
+  explicit PlayerUnitIterator(std::list<Unit>* pUnitCache, Unit u) : PlayerUnitIterator(pUnitCache, u.GetMapObject()) { }
+  virtual ~PlayerUnitIterator() { if (freeCache_) delete pUnitCache_; }
 
   PlayerUnitIterator& operator++() { pMo_ = (pMo_ != nullptr) ? pMo_->pPlayerNext_ : nullptr;  return *this; }
+  PlayerUnitIterator operator++(int) { auto v = *this; operator++(); return v; }
   bool operator==(const PlayerUnitIterator& other) const { return (pMo_ == other.pMo_); }
   bool operator!=(const PlayerUnitIterator& other) const { return !(*this == other);    }
   operator bool()  const { return (pMo_ != nullptr); }
-  Unit operator*() const { return Unit(pMo_);        }
+  Unit& operator*() const { auto& u = pUnitCache_->emplace_back(pMo_); return u; }
 
 protected:
   MapObject* pMo_;
+  std::list<Unit>* pUnitCache_;
+  bool freeCache_ = false;
 };
 
 /// Iterates over a player's units of the specified type.
 class FilterPlayerUnitIterator : public PlayerUnitIterator {
 public:
-  explicit FilterPlayerUnitIterator(MapObject* pMo = nullptr, MapID type = MapID::Any)
-    : FilterPlayerUnitIterator(PlayerUnitIterator(pMo), type) { }
-  explicit FilterPlayerUnitIterator(Unit u, MapID type = MapID::Any)
-    : FilterPlayerUnitIterator(PlayerUnitIterator(u), type) { }
+  explicit FilterPlayerUnitIterator(std::list<Unit>* pUnitCache, MapObject* pMo = nullptr, MapID type = MapID::Any)
+    : FilterPlayerUnitIterator(PlayerUnitIterator(pUnitCache, pMo), type) { }
+  explicit FilterPlayerUnitIterator(std::list<Unit>* pUnitCache, Unit u, MapID type = MapID::Any)
+    : FilterPlayerUnitIterator(PlayerUnitIterator(pUnitCache, u), type) { }
   explicit FilterPlayerUnitIterator(PlayerUnitIterator src, MapID type = MapID::Any)
     : PlayerUnitIterator(src), type_(type)
       { if (pMo_ && (type_ != MapID::Any) && (pMo_->GetTypeID() != type_)) { ++(*this); } }
@@ -97,6 +108,7 @@ public:
     else do PlayerUnitIterator::operator++(); while (pMo_ && (pMo_->GetTypeID() != type_));
     return *this;
   }
+  FilterPlayerUnitIterator operator++(int) { auto v = *this; operator++(); return v; }
 
 private:
   MapID type_;
@@ -112,12 +124,15 @@ public:
 
   explicit PlayerUnitEnumBase(int playerNum, MapID type = MapID::Any) : playerNum_(playerNum), type_(type) { }
 
-  Iterator begin() { return Iterator(nullptr, type_); }
-  Iterator end()   { return Iterator(nullptr, type_); }
+  Iterator begin() { return Iterator(&unitCache_, nullptr, type_); }
+  Iterator end()   { return Iterator(&unitCache_, nullptr, type_); }
 
 protected:
   int   playerNum_;
   MapID type_;
+  /// Holds onto all units that have been returned via iterators produced by this enumerator.
+  /// This is required since CLIF only supports reference-valued iterators, so we need to ensure the Unit object outlives the iterator.
+  std::list<TethysAPI::Unit> unitCache_;
 };
 } // TethysImpl
 
@@ -127,14 +142,14 @@ namespace TethysAPI {
 class PlayerVehicleEnum : public TethysImpl::PlayerUnitEnumBase {
 public:
   using PlayerUnitEnumBase::PlayerUnitEnumBase;
-  Iterator begin() { return Iterator(GameImpl::GetInstance()->GetPlayer(playerNum_)->pVehicleList_, type_); }
+  Iterator begin() { return Iterator(&unitCache_, GameImpl::GetInstance()->GetPlayer(playerNum_)->pVehicleList_, type_); }
 };
 
 /// Enumerates all buildings (of the specified type) belonging to the specified player.
 class PlayerBuildingEnum : public TethysImpl::PlayerUnitEnumBase {
 public: 
   using PlayerUnitEnumBase::PlayerUnitEnumBase;
-  Iterator begin() { return Iterator(GameImpl::GetInstance()->GetPlayer(playerNum_)->pBuildingList_, type_); }
+  Iterator begin() { return Iterator(&unitCache_, GameImpl::GetInstance()->GetPlayer(playerNum_)->pBuildingList_, type_); }
 };
 
 /// Enumerates all entities (of the specified type) belonging to the specified player.
@@ -142,7 +157,7 @@ class PlayerEntityEnum : public TethysImpl::PlayerUnitEnumBase {
 public:
   using PlayerUnitEnumBase::PlayerUnitEnumBase;
   explicit PlayerEntityEnum() : PlayerUnitEnumBase(6) { }
-  Iterator begin() { return Iterator(GameImpl::GetInstance()->GetPlayer(playerNum_)->pEntityList_, type_); }
+  Iterator begin() { return Iterator(&unitCache_, GameImpl::GetInstance()->GetPlayer(playerNum_)->pEntityList_, type_); }
 };
 
 /// Enumerates all units within a given distance of a given location.
