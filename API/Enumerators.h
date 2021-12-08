@@ -37,11 +37,13 @@ public:
   using pointer           = Result*;
   using reference         = Result&;
 
+  AreaIteratorBase(std::list<Result>* pResultCache) : pResultCache_(pResultCache) { }
   Iterator& operator++() { auto& e = static_cast<Iterator&>(*this); result_ = { }; e.GetNext(result_); return e; }
+  Iterator operator++(int) { auto v = static_cast<Iterator&>(*this); operator++(); return v; }
   bool operator==(const AreaIteratorBase& other) const { return result_ == other.result_; }
   bool operator!=(const AreaIteratorBase& other) const { return !(*this == other);        }
   operator bool()      const { return (result_ != Result{}); }
-  Result   operator*() const { return  result_;              }
+  Result&  operator*() const { pResultCache_->push_back(result_); return pResultCache_->back(); }
 
 private:
   MapObject* pCurrentUnit_;
@@ -60,6 +62,9 @@ private:
   int field_30;
 
   Result result_ = { };
+
+protected:
+  std::list<Result>* pResultCache_ = nullptr;
 };
 
 } // TethysImpl
@@ -166,7 +171,8 @@ public:
   class Iterator : public TethysImpl::AreaIteratorBase<Iterator> {
   public:
     using AreaIteratorBase::AreaIteratorBase;
-    Iterator(const Location& centerPoint, int maxTileDistance)
+    Iterator(std::list<Unit>* pResultCache, const Location& centerPoint, int maxTileDistance)
+      : AreaIteratorBase(pResultCache)
       { InternalCtor<0x47A740, const Location&, int>(centerPoint, maxTileDistance);  ++(*this); }
     ibool GetNext(Unit& currentUnit) { return Thunk<0x47A780, &$::GetNext>(currentUnit); };
   };
@@ -174,12 +180,13 @@ public:
   InRangeEnumerator(const Location& centerPoint, int maxTileDistance)
     : centerPoint_(centerPoint), maxTileDistance_(maxTileDistance) { }
 
-  Iterator begin() { return Iterator(centerPoint_, maxTileDistance_); }
-  Iterator end()   { return Iterator();                               }
+  Iterator begin() { return Iterator(&unitCache_, centerPoint_, maxTileDistance_); }
+  Iterator end()   { return Iterator(&unitCache_);                                 }
 
 private:
   Location centerPoint_;
   int      maxTileDistance_;
+  std::list<Unit> unitCache_;
 };
 
 /// Eenumerates all units within a given rectangle.
@@ -188,17 +195,19 @@ public:
   class Iterator : public TethysImpl::AreaIteratorBase<Iterator> {
   public:
     using AreaIteratorBase::AreaIteratorBase;
-    explicit Iterator(const MapRect& rect) { InternalCtor<0x47A610, const MapRect&>(rect);  ++(*this); }
+    Iterator(std::list<Unit>* pResultCache, const MapRect& rect)
+      : AreaIteratorBase(pResultCache) { InternalCtor<0x47A610, const MapRect&>(rect);  ++(*this); }
     ibool GetNext(Unit& currentUnit) { return Thunk<0x47A6A0, &$::GetNext>(currentUnit); }
   };
 
   explicit InRectEnumerator(const MapRect& rect) : rect_(rect) { }
 
-  Iterator begin() { return Iterator(rect_); }
-  Iterator end()   { return Iterator();      }
+  Iterator begin() { return Iterator(&unitCache_, rect_); }
+  Iterator end()   { return Iterator(&unitCache_);        }
 
 private:
   MapRect rect_;
+  std::list<Unit> unitCache_;
 };
 
 /// Enumerates all units at a given location.
@@ -207,17 +216,19 @@ public:
   class Iterator : public TethysImpl::AreaIteratorBase<Iterator> {
   public:
     using AreaIteratorBase::AreaIteratorBase;
-    explicit Iterator(const Location& location) { InternalCtor<0x47A6D0, const Location&>(location);  ++(*this); }
+    Iterator(std::list<Unit>* pResultCache, const Location& location)
+      : AreaIteratorBase(pResultCache) { InternalCtor<0x47A6D0, const Location&>(location);  ++(*this); }
     ibool GetNext(Unit& currentUnit) { return Thunk<0x47A710, &$::GetNext>(currentUnit); }
   };
 
   explicit LocationEnumerator(const Location& location) : location_(location) { }
 
-  Iterator begin() { return Iterator(location_); }
-  Iterator end()   { return Iterator();          }
+  Iterator begin() { return Iterator(&unitCache_, location_); }
+  Iterator end()   { return Iterator(&unitCache_);            }
 
 private:
   Location location_;
+  std::list<Unit> unitCache_;
 };
 
 /// Enumerates all units ordered by their distance to a given location.
@@ -228,17 +239,19 @@ public:
   class Iterator : public TethysImpl::AreaIteratorBase<Iterator, Result> {
   public:
     using AreaIteratorBase::AreaIteratorBase;
-    explicit Iterator(const Location& location) { InternalCtor<0x47A7B0, const Location&>(location);  ++(*this); }
+    explicit Iterator(std::list<Result>* pResultCache, const Location& location)
+      : AreaIteratorBase(pResultCache) { InternalCtor<0x47A7B0, const Location&>(location);  ++(*this); }
     ibool GetNext(Result& result) { return Thunk<0x47A7F0, ibool(Unit&, uint32&)>(result.first, result.second); }
   };
 
   explicit ClosestEnumerator(const Location& location) : location_(location) { }
 
-  Iterator begin() { return Iterator(location_); }
-  Iterator end()   { return Iterator();          }
+  Iterator begin() { return Iterator(&resultCache_, location_); }
+  Iterator end()   { return Iterator(&resultCache_);            }
 
 private:
   Location location_;
+  std::list<Result> resultCache_;
 };
 
 } // TethysAPI
