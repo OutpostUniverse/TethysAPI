@@ -3,6 +3,8 @@
 
 #include "Tethys/Common/Memory.h"
 
+struct IDirectDraw;
+
 namespace Tethys {
 
 enum class GameTermReasons : int;
@@ -11,7 +13,6 @@ struct GameStartInfo;
 struct MissionResults;
 struct CommandPacket;
 
-class IDirectDraw;
 class DirectDrawWindow;
 class IDlgWnd;
 class TFileDialog;

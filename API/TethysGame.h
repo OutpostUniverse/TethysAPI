@@ -122,9 +122,7 @@ public:
     Unit u;
     OP2Thunk<0x478780, ibool FASTCALL(Unit&, MapID, Location, int, MapID, UnitDirection)>(
       u, type, where, ownerNum, weaponCargo, rotation);
-    if (u.IsVehicle() && lightsOn) {
-      u.DoSetLights(true);
-    }
+    if (u.IsVehicle() && lightsOn) u.DoSetLights(true);
     return u;
   }
 
@@ -159,8 +157,10 @@ public:
     { OP2Thunk<0x478AA0, ibool FASTCALL(int, int, int, MapID)>(location.x, location.y, 0, type); }
 
   /// Creates a block of walls or tubes over the given area.
-  static void CreateWallOrTube(MapID type, const MapRect& rect)
-    { for (int y = rect.y1; y <= rect.y2; ++y) for (int x = rect.x1; x <= rect.x2; CreateWallOrTube(type, {x++, y})); }
+  static void CreateWallOrTube(MapID type, const MapRect& area) {
+    for (int y = area.y1; y <= area.y2; ++y)
+      for (int x = area.x1; x <= area.x2; CreateWallOrTube(type, Location(x++, y)));
+  }
 
   /// Let morale vary according to colony state & events for the specified player.  @note toPlayerNum: -1 = all players
   static void FreeMoraleLevel(int player = AllPlayers) { SetGameOpt(GameOpt::FreeMoraleLevel, player); }
@@ -184,12 +184,12 @@ public:
   static void SetMusicPlayList(int numSongs, int repeatStartIndex, const SongID* pSongIDList)
     { return MusicManager::GetInstance()->SetMusicPlaylist(numSongs, repeatStartIndex, pSongIDList); }
   static void SetMusicPlayList(TethysUtil::Span<SongID> songIDList, int repeatStartIndex = 0)
-    { return SetMusicPlayList(songIDList.Length(), repeatStartIndex, songIDList.Data()); }
+    { return SetMusicPlayList(songIDList.size(), repeatStartIndex, songIDList.data()); }
   ///@}
 
   /// Search aligned 8x8 blocks, for the block with the greatest weight.
   /// @note The target location is at the block center (+3, +3)
-  /// @note Targets first found block of heighest (non-negative) weight, or the first block if all blocks have negative
+  /// @note Targets first found block of highest (non-negative) weight, or the first block if all blocks have negative
   ///       weight
   /// @note Target player military units weigh 64, non-target player military units weigh -32, and non-target player
   ///       non-military units weigh 1.
@@ -260,9 +260,8 @@ public:
   static void SetForceRCCPathFinding(ToggleState state) {
     GetImpl()->forceEnableRCC_  = (state == ToggleState::On);
     GetImpl()->forceDisableRCC_ = (state == ToggleState::Off);
-    if (state != ToggleState::Default) {
+    if (state != ToggleState::Default)
       for (int i = 0; i < MaxPlayers; GetImpl()->GetPlayer(i++)->rccOperational_ = (state == ToggleState::On));
-    }
   }
 
   /// Toggles debug morale logging.

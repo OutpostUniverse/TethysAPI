@@ -328,7 +328,7 @@ public:
     const int  border  = includeBorder ? 2 : 0;
     const auto size    = Location(stats_.building.width + border, stats_.building.height + border);
     const auto topLeft = Location(center.x - (size.x / 2), center.y - (size.y / 2)).Clip();
-    return MapRect(topLeft, topLeft + size - 1).Clip();
+    return MapRect(topLeft, topLeft + size - Location(1, 1)).Clip();
   }
 
 public:

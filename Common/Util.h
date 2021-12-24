@@ -70,16 +70,23 @@ public:
   constexpr const T* end()    const { return pData_ + length_; }
   constexpr const T* cend()   const { return pData_ + length_; }
 
-  constexpr const T* Data()     const { return pData_; }
+  constexpr const T* data()     const { return pData_; }
   constexpr operator const T*() const { return pData_; }
   template <typename I>  constexpr const T& operator[](I index) const { return *(pData_ + static_cast<size_t>(index)); }
 
-  constexpr size_t Length()  const { return length_;        }
-  constexpr bool   IsEmpty() const { return (length_ == 0); }
+  constexpr size_t size()  const { return  length_;       }
+  constexpr bool   empty() const { return (length_ == 0); }
 
 private:
   const T*  pData_;
   size_t    length_;
+};
+
+/// Template class wrapping any OP2 internal class, which automatically calls Destroy() upon destruction.
+template <typename T>
+class AutoDestroy : public T {
+public:
+  ~AutoDestroy() { T::Destroy(); }
 };
 
 } // Tethys::TethysUtil

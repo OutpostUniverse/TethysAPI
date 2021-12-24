@@ -7,7 +7,8 @@
 
 /**
  ***********************************************************************************************************************
- * Mission DLLs should include this header.
+ * Mission DLLs should always include this header.
+ * 
  * Mission DLLs are required to export mission description data, which can be done with either of the following macros:
  *   EXPORT_OP2_MULTIPLAYER_SCRIPT("Mission Name", missionType, numHumans, "map_file.map", "tech_file.txt"(, numAIs))
  *     ** OR **
@@ -22,15 +23,21 @@
  *   MISSION_API void  MyLegacyTriggerFunction() { }     // Passed by name to Create*Trigger().  Called when the trigger
  *                                                       // fires (only once if oneShot=true).
  *
- * The following are extended APIs introduced in OPU mod 1.4.0+:
- *   MISSION_API ibool OnLoad(OnLoadArgs*     pArgs) { return 1; } // Called on DLL load.    Return false = error.
- *   MISSION_API ibool OnUnload(OnUnloadArgs* pArgs) { return 1; } // Called on DLL unload.  Return false = error.
- *   MISSION_API void  OnEnd(OnEndArgs*       pArgs) {           } // Called on mission end (not on restart or app exit)
- *   MISSION_API void  OnChat(OnChatArgs*     pArgs) {           } // Called when any player sends a chat message.
- *   MISSION_API void  OnCreateUnit(OnCreateUnitArgs*   pArgs) { } // Called when a unit/entity is created.
- *   MISSION_API void  OnDestroyUnit(OnCreateUnitArgs*  pArgs) { } // Called when a unit/entity is destroyed.
- *   MISSION_API void  MyTriggerFunction(OnTriggerArgs* pArgs) { } // Trigger function with access to extended info,
- *                                                                 // such as the source Trigger.
+ * The following extended APIs are introduced in OPU mod 1.4.0:
+ *   MISSION_API ibool OnLoadMission(OnLoadMissionArgs*     pArgs) { return 1; } // On DLL load.   Return 0 = error.
+ *   MISSION_API ibool OnUnloadMission(OnUnloadMissionArgs* pArgs) { return 1; } // On DLL unload. Return 0 = error.
+ *   MISSION_API void  OnEndMission(OnEndArgsMission*       pArgs) {           } // On mission win/lose/abort.
+ *   MISSION_API void  OnChat(OnChatArgs*                   pArgs) { } // Called when any player sends a chat message.
+ *   MISSION_API void  OnCreateUnit(OnCreateUnitArgs*       pArgs) { } // Called when a unit/entity is created.
+ *   MISSION_API void  OnDestroyUnit(OnCreateUnitArgs*      pArgs) { } // Called when a unit/entity is destroyed.
+ *   MISSION_API void  MyTriggerFunction(OnTriggerArgs*     pArgs) { } // Trigger function with access to extended info,
+ *                                                                     // such as the source Trigger.
+ * The following extended APIs are introduced in OPU mod 1.4.2:
+ *   MISSION_API ibool OnSaveGame(OnSaveGameArgs*             pArgs) { return 1; } // Saving the game. Return 0 = error.
+ *   MISSION_API ibool OnLoadSavedGame(OnLoadSavedGameArgs*   pArgs) { return 1; } // Loading a save.  Return 0 = error.
+ *   MISSION_API void  OnDamageUnit(OnDamageUnitArgs*         pArgs) { } // Called when a unit is damaged.
+ *   MISSION_API void  OnTransferUnit(OnTransferUnitArgs*     pArgs) { } // Called when a unit is transferred.
+ *   MISSION_API void  OnProcessCommand(OnProcessCommandArgs* pArgs) { } // Called when processing a command packet.
  ***********************************************************************************************************************
  */
 
@@ -172,10 +179,10 @@ struct OnChatArgs {
   int    playerNum;   ///< Source player number.
 };
 
-/// Info passed to OnProcessCommand() user callback.
-struct OnProcessCommandArgs {
+/// Info passed to OnGameCommand() user callback.
+struct OnGameCommandArgs {
   size_t         structSize;  ///< Size of this structure.
-  CommandPacket* pPacket;     ///< Pointer to command packet data (writable).
+  CommandPacket* pPacket;     ///< Pointer to command packet data (writable up to header size + dataLength).
   int            playerNum;   ///< Player number of sender.
 };
 
@@ -187,26 +194,26 @@ struct OnTransferUnitArgs;  ///< Info passed to OnTransferUnit() user callback. 
 
 
 ///@{ Type aliases showing the function signature for each mission API callback.
-using PfnInitProc         = ibool(CDECL*)();
-using PfnAIProc           =  void(CDECL*)();
-using PfnGetSaveRegions   =  void(CDECL*)(SaveRegion* pSave);
-using PfnLegacyOnTrigger  =  void(CDECL*)();
+using PfnInitProc        = ibool(CDECL*)();
+using PfnAIProc          =  void(CDECL*)();
+using PfnGetSaveRegions  =  void(CDECL*)(SaveRegion*);
+using PfnLegacyOnTrigger =  void(CDECL*)();
 
 // The following require OPU mod 1.4.0.
-using PfnOnTrigger        =  void(CDECL*)(OnTriggerArgs*);
-using PfnOnLoadMission    = ibool(CDECL*)(OnLoadMissionArgs*);
-using PfnOnUnloadMission  = ibool(CDECL*)(OnUnloadMissionArgs*);
-using PfnOnEndMission     =  void(CDECL*)(OnEndMissionArgs*);
-using PfnOnChat           =  void(CDECL*)(OnChatArgs*);
-using PfnOnCreateUnit     =  void(CDECL*)(OnCreateUnitArgs*);
-using PfnOnDestroyUnit    =  void(CDECL*)(OnDestroyUnitArgs*);
+using PfnOnTrigger       =  void(CDECL*)(OnTriggerArgs*);
+using PfnOnLoadMission   = ibool(CDECL*)(OnLoadMissionArgs*);
+using PfnOnUnloadMission = ibool(CDECL*)(OnUnloadMissionArgs*);
+using PfnOnEndMission    =  void(CDECL*)(OnEndMissionArgs*);
+using PfnOnChat          =  void(CDECL*)(OnChatArgs*);
+using PfnOnCreateUnit    =  void(CDECL*)(OnCreateUnitArgs*);
+using PfnOnDestroyUnit   =  void(CDECL*)(OnDestroyUnitArgs*);
 
 // The following require OPU mod 1.4.2.
-using PfnOnSaveGame       = ibool(CDECL*)(OnSaveGameArgs*);
-using PfnOnLoadSavedGame  = ibool(CDECL*)(OnLoadSavedGameArgs*);
-using PfnOnProcessCommand =  void(CDECL*)(OnProcessCommandArgs*);
-using PfnOnDamageUnit     =  void(CDECL*)(OnDamageUnitArgs*);
-using PfnOnTransferUnit   =  void(CDECL*)(OnTransferUnitArgs*);
+using PfnOnSaveGame      = ibool(CDECL*)(OnSaveGameArgs*);
+using PfnOnLoadSavedGame = ibool(CDECL*)(OnLoadSavedGameArgs*);
+using PfnOnGameCommand   =  void(CDECL*)(OnGameCommandArgs*);
+using PfnOnDamageUnit    =  void(CDECL*)(OnDamageUnitArgs*);
+using PfnOnTransferUnit  =  void(CDECL*)(OnTransferUnitArgs*);
 ///@}
 
 } // TethysAPI

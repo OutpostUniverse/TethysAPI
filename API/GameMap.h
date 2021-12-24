@@ -54,11 +54,11 @@ public:
   static void DamageWall(Location where, int damage) { GetImpl()->DamageWall(where.x, where.y, damage); }
 
   ///@{ Returns the map dimensions.
-  static int GetPaddingWidth() { return GetImpl()->paddingOffsetTileX_; }  ///< 0 for world maps, +32 otherwise.
-  static int GetPaddedWidth()  { return GetImpl()->tileWidth_;          }
-
   static int GetWidth()  { return GetPaddedWidth() / ((GetPaddingWidth() != 0) ? 2 : 1); }
   static int GetHeight() { return GetImpl()->tileHeight_;                                }
+
+  static int GetPaddingWidth() { return GetImpl()->paddingOffsetTileX_; }  ///< 0 for world maps, +32 otherwise.
+  static int GetPaddedWidth()  { return GetImpl()->tileWidth_;          }
   ///@}
 
   /// Gets the clip rect used by MapRect::Clip().  @note For world maps, x1 = -1, x2 = INT_MAX.
@@ -92,7 +92,7 @@ public:
   static void CreateRareRubble(Location where)
     { SetTile(where, GetImpl()->pTerrainManager_->GetRareRubbleTileIndex(GetTile(where))); }
 
-  ///@{ Helper functions to create lava flow animations on the side of a volcano (default tileset only).
+  ///@{ Create lava flow animations on the side of a volcano (only valid for default tileset).
   static void CreateLavaFlowSW(Location where) { SetLavaFlowHelper(where, 0x447, 0x45E, 0x453, 0x469);           }
   static void CreateLavaFlowS(Location  where) { SetTile(where, 0x474);  SetTile(where + Location(0, 1), 0x47E); }
   static void CreateLavaFlowSE(Location where) { SetLavaFlowHelper(where, 0x489, 0x4A0, 0x494, 0x4AB);           }

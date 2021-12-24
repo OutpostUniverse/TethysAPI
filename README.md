@@ -29,6 +29,20 @@ The public mission APIs are within the `TethysAPI` namespace, while everything e
 
 # Change log
 
+## Version 0.8.2
+* Change `Create*Trigger()` functions to take `triggerFunction` as a `std::string_view` instead of a `const char*`. This is a backwards-compatible interface change.
+* Rename `OnProcessCommandArgs` to `OnGameCommandArgs`
+* Add `Unit::GetMapObject()` template overloads that take a `MapID` as a template arg
+* Add `TethysUtil::AutoDestroy<>` template class
+* Rename `TethysUtil::Span::Data()`, `Length()`, and `IsEmpty()` to `data(`), `length()`, and `empty()` in preparation to switch to C++20 std::span eventually
+* Fix `IDirectDraw` forward declaration in `TApp.h`
+* Add some member function definitions to `ScriptDataBlock` and `FuncReference`
+* Define vtbl info for `TriggerImpl` and `VictoryConditionImpl`
+* Add post-increment operators for unit iterator types
+* Remove decrement operator for `GroupIterator`
+* Remove `Location` operator+/- overload for scalar integers
+
+
 ## Version 0.8.1
 * Rework Enumerator interfaces to more closely match `std::iterator` semantics.
 * Remove `GroupEnumerator`; replace with `ScGroup::begin()` and `end()`.

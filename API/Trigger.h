@@ -64,7 +64,7 @@ struct OnTriggerArgs {
   
   // The following fields require OPU mod 1.4.2.
   PlayerBitmask triggeredBy;      ///< Bitmask of players currently activating this trigger.
-  PlayerBitmask prevTriggeredBy;  ///< Bitmask of players that previously activated this trigger.
+  PlayerBitmask prevTriggeredBy;  ///< Bitmask of players that were previously activating this trigger.
 };
 
 
@@ -85,10 +85,11 @@ inline Trigger CreateFailureCondition(Trigger condition, bool enabled = true)
 /// in a set of 5 objectives.
 template <typename... Ts>
 Trigger CreateSetTrigger(
-  const char* pTriggerFunction, int needed = sizeof...(Ts), bool oneShot = false, bool enabled = true, Ts... triggers)
+  std::string_view triggerFunction, int needed = sizeof...(Ts), bool oneShot = false, bool enabled = true,
+  Ts... triggers)
 {
   return OP2Thunk<0x4794E0, Trigger CDECL(ibool, ibool, int, int, const char*, ...)>(
-    enabled, oneShot, sizeof...(Ts), needed, pTriggerFunction, triggers...);
+    enabled, oneShot, sizeof...(Ts), needed, triggerFunction.data(), triggers...);
 }
 
 
@@ -96,22 +97,23 @@ Trigger CreateSetTrigger(
 
 /// Creates a trigger used for victory condition in Last One Standing and later part of Land Rush.
 inline Trigger CreateLastOneStandingTrigger(
-  const char* pTriggerFunction = nullptr, bool oneShot = true, bool enabled = true)
-    { return OP2Thunk<0x478F30, Trigger FASTCALL(ibool, ibool, const char*)>(enabled, oneShot, pTriggerFunction); }
+  std::string_view triggerFunction = "", bool oneShot = true, bool enabled = true)
+    { return OP2Thunk<0x478F30, Trigger FASTCALL(ibool, ibool, const char*)>(enabled, oneShot, triggerFunction.data());}
 
 /// Creates a trigger used for victory condition in Space Race.
 inline Trigger CreateSpaceRaceTrigger(
-  const char* pTriggerFunction = nullptr, int playerNum = AllPlayers, bool oneShot = true, bool enabled = true)
+  std::string_view triggerFunction = "", int playerNum = AllPlayers, bool oneShot = true, bool enabled = true)
 {
   return OP2Thunk<0x479260, Trigger FASTCALL(ibool, ibool, int, const char*)>(
-    enabled, oneShot, playerNum, pTriggerFunction);
+    enabled, oneShot, playerNum, triggerFunction.data());
 }
 
 /// Creates a trigger used for victory condition in Midas.
 inline Trigger CreateMidasTrigger(
-  int time, const char* pTriggerFunction = nullptr, bool oneShot = true, bool enabled = true)
+  int time, std::string_view triggerFunction = "", bool oneShot = true, bool enabled = true)
 {
-  return OP2Thunk<0x479300, Trigger FASTCALL(ibool, ibool, int, const char*)>(enabled, oneShot, time, pTriggerFunction);
+  return OP2Thunk<0x479300, Trigger FASTCALL(ibool, ibool, int, const char*)>(
+    enabled, oneShot, time, triggerFunction.data());
 }
 
 // -------------------- Research and resource count triggers  (typically used in campaign missions) --------------------
@@ -119,28 +121,28 @@ inline Trigger CreateMidasTrigger(
 /// Resource Race and campaign objectives
 inline Trigger CreateResourceTrigger(
   TriggerResource resourceType, CompareMode compare, int refAmount,
-  const char* pTriggerFunction = nullptr, int playerNum = AllPlayers, bool oneShot = false, bool enabled = true)
+  std::string_view triggerFunction = "", int playerNum = AllPlayers, bool oneShot = false, bool enabled = true)
 {
   return OP2Thunk<0x478DE0, Trigger FASTCALL(ibool, ibool, TriggerResource, int, int, CompareMode, const char*)>(
-    enabled, oneShot, resourceType, refAmount, playerNum, compare, pTriggerFunction);
+    enabled, oneShot, resourceType, refAmount, playerNum, compare, triggerFunction.data());
 }
 
 /// Creates a tech research trigger.
 inline Trigger CreateResearchTrigger(
   int techID,
-  const char* pTriggerFunction = nullptr, int playerNum = AllPlayers, bool oneShot = false, bool enabled = true)
+  std::string_view triggerFunction = "", int playerNum = AllPlayers, bool oneShot = false, bool enabled = true)
 {
   return OP2Thunk<0x478E90, Trigger FASTCALL(ibool, ibool, int, int, const char*)>(
-    enabled, oneShot, techID, playerNum, pTriggerFunction);
+    enabled, oneShot, techID, playerNum, triggerFunction.data());
 }
 
 /// Creates a structure kit count trigger.
 inline Trigger CreateKitTrigger(
   MapID structureKitType, int refCount,
-  const char* pTriggerFunction = nullptr, int playerNum = AllPlayers, bool oneShot = false, bool enabled = true)
+  std::string_view triggerFunction = "", int playerNum = AllPlayers, bool oneShot = false, bool enabled = true)
 {
   return OP2Thunk<0x4791C0, Trigger FASTCALL(ibool, ibool, int, MapID, int, const char*)>(
-    enabled, oneShot, playerNum, structureKitType, refCount, pTriggerFunction);
+    enabled, oneShot, playerNum, structureKitType, refCount, triggerFunction.data());
 }
 
 // ------------------------------------------------ Unit count triggers ------------------------------------------------
@@ -148,47 +150,47 @@ inline Trigger CreateKitTrigger(
 /// Creates a unit/cargo type count trigger.
 inline Trigger CreateCountTrigger(
   MapID unitType, MapID cargoOrWeapon, CompareMode compare, int refCount,
-  const char* pTriggerFunction = nullptr, int playerNum = AllPlayers, bool oneShot = false, bool enabled = true)
+  std::string_view triggerFunction = "", int playerNum = AllPlayers, bool oneShot = false, bool enabled = true)
 {
   return OP2Thunk<0x479110, Trigger FASTCALL(ibool, ibool, int, MapID, MapID, int, CompareMode, const char*)>(
-    enabled, oneShot, playerNum, unitType, cargoOrWeapon, refCount, compare, pTriggerFunction);
+    enabled, oneShot, playerNum, unitType, cargoOrWeapon, refCount, compare, triggerFunction.data());
 }
 
 /// Creates a count trigger for Cargo Trucks with the specified cargo type.  @param refCount = number of Cargo Trucks.
 inline Trigger CreateCountTrigger(
   CargoType truckCargoType, CompareMode compare, int refCount,
-  const char* pTriggerFunction = nullptr, int playerNum = AllPlayers, bool oneShot = false, bool enabled = true)
+  std::string_view triggerFunction = "", int playerNum = AllPlayers, bool oneShot = false, bool enabled = true)
 {
   return OP2Thunk<0x479110, Trigger FASTCALL(ibool, ibool, int, MapID, CargoType, int, CompareMode, const char*)>(
-    enabled, oneShot, playerNum, MapID::CargoTruck, truckCargoType, refCount, compare, pTriggerFunction);
+    enabled, oneShot, playerNum, MapID::CargoTruck, truckCargoType, refCount, compare, triggerFunction.data());
 }
 
 /// Used for Last One Standing failure condition and converting Land Rush to Last One Standing (when CC becomes active).
 /// @warning Do not use AllPlayers.
 inline Trigger CreateOperationalTrigger(
   MapID structureType, CompareMode compare, int refCount, int playerNum,
-  const char* pTriggerFunction = nullptr, bool oneShot = true, bool enabled = true)
+  std::string_view triggerFunction = "", bool oneShot = true, bool enabled = true)
 {
   return OP2Thunk<0x479880, Trigger FASTCALL(ibool, ibool, int, MapID, int, CompareMode, const char*)>(
-    enabled, oneShot, playerNum, structureType, refCount, compare, pTriggerFunction);
+    enabled, oneShot, playerNum, structureType, refCount, compare, triggerFunction.data());
 }
 
 /// Creates a trigger that fires based on the player(s)' total number of vehicles.
 inline Trigger CreateVehicleCountTrigger(
   CompareMode compare, int refCount,
-  const char* pTriggerFunction = nullptr, int playerNum = AllPlayers, bool oneShot = false, bool enabled = true)
+  std::string_view triggerFunction = "", int playerNum = AllPlayers, bool oneShot = false, bool enabled = true)
 {
   return OP2Thunk<0x479440, Trigger FASTCALL(ibool, ibool, int, int, CompareMode, const char*)>(
-    enabled, oneShot, playerNum, refCount, compare, pTriggerFunction);
+    enabled, oneShot, playerNum, refCount, compare, triggerFunction.data());
 }
 
 /// Creates a trigger that fires based on the player(s)' total number of structures.
 inline Trigger CreateBuildingCountTrigger(
   CompareMode compare, int refCount,
-  const char* pTriggerFunction = nullptr, int playerNum = AllPlayers, bool oneShot = false, bool enabled = true)
+  std::string_view triggerFunction = "", int playerNum = AllPlayers, bool oneShot = false, bool enabled = true)
 {
   return OP2Thunk<0x4793A0, Trigger FASTCALL(ibool, ibool, int, int, CompareMode, const char*)>(
-    enabled, oneShot, playerNum, refCount, compare, pTriggerFunction);
+    enabled, oneShot, playerNum, refCount, compare, triggerFunction.data());
 }
 
 // --------------------------------------------------- Time triggers ---------------------------------------------------
@@ -196,18 +198,19 @@ inline Trigger CreateBuildingCountTrigger(
 /// Creates a trigger that fires on the specified time interval in ticks.
 /// If @ref oneShot = false, fires again on every interval.
 inline Trigger CreateTimeTrigger(
-  int time, const char* pTriggerFunction = nullptr, bool oneShot = true, bool enabled = true)
+  int time, std::string_view triggerFunction = "", bool oneShot = true, bool enabled = true)
 {
-  return OP2Thunk<0x478D00, Trigger FASTCALL(ibool, ibool, int, const char*)>(enabled, oneShot, time, pTriggerFunction);
+  return OP2Thunk<0x478D00, Trigger FASTCALL(ibool, ibool, int, const char*)>(
+    enabled, oneShot, time, triggerFunction.data());
 }
 
 /// Creates a trigger that fires randomly between the specified time interval in ticks.
 /// If @ref oneShot = false, fires again on every interval, chosen randomly each time.
 inline Trigger CreateTimeTrigger(
-  int timeMin, int timeMax, const char* pTriggerFunction = nullptr, bool oneShot = true, bool enabled = true)
+  int timeMin, int timeMax, std::string_view triggerFunction = "", bool oneShot = true, bool enabled = true)
 {
   return OP2Thunk<0x478DA0, Trigger FASTCALL(ibool, ibool, int, int, const char*)>(
-    enabled, oneShot, timeMin, timeMax, pTriggerFunction);
+    enabled, oneShot, timeMin, timeMax, triggerFunction.data());
 }
 
 // -------------------------------------------------- Special target ---------------------------------------------------
@@ -215,10 +218,10 @@ inline Trigger CreateTimeTrigger(
 /// Creates a special target that triggers when any sourceUnitType instance moves next to targetUnit for a few seconds.
 inline Trigger CreateSpecialTarget(
   const Unit& targetUnit, MapID sourceUnitType,
-  const char* pTriggerFunction = nullptr, bool oneShot = true, bool enabled = true)
+  std::string_view triggerFunction = "", bool oneShot = true, bool enabled = true)
 {
   return OP2Thunk<0x4797A0, Trigger FASTCALL(ibool, ibool, const Unit&, MapID, const char*)>(
-    enabled, oneShot, targetUnit, sourceUnitType, pTriggerFunction);
+    enabled, oneShot, targetUnit, sourceUnitType, triggerFunction.data());
 }
 
 /// Gets the unit that triggered the special target.
@@ -229,19 +232,19 @@ inline Unit GetSpecialTargetData(const Trigger& specialTargetTrigger)
 
 /// Creates a trigger that fires when the given ScGroup is under attack.
 inline Trigger CreateAttackedTrigger(
-  const ScGroup& group, const char* pTriggerFunction = nullptr, bool oneShot = true, bool enabled = true)
+  const ScGroup& group, std::string_view triggerFunction = "", bool oneShot = true, bool enabled = true)
 {
   return OP2Thunk<0x4795A0, Trigger FASTCALL(ibool, ibool, const ScGroup&, const char*)>(
-    enabled, oneShot, group, pTriggerFunction);
+    enabled, oneShot, group, triggerFunction.data());
 }
 
 /// Creates a trigger that fires when a percentage of the given ScGroup has been destroyed.
 inline Trigger CreateDamagedTrigger(
   const ScGroup& group, TriggerDamage damage,
-  const char* pTriggerFunction = nullptr, bool oneShot = true, bool enabled = true)
+  std::string_view triggerFunction = "", bool oneShot = true, bool enabled = true)
 {
   return OP2Thunk<0x479640, Trigger FASTCALL(ibool, ibool, const ScGroup&, TriggerDamage, const char*)>(
-    enabled, oneShot, group, damage, pTriggerFunction);
+    enabled, oneShot, group, damage, triggerFunction.data());
 }
 
 // ------------------------------------------------ Positional triggers ------------------------------------------------
@@ -249,29 +252,29 @@ inline Trigger CreateDamagedTrigger(
 /// Creates a trigger that fires when any unit is at the location.
 inline Trigger CreatePointTrigger(
   Location where,
-  const char* pTriggerFunction = nullptr, int playerNum = AllPlayers, bool oneShot = false, bool enabled = true)
+  std::string_view triggerFunction = "", int playerNum = AllPlayers, bool oneShot = false, bool enabled = true)
 {
   return OP2Thunk<0x479070, Trigger FASTCALL(ibool, ibool, int, int, int, const char*)>(
-    enabled, oneShot, playerNum, where.x, where.y, pTriggerFunction);
+    enabled, oneShot, playerNum, where.x, where.y, triggerFunction.data());
 }
 
 /// Creates a trigger that fires when any unit enters the area rect.
 inline Trigger CreateRectTrigger(
   MapRect area,
-  const char* pTriggerFunction = nullptr, int playerNum = AllPlayers, bool oneShot = false, bool enabled = true)
+  std::string_view triggerFunction = "", int playerNum = AllPlayers, bool oneShot = false, bool enabled = true)
 {
   return OP2Thunk<0x478FC0, Trigger FASTCALL(ibool, ibool, int, int, int, int, int, const char*)>(
-    enabled, oneShot, playerNum, area.x1, area.x2, area.Width(), area.Height(), pTriggerFunction);
+    enabled, oneShot, playerNum, area.x1, area.x2, area.Width(), area.Height(), triggerFunction.data());
 }
 
 /// Creates a rect trigger that filters based on the specified unit type (and cargo type/amount).
 inline Trigger CreateEscapeTrigger(
   MapRect area, MapID unitType, int refCount, int cargoType, int cargoAmount,
-  const char* pTriggerFunction = nullptr, int playerNum = AllPlayers, bool oneShot = false, bool enabled = true)
+  std::string_view triggerFunction = "", int playerNum = AllPlayers, bool oneShot = false, bool enabled = true)
 {
   return OP2Thunk<0x4796E0, Trigger FASTCALL(ibool, ibool, int, int, int, int, int, int, MapID, int, int, const char*)>(
     enabled, oneShot, playerNum, area.x1, area.y1, area.Width(), area.Height(), refCount, unitType, cargoType,
-    cargoAmount, pTriggerFunction);
+    cargoAmount, triggerFunction.data());
 }
 
 } // Tethys::TethysAPI

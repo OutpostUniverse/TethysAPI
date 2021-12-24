@@ -36,7 +36,8 @@ public:
   using pointer           = const Result*;
   using reference         = Result;
 
-  Iterator& operator++() { auto& e = static_cast<Iterator&>(*this); result_ = { }; e.GetNext(result_); return e; }
+  Iterator& operator++()    { auto& e = static_cast<Iterator&>(*this); result_ = { }; e.GetNext(result_); return e; }
+  Iterator  operator++(int) { auto old = *this;  operator++();  return old; }
   bool operator==(const AreaIteratorBase& other) const { return result_ == other.result_; }
   bool operator!=(const AreaIteratorBase& other) const { return !(*this == other);        }
   operator bool()      const { return (result_ != Result{}); }
@@ -65,13 +66,14 @@ private:
 
 namespace TethysAPI {
 
- /// Iterates over a player's unit list.
+/// Iterates over a player's unit list.
 class PlayerUnitIterator : public TethysImpl::UnitIteratorBase {
 public:
   explicit PlayerUnitIterator(MapObject* pMo = nullptr) : pMo_(pMo) { }
   explicit PlayerUnitIterator(Unit u) : pMo_(u.GetMapObject()) { }
 
-  PlayerUnitIterator& operator++() { pMo_ = (pMo_ != nullptr) ? pMo_->pPlayerNext_ : nullptr;  return *this; }
+  PlayerUnitIterator& operator++()    { pMo_ = (pMo_ != nullptr) ? pMo_->pPlayerNext_ : nullptr;  return *this; }
+  PlayerUnitIterator  operator++(int) { auto old = *this;  operator++();  return old; }
   bool operator==(const PlayerUnitIterator& other) const { return (pMo_ == other.pMo_); }
   bool operator!=(const PlayerUnitIterator& other) const { return !(*this == other);    }
   operator bool()  const { return (pMo_ != nullptr); }
@@ -97,6 +99,7 @@ public:
     else do PlayerUnitIterator::operator++(); while (pMo_ && (pMo_->GetTypeID() != type_));
     return *this;
   }
+  FilterPlayerUnitIterator operator++(int) { auto old = *this;  operator++();  return old; }
 
 private:
   MapID type_;

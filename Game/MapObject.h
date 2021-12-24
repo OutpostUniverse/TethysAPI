@@ -13,7 +13,7 @@ namespace Tethys {
 class  MapObject;
 union  AnyMapObj;
 struct PathContext;
-struct Waypoint;
+union  Waypoint;
 class  Viewport;
 class  TubeConnection;
 

@@ -12,10 +12,13 @@
 namespace Tethys {
 
 /// Bitfields typically representing pixel X/Y coordinates for path finding waypoints.
-struct Waypoint {
-  uint32 x : 15;  ///< In pixels (max = 1024 tiles)
-  uint32 y : 14;  ///< In pixels (max = 512 tiles)
-  uint32   :  3;
+union Waypoint {
+  struct {
+    uint32 x : 15;  ///< In pixels (max = 1024 tiles)
+    uint32 y : 14;  ///< In pixels (max = 512 tiles)
+    uint32   :  3;
+  };
+  uint32 u32All;
 };
 
 /// Compactified struct typically representing a rectangular tile area on the map.
@@ -30,8 +33,7 @@ struct PackedMapRect {
 /// Exported struct typically representing tile X/Y coordinates on the map.
 struct Location : public OP2Class<Location> {
 public:
-  constexpr Location()                     : x(-1),    y(-1)    { }
-  constexpr Location(int tileX, int tileY) : x(tileX), y(tileY) { }
+  constexpr Location(int tileX = -1, int tileY = -1) : x(tileX), y(tileY) { }
 
   constexpr bool operator==(const Location& other) const { return (x == other.x) && (y == other.y); }
   constexpr operator bool()                        const { return (x != -1)      && (y != -1);      }
@@ -44,8 +46,6 @@ public:
   Location& operator+=(const Location& vector)       { return Add(vector);                      }
   Location   operator+(const Location& vector) const { return Location(*this).Add(vector);      }
   Location   operator-(const Location& vector) const { return Difference(vector, *this);        }
-  Location   operator+(int scalar)             const { return *this + Location(scalar, scalar); }
-  Location   operator-(int scalar)             const { return *this - Location(scalar, scalar); }
   ///@}
 
   Location& Clip() { Thunk<0x475960>();  return *this; }  ///< Wraps X coordinate around the map, clips Y to edge
@@ -71,11 +71,10 @@ public:
 /// Exported struct typically representing a rectangular tile area on the map.
 struct MapRect : public OP2Class<MapRect> {
 public:
-  constexpr MapRect() : x1(-1), y1(-1), x2(-1), y2(-1) { }
+  constexpr MapRect(const Location& topLeftTile = { -1, -1 }, const Location& bottomRightTile = { -1, -1 })
+    : x1(topLeftTile.x), y1(topLeftTile.y), x2(bottomRightTile.x), y2(bottomRightTile.y) { }
   constexpr MapRect(int leftTile, int topTile, int rightTile, int bottomTile)
     : x1(leftTile), y1(topTile), x2(rightTile), y2(bottomTile) { }
-  constexpr MapRect(const Location& topLeftTile, const Location& bottomRightTile)
-    : x1(topLeftTile.x), y1(topLeftTile.y), x2(bottomRightTile.x), y2(bottomRightTile.y) { }
 
   constexpr bool operator==(const MapRect& other) const
     { return (x1 == other.x1) && (y1 == other.y1) && (x2 == other.x2) && (y2 == other.y2); }
@@ -121,9 +120,9 @@ struct PatrolRoute {
 
 
 namespace TethysAPI {
-  using Location    = Tethys::Location;
-  using MapRect     = Tethys::MapRect;
-  using PatrolRoute = Tethys::PatrolRoute;
+using Location    = Tethys::Location;
+using MapRect     = Tethys::MapRect;
+using PatrolRoute = Tethys::PatrolRoute;
 } // TethysAPI
 
 } // Tethys

@@ -86,9 +86,10 @@ public:
   operator bool() const { return IsValid(); }  ///< Converts to true if IsValid()
 
   ///@{ Get the underlying MapObject that this Unit is a proxy for.
-  template <typename T = MapObject>  T* GetMapObject() { return IsValid() ? T::GetInstance(size_t(id_)) : nullptr; }
-  template <typename T = MapObject>
-  const T* GetMapObject() const { return IsValid() ? T::GetInstance(size_t(id_)) : nullptr; }
+  template <typename T = MapObject>       T* GetMapObject()      { return IsValid() ? T::GetInstance(size_t(id_)) : 0; }
+  template <typename T = MapObject> const T* GetMapObject()const { return IsValid() ? T::GetInstance(size_t(id_)) : 0; }
+  template <MapID I>       auto* GetMapObject()       { return IsValid() ? MapObjFor<I>::GetInstance(size_t(id_)) : 0; }
+  template <MapID I> const auto* GetMapObject() const { return IsValid() ? MapObjFor<I>::GetInstance(size_t(id_)) : 0; }
   ///@}
 
   ///@{ Get the internal MapObjectType that this unit is managed by.  (Returns MaxObjectType if !IsValid())
@@ -120,8 +121,8 @@ public:
 
   int  GetMaxHitpoints() const { return IsLive() ? GetPlayerUnitStats().hp : 0; } ///< Gets the unit's max hitpoints.
   int  GetDamage()       const { return IsLive() ? GetMapObject()->damage_ : 0; } ///< Gets the unit's damage amount.
-  void AddDamage(int damage)   { SetDamage(GetDamage() + damage);               } ///< Sets the unit's damage amount.
-  void SetDamage(int damage)                                                      ///< Adds to the unit's damage amount.
+  void AddDamage(int damage)   { SetDamage(GetDamage() + damage);               } ///< Adds to the unit's damage amount.
+  void SetDamage(int damage)                                                      ///< Sets the unit's damage amount.
     { if (IsLive() && ((GetMapObject()->damage_ = damage) >= GetMaxHitpoints())) { DoDeath(); } }
 
   /// Returns true if the target Unit is hostile to this Unit.
@@ -233,7 +234,7 @@ public:
 
   ///@{ [ConVec]  Gets or sets ConVec cargo.
   CargoKit GetConVecCargo() const {
-    return IsVehicle() ? 
+    return IsVehicle() ?
       CargoKit{ MapID(GetMapObject<Vehicle>()->cargo_), MapID(GetMapObject<Vehicle>()->weaponOfCargo_) } : CargoKit{};
   }
   void SetCargo(MapID cargo, MapID weapon)
@@ -364,6 +365,7 @@ protected:
 public:
   int id_;
 };
+
 
 /// Info passed to OnCreateUnit() user callback.  (1.4.0)
 struct OnCreateUnitArgs {

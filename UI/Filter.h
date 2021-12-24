@@ -47,9 +47,9 @@ public:
 /// Exported UI input filter class.
 class Filter : public OP2Class<Filter> {
 public:
-  Filter()                             { InternalCtor<0x483CB0>();                     }
-  Filter(const Filter& src)            { InternalCtor<0x483CC0, const Filter&>(src);   }
-  Filter(InternalCtorChain)            {                                               }
+  Filter()                  { InternalCtor<0x483CB0>();                   }
+  Filter(const Filter& src) { InternalCtor<0x483CC0, const Filter&>(src); }
+  Filter(InternalCtorChain) {                                             }
 
   static Filter* FASTCALL GetCapture() { return OP2Thunk<0x431210, &$::GetCapture>(); }
 
