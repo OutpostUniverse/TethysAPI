@@ -255,16 +255,16 @@ public:
 
 struct RecordedBuilding {
   MapRect buildingTileRect;
-  MapID    buildingType;
-  MapID    weaponType;
-  int      groupScStubIndex;
+  MapID   buildingType;
+  MapID   weaponType;
+  int     groupScStubIndex;
 };
 
 struct RecordedMine {
   MapRect mineRectInTiles;
-  MapID    mineType;
-  int      buildGroupScStubIndex;
-  int      minerUnitIndex;
+  MapID   mineType;
+  int     buildGroupScStubIndex;
+  int     minerUnitIndex;
 };
 
 struct RecordedTubeWall {

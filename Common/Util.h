@@ -82,11 +82,4 @@ private:
   size_t    length_;
 };
 
-/// Template class wrapping any OP2 internal class, which automatically calls Destroy() upon destruction.
-template <typename T>
-class AutoDestroy : public T {
-public:
-  ~AutoDestroy() { T::Destroy(); }
-};
-
 } // Tethys::TethysUtil

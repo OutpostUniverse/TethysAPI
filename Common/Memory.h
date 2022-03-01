@@ -143,6 +143,14 @@ protected:
 };
 static_assert(std::is_empty_v<OP2Class<void>>, "OP2Class<> should be empty.");
 
+/// Template class wrapping any OP2 internal class, which automatically calls Destroy() upon destruction.
+/// @note Do not specify virtual destructor overrides for subclasses of this type.  Instead, override Destroy().
+template <typename T>
+class OP2Destroyable : public T {
+public:
+  ~OP2Destroyable() { T::Destroy(); }
+};
+
 
 /// Macro that allows a class's virtual functions to be accessed via a struct of function pointers, allowing them to be
 /// hooked via Vtbl() (static) or Vfptr() (non-static).  Vfptr() also allows an object's vfptr to be reassigned.
@@ -158,7 +166,7 @@ static_assert(std::is_empty_v<OP2Class<void>>, "OP2Class<> should be empty.");
 ///   virtual void* Func1(void*, size_t) { ... }
 ///   virtual bool  Func2() const        { ... }
 ///
-/// #define MYCLASS_VTBL($)  $(DestroyVirtual)  $(Func1)  $(Func2)
+/// #define MYCLASS_VTBL($)  $(_DestroyVirtual)  $(Func1)  $(Func2)
 ///   DEFINE_VTBL_TYPE(MYCLASS_VTBL);  // Or DEFINE_VTBL_TYPE(macro, address) to also define a static vtbl getter.
 /// };
 ///
