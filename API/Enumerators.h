@@ -10,7 +10,6 @@
 #include "Tethys/API/Unit.h"
 #include "Tethys/API/Location.h"
 #include "Tethys/Game/GameImpl.h"
-#include <iterator>
 #include <list>
 
 namespace Tethys {

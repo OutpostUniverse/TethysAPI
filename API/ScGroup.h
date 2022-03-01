@@ -12,6 +12,7 @@
 #include "Tethys/API/ScStub.h"
 #include "Tethys/API/Unit.h"
 #include "Tethys/API/Enumerators.h"
+#include <list>
 
 namespace Tethys::TethysAPI {
 
@@ -22,16 +23,19 @@ class GroupIterator : public TethysImpl::UnitIteratorBase {
 public:
   using iterator_category = std::bidirectional_iterator_tag;
 
-  explicit GroupIterator(const ScGroupImpl::UnitNode* pNode = nullptr) : pNode_(pNode) { }
+  explicit GroupIterator(std::list<Unit>* pUnitCache, const ScGroupImpl::UnitNode* pNode = nullptr) : pNode_(pNode), pUnitCache_(pUnitCache) { }
   GroupIterator& operator++() { pNode_ = (pNode_ != nullptr) ? pNode_->pNext : nullptr;  return *this; }
+  GroupIterator operator++(int) { auto v = *this; operator++(); return v; }
   GroupIterator& operator--() { pNode_ = (pNode_ != nullptr) ? pNode_->pPrev : nullptr;  return *this; }
   bool operator==(GroupIterator other) const { return pNode_ == other.pNode_; }
   bool operator!=(GroupIterator other) const { return !(*this == other);      }
   operator bool()  const { return (pNode_ != nullptr); }
-  Unit operator*() const { return Unit(pNode_->pUnit); }
+  Unit& operator*() const { pUnitCache_->push_back(Unit(pNode_->pUnit)); return pUnitCache_->back(); }
 
 private:
   const ScGroupImpl::UnitNode* pNode_;
+
+  std::list<Unit>* pUnitCache_ = nullptr;
 };
 
 /// Exported interface for UI unit groups (wraps ScGroupImpl).
@@ -78,10 +82,15 @@ public:
     { Unit u;  Thunk<0x479A60, int(Unit*, MapID, MapID)>(&u, unitType, cargoOrWeapon);  return u; }
   ///@}
 
-  auto begin() { return GroupIterator(GetImpl()->pUnitListHead_); }  ///< Iterator to the first unit of this ScGroup.
-  auto end()   { return GroupIterator(nullptr);                   }  ///< Iterator past the last unit of this ScGroup.
+  auto begin() { return GroupIterator(&unitCache_, GetImpl()->pUnitListHead_); }  ///< Iterator to the first unit of this ScGroup.
+  auto end()   { return GroupIterator(&unitCache_, nullptr);                   }  ///< Iterator past the last unit of this ScGroup.
 
   int GetOwner() const { return GetImpl()->ownerPlayerNum_; }  ///< Gets the owner player ID of this ScGroup.
+
+private:
+  // TODO: We make this inline static to avoid an issue with copying that arises in the CLIF wrapper
+  // That said, since this is a proxy class we could have a per-instance cache so we don't leak memory
+  inline static std::list<Unit> unitCache_;
 };
 
 
