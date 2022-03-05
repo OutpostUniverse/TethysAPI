@@ -10,7 +10,7 @@
 
 #include "Tethys/API/Mission.h"
 #include "Tethys/API/Location.h"
-#include "Tethys/API/TethysGame.h"
+#include "Tethys/API/Game.h"
 #include "Tethys/API/GameMap.h"
 #include "Tethys/API/Player.h"
 #include "Tethys/API/Unit.h"

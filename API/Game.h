@@ -1,7 +1,7 @@
 /**
  ***********************************************************************************************************************
- * @file  TethysGame.h
- * @brief Defines the TethysGame class which controls the overall game environment.
+ * @file  Game.h
+ * @brief Defines the Game class which controls the overall game environment.
  ***********************************************************************************************************************
  */
 
@@ -39,7 +39,7 @@ namespace TethysAPI {
 
 using UnitDirection = Tethys::UnitDirection;
 
-/// Defines mine resource types for TethysGame::CreateMine().
+/// Defines mine resource types for Game::CreateMine().
 enum class MineType : int {
   RandomOre = int(OreType::Random),  ///< 70% chance of CommonOre or 30% chance of RareOre.
   CommonOre = int(OreType::Common),  ///< Common ore.
@@ -48,7 +48,7 @@ enum class MineType : int {
   Fumarole  = -3,                    ///< Fumarole.  GeoCons can build Geothermal Plants.
 };
 
-/// Defines meteor sizes for TethysGame::CreateMeteor().
+/// Defines meteor sizes for Game::CreateMeteor().
 enum class MeteorSize : int {
   Random = -1,
   Small,
@@ -56,7 +56,7 @@ enum class MeteorSize : int {
   Large
 };
 
-/// Defines marker graphic types for TethysGame::CreateMarker().
+/// Defines marker graphic types for Game::CreateMarker().
 enum class MarkerType : int {
   Circle = 0,  ///< Circular marker
   DNA,         ///< DNA strand
@@ -71,8 +71,8 @@ enum class ToggleState : int {
 };
 
 
-/// Exported interface for accessing global game state, creating units, adding game messages, RNG, etc. (wraps GameImpl)
-class TethysGame : public OP2Class<TethysGame> {
+/// Public interface for accessing global game state, creating units, adding game messages, RNG, etc. (wraps GameImpl)
+class Game : public OP2Class<Game> {
 public:
   static int LocalPlayer() { return GetImpl()->localPlayer_;     }  ///< Returns the local player index.
   static int NumPlayers()  { return GetImpl()->numPlayers_;      }  ///< Returns number of human and AI players.
@@ -130,17 +130,7 @@ public:
   /// @note @ref yield and @ref variant are only meaningful when @ref type is RandomOre, CommonOre, or RareOre.
   static Unit CreateMine(
     Location location, MineType type = MineType::RandomOre,
-    OreYield yield = OreYield::Random, OreVariant variant = OreVariant::Random)
-  {
-    const MapID mapID = (type == MineType::MagmaVent) ? MapID::MagmaVent :
-                        (type == MineType::Fumarole)  ? MapID::Fumarole  : MapID::MiningBeacon;
-    yield = ((mapID == MapID::MiningBeacon) && (yield == OreYield::Random) && (variant != OreVariant::Random)) ?
-            OreYield(GetRand(3)) : yield;
-    const int varNum = MineManager::GetInstance()->GetVariantNum(yield, variant);
-    return OP2Thunk<0x478940, ibool FASTCALL(MapID, int, int, MineType, OreYield, int)>(
-      mapID, location.x, location.y, max(type, MineType::RandomOre), yield, varNum) ?
-      *(_Player::GetInstance(6)->GetBeacons()) : Unit();
-  }
+    OreYield yield = OreYield::Random, OreVariant variant = OreVariant::Random);
 
   /// Creates wreckage that grants the given tech ID when turned in at a spaceport.  Tech ID must be within 8000-12095.
   static Unit CreateWreckage(Location location, int techID, bool isDiscovered = false) {
@@ -292,6 +282,28 @@ private:
 public:
   uint8 field_00;
 };
+
+// =====================================================================================================================
+inline Unit Game::CreateMine(
+  Location    location,
+  MineType    type,
+  OreYield    yield,
+  OreVariant  variant)
+{
+  const MapID mapID = (type == MineType::MagmaVent) ? MapID::MagmaVent :
+    (type == MineType::Fumarole)  ? MapID::Fumarole  : MapID::MiningBeacon;
+
+  if ((mapID == MapID::MiningBeacon) && (yield == OreYield::Random) && (variant != OreVariant::Random)) {
+    // We must pre-generate the random yield in order to be able to look up the internal variant number.
+    const int result = GetRand(10);  // 20% chance of Bar3, 60% chance of Bar2, 20% chance of Bar1
+    yield = (result <= 1) ? OreYield::Bar3 : (result <= 7) ? OreYield::Bar2 : OreYield::Bar1;
+  }
+  const int varNum = MineManager::GetInstance()->GetVariantNum(yield, variant);
+
+  return OP2Thunk<0x478940, ibool FASTCALL(MapID, int, int, MineType, OreYield, int)>(
+    mapID, location.x, location.y, max(type, MineType::RandomOre), yield, varNum) ?
+      *(_Player::GetInstance(6)->GetBeacons()) : Unit();
+}
 
 } // TethysAPI
 } // Tethys

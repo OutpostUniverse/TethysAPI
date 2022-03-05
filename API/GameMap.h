@@ -65,7 +65,7 @@ public:
   static MapRect GetClipRect() { return GetImpl()->clipRect_; }
 
   /// Translates in-game map (x, y) coordinates as displayed on the status bar, to real map coordinates.
-  /// Useful with e.g. GetTile(), TethysGame::CreateUnit(), and other functions that take a Location.
+  /// Useful with e.g. GetTile(), Game::CreateUnit(), and other functions that take a Location.
   static Location At(int x, int y)
     { return Location(((x - 1 + GetPaddingWidth()) & GetImpl()->tileXMask_), ((y - 1) & (GetHeight() - 1))); }
 

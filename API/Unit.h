@@ -343,7 +343,7 @@ public:
   bool IsDisabled() const           ///< Building is disabled?
     { return IsBuilding() && (IsUnderConstruction() == false) && (GetMapObject<Building>()->IsEnabled() == false); }
   bool IsIdled()    const { return IsBuilding() && (HasFlag(MoFlagBldActive)    == false); }  ///< Building is idled?
-  bool IsEnabled()  const { return IsBuilding() && ((IsIdled() || IsDisabled()) == false); }  ///< Buidling is enabled?
+  bool IsEnabled()  const { return IsBuilding() && ((IsIdled() || IsDisabled()) == false); }  ///< Building is enabled?
   bool IsInfected() const { return IsBuilding() &&  HasFlag(MoFlagBldInfected);            }  ///< Building is infected?
 
   void DoIdle()   { DoSimpleCommand(CommandType::Idle);   }        ///< Idle the building.
