@@ -350,8 +350,7 @@ public:
   void DoUnidle() { DoSimpleCommand(CommandType::Unidle); }        ///< Unidle the building.
   void DoInfect() { Thunk<0x476B90, &$::DoInfect>();      }        ///< Set building to Blight-infected.
   void DoProduce(                                                  ///< [Factory] Issue a factory build command.
-    MapID itemType, MapID weaponType = MapID::None, uint16 scGroupIndex = -1)
-      { if (IsLive()) { GetMapObject()->CmdProduce(itemType, weaponType, scGroupIndex); } }
+    MapID itemType, MapID weaponType = MapID::None, uint16 scGroupIndex = -1, bool recycleIfFull = false);
   void DoLaunch(Location target = { }, bool forceEnable = false);  ///< [Spaceport] Launch the rocket on launch pad.
   void DoTransferCargo(int bay)                                    ///< [Factory, Garage] Move cargo to a bay.
     { if (IsLive()) { GetMapObject()->CmdTransferCargo(bay); } }
@@ -606,6 +605,26 @@ inline void Unit::DoSalvage(
     packet.data.salvage.unitID     = id_;
     packet.data.salvage.rect       = area.AsPacked();
     packet.data.salvage.unitIDGorf = gorf.id_;
+    ProcessCommandPacket(packet);
+  }
+}
+
+// =====================================================================================================================
+inline void Unit::DoProduce(
+  MapID  itemType,
+  MapID  weaponType,
+  uint16 scGroupIndex,
+  bool   recycleIfFull)
+{
+  if (recycleIfFull) {
+    GetMapObject()->CmdProduce(itemType, weaponType, scGroupIndex);
+  }
+  else if (IsLive()) {
+    CommandPacket packet = { CommandType::Produce, sizeof(ProduceCommand) };
+    packet.data.produce.unitID        = id_;
+    packet.data.produce.itemToProduce = itemType;
+    packet.data.produce.weaponType    = weaponType;
+    packet.data.produce.scGroupIndex  = scGroupIndex;
     ProcessCommandPacket(packet);
   }
 }
