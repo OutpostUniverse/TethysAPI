@@ -2179,7 +2179,7 @@ END_PACKED
   $(MagmaVent)  $(Fumarole)  $(Wreckage)  $(SmallBuildingExplosion)  $(MediumBuildingExplosion)                        \
   $(LargeBuildingExplosion)  $(SULV)  $(RLV)  $(EMPMissile)  $(InterColonyShuttle)  $(AmbientAnimation)
 #define OP2_EMIT_MO_TYPE_MAPPINGS($)                                                                                   \
-  OP2_EMIT_MO_MAPPINGS($);  $(EDWARDSatellite)  $(SolarSatellite)  $(IonDriveModule)  $(FusionDriveModule)             \
+  OP2_EMIT_MO_MAPPINGS($)  $(EDWARDSatellite)  $(SolarSatellite)  $(IonDriveModule)  $(FusionDriveModule)              \
   $(CommandModule)  $(FuelingSystems)  $(HabitatRing)  $(SensorPackage)  $(Skydock)  $(StasisSystems)                  \
   $(OrbitalPackage)  $(PhoenixModule)  $(RareMetalsCargo)  $(CommonMetalsCargo)  $(FoodCargo)  $(EvacuationModule)     \
   $(ChildrenModule)  $(ImpulseItems)  $(Wares)  $(LuxuryWares)  $(Spider3Pack)  $(Scorpion3Pack)
