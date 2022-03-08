@@ -47,6 +47,9 @@ public:
 /// Internal class for creating ScStubs.
 class ScStubFactory {
 public:
+  // ** TODO member functions
+
+public:
   ScStubFactory* pParent_;
   const char*    pName_;
   uint32         elementSizeInBytes_;
@@ -85,8 +88,15 @@ public:
 
 /// Internal implementation class for entities from the mission DLL.
 class ScriptDataBlock : public ScBase {
+  using $ = ScriptDataBlock;
 public:
-  // ** TODO
+  void*          Destroy(ibool freeMem)     override { return Thunk<0x475630, &$::Destroy>(freeMem);   }
+  ScStubFactory* GetScStubFactory()         override { return Thunk<0x475620, &$::GetScStubFactory>(); }
+  void           Init()                     override { return Thunk<0x4756D0, &$::Init>();             }
+  void           Save(StreamIO* pSavedGame) override { return Thunk<0x4756E0, &$::Save>(pSavedGame);   }
+  ibool          Load(StreamIO* pSavedGame) override { return Thunk<0x475750, &$::Load>(pSavedGame);   }
+
+  DEFINE_VTBL_GETTER(0x4D5DE0);
 
   static ScriptDataBlock* GetInstance(int index) { return static_cast<ScriptDataBlock*>(ScBase::GetInstance(index)); }
 
@@ -100,8 +110,15 @@ public:
 
 /// Internal implementation class for mission DLL function references.
 class FuncReference : public ScriptDataBlock {
+  using $ = FuncReference;
 public:
-  // ** TODO
+  void*          Destroy(ibool freeMem) override { return Thunk<0x475870, &$::Destroy>(freeMem);   }
+  ScStubFactory* GetScStubFactory()     override { return Thunk<0x475860, &$::GetScStubFactory>(); }
+
+  DEFINE_VTBL_GETTER(0x4D5E08);
+
+  ibool SetData(const char* pCallbackName, ibool useLevelModule)
+    { return Thunk<0x4757D0, &$::SetData>(pCallbackName, useLevelModule); }
 
   static FuncReference* GetInstance(int index) { return static_cast<FuncReference*>(ScBase::GetInstance(index)); }
 
@@ -126,6 +143,9 @@ public:
 
   virtual TethysAPI::PfnOnTrigger GetCallbackFunction() { return Thunk<0x491E70, &$::GetCallbackFunction>(); }
 
+#define OP2_TRIGGERIMPL_VTBL($)  $(HasFired) $(GetCallbackFunction)
+  DEFINE_VTBL_TYPE(OP2_TRIGGERIMPL_VTBL, 0x4D6530);
+
   auto* GetLegacyCallbackFunction() { return TethysAPI::PfnLegacyOnTrigger(GetCallbackFunction()); }
 
   static TriggerImpl* GetInstance(int index) { return static_cast<TriggerImpl*>(ScBase::GetInstance(index)); }
@@ -140,6 +160,8 @@ public:
   FuncReference* pFuncRef_;
 };
 
+// ** TODO TriggerImpl subclasses
+
 /// Internal implementation class for victory conditions.
 class VictoryConditionImpl : public TriggerImpl {
   using $ = VictoryConditionImpl;
@@ -149,6 +171,8 @@ public:
   void           Save(StreamIO* pSavedGame) override { return Thunk<0x4958E0, &$::Save>(pSavedGame);   }
   ibool          Load(StreamIO* pSavedGame) override { return Thunk<0x495960, &$::Load>(pSavedGame);   }
   ibool          HasFired()                 override { return Thunk<0x495890, &$::HasFired>();         }
+
+  DEFINE_VTBL_GETTER(0x4D68C0);
 
 public:
   int          field_24;
@@ -231,16 +255,16 @@ public:
 
 struct RecordedBuilding {
   MapRect buildingTileRect;
-  MapID    buildingType;
-  MapID    weaponType;
-  int      groupScStubIndex;
+  MapID   buildingType;
+  MapID   weaponType;
+  int     groupScStubIndex;
 };
 
 struct RecordedMine {
   MapRect mineRectInTiles;
-  MapID    mineType;
-  int      buildGroupScStubIndex;
-  int      minerUnitIndex;
+  MapID   mineType;
+  int     buildGroupScStubIndex;
+  int     minerUnitIndex;
 };
 
 struct RecordedTubeWall {

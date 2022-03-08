@@ -1,7 +1,7 @@
 /**
  ***********************************************************************************************************************
- * @file  TethysGame.h
- * @brief Defines the TethysGame class which controls the overall game environment.
+ * @file  Game.h
+ * @brief Defines the Game class which controls the overall game environment.
  ***********************************************************************************************************************
  */
 
@@ -39,7 +39,7 @@ namespace TethysAPI {
 
 using UnitDirection = Tethys::UnitDirection;
 
-/// Defines mine resource types for TethysGame::CreateMine().
+/// Defines mine resource types for Game::CreateMine().
 enum class MineType : int {
   RandomOre = int(OreType::Random),  ///< 70% chance of CommonOre or 30% chance of RareOre.
   CommonOre = int(OreType::Common),  ///< Common ore.
@@ -48,7 +48,7 @@ enum class MineType : int {
   Fumarole  = -3,                    ///< Fumarole.  GeoCons can build Geothermal Plants.
 };
 
-/// Defines meteor sizes for TethysGame::CreateMeteor().
+/// Defines meteor sizes for Game::CreateMeteor().
 enum class MeteorSize : int {
   Random = -1,
   Small,
@@ -56,7 +56,7 @@ enum class MeteorSize : int {
   Large
 };
 
-/// Defines marker graphic types for TethysGame::CreateMarker().
+/// Defines marker graphic types for Game::CreateMarker().
 enum class MarkerType : int {
   Circle = 0,  ///< Circular marker
   DNA,         ///< DNA strand
@@ -71,8 +71,8 @@ enum class ToggleState : int {
 };
 
 
-/// Exported interface for accessing global game state, creating units, adding game messages, RNG, etc. (wraps GameImpl)
-class TethysGame : public OP2Class<TethysGame> {
+/// Public interface for accessing global game state, creating units, adding game messages, RNG, etc. (wraps GameImpl)
+class Game : public OP2Class<Game> {
 public:
   static int LocalPlayer() { return GetImpl()->localPlayer_;     }  ///< Returns the local player index.
   static int NumPlayers()  { return GetImpl()->numPlayers_;      }  ///< Returns number of human and AI players.
@@ -122,9 +122,7 @@ public:
     Unit u;
     OP2Thunk<0x478780, ibool FASTCALL(Unit&, MapID, Location, int, MapID, UnitDirection)>(
       u, type, where, ownerNum, weaponCargo, rotation);
-    if (u.IsVehicle() && lightsOn) {
-      u.DoSetLights(true);
-    }
+    if (u.IsVehicle() && lightsOn) u.DoSetLights(true);
     return u;
   }
 
@@ -132,17 +130,7 @@ public:
   /// @note @ref yield and @ref variant are only meaningful when @ref type is RandomOre, CommonOre, or RareOre.
   static Unit CreateMine(
     Location location, MineType type = MineType::RandomOre,
-    OreYield yield = OreYield::Random, OreVariant variant = OreVariant::Random)
-  {
-    const MapID mapID = (type == MineType::MagmaVent) ? MapID::MagmaVent :
-                        (type == MineType::Fumarole)  ? MapID::Fumarole  : MapID::MiningBeacon;
-    yield = ((mapID == MapID::MiningBeacon) && (yield == OreYield::Random) && (variant != OreVariant::Random)) ?
-            OreYield(GetRand(3)) : yield;
-    const int varNum = MineManager::GetInstance()->GetVariantNum(yield, variant);
-    return OP2Thunk<0x478940, ibool FASTCALL(MapID, int, int, MineType, OreYield, int)>(
-      mapID, location.x, location.y, max(type, MineType::RandomOre), yield, varNum) ?
-      *(_Player::GetInstance(6)->GetBeacons()) : Unit();
-  }
+    OreYield yield = OreYield::Random, OreVariant variant = OreVariant::Random);
 
   /// Creates wreckage that grants the given tech ID when turned in at a spaceport.  Tech ID must be within 8000-12095.
   static Unit CreateWreckage(Location location, int techID, bool isDiscovered = false) {
@@ -159,8 +147,10 @@ public:
     { OP2Thunk<0x478AA0, ibool FASTCALL(int, int, int, MapID)>(location.x, location.y, 0, type); }
 
   /// Creates a block of walls or tubes over the given area.
-  static void CreateWallOrTube(MapID type, const MapRect& rect)
-    { for (int y = rect.y1; y <= rect.y2; ++y) for (int x = rect.x1; x <= rect.x2; CreateWallOrTube(type, {x++, y})); }
+  static void CreateWallOrTube(MapID type, const MapRect& area) {
+    for (int y = area.y1; y <= area.y2; ++y)
+      for (int x = area.x1; x <= area.x2; CreateWallOrTube(type, Location(x++, y)));
+  }
 
   /// Let morale vary according to colony state & events for the specified player.  @note toPlayerNum: -1 = all players
   static void FreeMoraleLevel(int player = AllPlayers) { SetGameOpt(GameOpt::FreeMoraleLevel, player); }
@@ -184,12 +174,12 @@ public:
   static void SetMusicPlayList(int numSongs, int repeatStartIndex, const SongID* pSongIDList)
     { return MusicManager::GetInstance()->SetMusicPlaylist(numSongs, repeatStartIndex, pSongIDList); }
   static void SetMusicPlayList(TethysUtil::Span<SongID> songIDList, int repeatStartIndex = 0)
-    { return SetMusicPlayList(songIDList.Length(), repeatStartIndex, songIDList.Data()); }
+    { return SetMusicPlayList(songIDList.size(), repeatStartIndex, songIDList.data()); }
   ///@}
 
   /// Search aligned 8x8 blocks, for the block with the greatest weight.
   /// @note The target location is at the block center (+3, +3)
-  /// @note Targets first found block of heighest (non-negative) weight, or the first block if all blocks have negative
+  /// @note Targets first found block of highest (non-negative) weight, or the first block if all blocks have negative
   ///       weight
   /// @note Target player military units weigh 64, non-target player military units weigh -32, and non-target player
   ///       non-military units weigh 1.
@@ -260,9 +250,8 @@ public:
   static void SetForceRCCPathFinding(ToggleState state) {
     GetImpl()->forceEnableRCC_  = (state == ToggleState::On);
     GetImpl()->forceDisableRCC_ = (state == ToggleState::Off);
-    if (state != ToggleState::Default) {
+    if (state != ToggleState::Default)
       for (int i = 0; i < MaxPlayers; GetImpl()->GetPlayer(i++)->rccOperational_ = (state == ToggleState::On));
-    }
   }
 
   /// Toggles debug morale logging.
@@ -293,6 +282,28 @@ private:
 public:
   uint8 field_00;
 };
+
+// =====================================================================================================================
+inline Unit Game::CreateMine(
+  Location    location,
+  MineType    type,
+  OreYield    yield,
+  OreVariant  variant)
+{
+  const MapID mapID = (type == MineType::MagmaVent) ? MapID::MagmaVent :
+    (type == MineType::Fumarole)  ? MapID::Fumarole  : MapID::MiningBeacon;
+
+  if ((mapID == MapID::MiningBeacon) && (yield == OreYield::Random) && (variant != OreVariant::Random)) {
+    // We must pre-generate the random yield in order to be able to look up the internal variant number.
+    const int result = GetRand(10);  // 20% chance of Bar3, 60% chance of Bar2, 20% chance of Bar1
+    yield = (result <= 1) ? OreYield::Bar3 : (result <= 7) ? OreYield::Bar2 : OreYield::Bar1;
+  }
+  const int varNum = MineManager::GetInstance()->GetVariantNum(yield, variant);
+
+  return OP2Thunk<0x478940, ibool FASTCALL(MapID, int, int, MineType, OreYield, int)>(
+    mapID, location.x, location.y, max(type, MineType::RandomOre), yield, varNum) ?
+      *(_Player::GetInstance(6)->GetBeacons()) : Unit();
+}
 
 } // TethysAPI
 } // Tethys

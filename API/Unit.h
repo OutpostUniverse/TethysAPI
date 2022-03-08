@@ -86,9 +86,10 @@ public:
   operator bool() const { return IsValid(); }  ///< Converts to true if IsValid()
 
   ///@{ Get the underlying MapObject that this Unit is a proxy for.
-  template <typename T = MapObject>  T* GetMapObject() { return IsValid() ? T::GetInstance(size_t(id_)) : nullptr; }
-  template <typename T = MapObject>
-  const T* GetMapObject() const { return IsValid() ? T::GetInstance(size_t(id_)) : nullptr; }
+  template <typename T = MapObject>       T* GetMapObject()      { return IsValid() ? T::GetInstance(size_t(id_)) : 0; }
+  template <typename T = MapObject> const T* GetMapObject()const { return IsValid() ? T::GetInstance(size_t(id_)) : 0; }
+  template <MapID I>       auto* GetMapObject()       { return IsValid() ? MapObjFor<I>::GetInstance(size_t(id_)) : 0; }
+  template <MapID I> const auto* GetMapObject() const { return IsValid() ? MapObjFor<I>::GetInstance(size_t(id_)) : 0; }
   ///@}
 
   ///@{ Get the internal MapObjectType that this unit is managed by.  (Returns MaxObjectType if !IsValid())
@@ -120,8 +121,8 @@ public:
 
   int  GetMaxHitpoints() const { return IsLive() ? GetPlayerUnitStats().hp : 0; } ///< Gets the unit's max hitpoints.
   int  GetDamage()       const { return IsLive() ? GetMapObject()->damage_ : 0; } ///< Gets the unit's damage amount.
-  void AddDamage(int damage)   { SetDamage(GetDamage() + damage);               } ///< Sets the unit's damage amount.
-  void SetDamage(int damage)                                                      ///< Adds to the unit's damage amount.
+  void AddDamage(int damage)   { SetDamage(GetDamage() + damage);               } ///< Adds to the unit's damage amount.
+  void SetDamage(int damage)                                                      ///< Sets the unit's damage amount.
     { if (IsLive() && ((GetMapObject()->damage_ = damage) >= GetMaxHitpoints())) { DoDeath(); } }
 
   /// Returns true if the target Unit is hostile to this Unit.
@@ -233,7 +234,7 @@ public:
 
   ///@{ [ConVec]  Gets or sets ConVec cargo.
   CargoKit GetConVecCargo() const {
-    return IsVehicle() ? 
+    return IsVehicle() ?
       CargoKit{ MapID(GetMapObject<Vehicle>()->cargo_), MapID(GetMapObject<Vehicle>()->weaponOfCargo_) } : CargoKit{};
   }
   void SetCargo(MapID cargo, MapID weapon)
@@ -342,15 +343,14 @@ public:
   bool IsDisabled() const           ///< Building is disabled?
     { return IsBuilding() && (IsUnderConstruction() == false) && (GetMapObject<Building>()->IsEnabled() == false); }
   bool IsIdled()    const { return IsBuilding() && (HasFlag(MoFlagBldActive)    == false); }  ///< Building is idled?
-  bool IsEnabled()  const { return IsBuilding() && ((IsIdled() || IsDisabled()) == false); }  ///< Buidling is enabled?
+  bool IsEnabled()  const { return IsBuilding() && ((IsIdled() || IsDisabled()) == false); }  ///< Building is enabled?
   bool IsInfected() const { return IsBuilding() &&  HasFlag(MoFlagBldInfected);            }  ///< Building is infected?
 
   void DoIdle()   { DoSimpleCommand(CommandType::Idle);   }        ///< Idle the building.
   void DoUnidle() { DoSimpleCommand(CommandType::Unidle); }        ///< Unidle the building.
   void DoInfect() { Thunk<0x476B90, &$::DoInfect>();      }        ///< Set building to Blight-infected.
   void DoProduce(                                                  ///< [Factory] Issue a factory build command.
-    MapID itemType, MapID weaponType = MapID::None, uint16 scGroupIndex = -1)
-      { if (IsLive()) { GetMapObject()->CmdProduce(itemType, weaponType, scGroupIndex); } }
+    MapID itemType, MapID weaponType = MapID::None, uint16 scGroupIndex = -1, bool recycleIfFull = false);
   void DoLaunch(Location target = { }, bool forceEnable = false);  ///< [Spaceport] Launch the rocket on launch pad.
   void DoTransferCargo(int bay)                                    ///< [Factory, Garage] Move cargo to a bay.
     { if (IsLive()) { GetMapObject()->CmdTransferCargo(bay); } }
@@ -364,6 +364,7 @@ protected:
 public:
   int id_;
 };
+
 
 /// Info passed to OnCreateUnit() user callback.  (1.4.0)
 struct OnCreateUnitArgs {
@@ -383,6 +384,14 @@ struct OnDamageUnitArgs {
   Unit   sourceUnit;  ///< Attacking unit.
   Unit   targetUnit;  ///< Target unit.
   int    damage;      ///< Amount of damage (or EMP time) applied.
+};
+
+/// Info passed to OnTransferUnit() user callback.  (1.4.2)
+struct OnTransferUnitArgs {
+  size_t structSize;     ///< Size of this structure.
+  Unit   unit;           ///< Unit being transferred.
+  int    fromPlayerNum;  ///< Original owner player number.
+  int    toPlayerNum;    ///< New owner player number.
 };
 
 
@@ -596,6 +605,26 @@ inline void Unit::DoSalvage(
     packet.data.salvage.unitID     = id_;
     packet.data.salvage.rect       = area.AsPacked();
     packet.data.salvage.unitIDGorf = gorf.id_;
+    ProcessCommandPacket(packet);
+  }
+}
+
+// =====================================================================================================================
+inline void Unit::DoProduce(
+  MapID  itemType,
+  MapID  weaponType,
+  uint16 scGroupIndex,
+  bool   recycleIfFull)
+{
+  if (recycleIfFull) {
+    GetMapObject()->CmdProduce(itemType, weaponType, scGroupIndex);
+  }
+  else if (IsLive()) {
+    CommandPacket packet = { CommandType::Produce, sizeof(ProduceCommand) };
+    packet.data.produce.unitID        = id_;
+    packet.data.produce.itemToProduce = itemType;
+    packet.data.produce.weaponType    = weaponType;
+    packet.data.produce.scGroupIndex  = scGroupIndex;
     ProcessCommandPacket(packet);
   }
 }

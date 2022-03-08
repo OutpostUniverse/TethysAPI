@@ -328,7 +328,7 @@ public:
     const int  border  = includeBorder ? 2 : 0;
     const auto size    = Location(stats_.building.width + border, stats_.building.height + border);
     const auto topLeft = Location(center.x - (size.x / 2), center.y - (size.y / 2)).Clip();
-    return MapRect(topLeft, topLeft + size - 1).Clip();
+    return MapRect(topLeft, topLeft + size - Location(1, 1)).Clip();
   }
 
 public:
@@ -2179,7 +2179,7 @@ END_PACKED
   $(MagmaVent)  $(Fumarole)  $(Wreckage)  $(SmallBuildingExplosion)  $(MediumBuildingExplosion)                        \
   $(LargeBuildingExplosion)  $(SULV)  $(RLV)  $(EMPMissile)  $(InterColonyShuttle)  $(AmbientAnimation)
 #define OP2_EMIT_MO_TYPE_MAPPINGS($)                                                                                   \
-  OP2_EMIT_MO_MAPPINGS($);  $(EDWARDSatellite)  $(SolarSatellite)  $(IonDriveModule)  $(FusionDriveModule)             \
+  OP2_EMIT_MO_MAPPINGS($)  $(EDWARDSatellite)  $(SolarSatellite)  $(IonDriveModule)  $(FusionDriveModule)              \
   $(CommandModule)  $(FuelingSystems)  $(HabitatRing)  $(SensorPackage)  $(Skydock)  $(StasisSystems)                  \
   $(OrbitalPackage)  $(PhoenixModule)  $(RareMetalsCargo)  $(CommonMetalsCargo)  $(FoodCargo)  $(EvacuationModule)     \
   $(ChildrenModule)  $(ImpulseItems)  $(Wares)  $(LuxuryWares)  $(Spider3Pack)  $(Scorpion3Pack)

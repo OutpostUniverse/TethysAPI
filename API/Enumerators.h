@@ -70,7 +70,7 @@ protected:
 
 namespace TethysAPI {
 
- /// Iterates over a player's unit list.
+/// Iterates over a player's unit list.
 class PlayerUnitIterator : public TethysImpl::UnitIteratorBase {
 public:
   explicit PlayerUnitIterator(std::list<Unit>* pUnitCache, MapObject* pMo = nullptr)
@@ -112,7 +112,7 @@ public:
     else do PlayerUnitIterator::operator++(); while (pMo_ && (pMo_->GetTypeID() != type_));
     return *this;
   }
-  FilterPlayerUnitIterator operator++(int) { auto v = *this; operator++(); return v; }
+  FilterPlayerUnitIterator operator++(int) { auto old = *this;  operator++();  return old; }
 
 private:
   MapID type_;

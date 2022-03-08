@@ -313,7 +313,7 @@ public:
   /// Damages a wall.  Damage state change is based on RNG.
   static void FASTCALL DamageWall(int x, int y, int damage) { return OP2Thunk<0x4A24C0, &$::DamageWall>(x, y, damage); }
   /// Destroys a wall.
-  static void FASTCALL DestroyWall(int x, int y)            { return OP2Thunk<0x4A26C0, &$::DestroyWall>(x, y); }
+  static void FASTCALL DestroyWall(int x, int y) { return OP2Thunk<0x4A26C0, &$::DestroyWall>(x, y); }
 
   /// Gets the internal map instance.
   static MapImpl* GetInstance() { return OP2Mem<0x54F7F8, MapImpl*>(); }

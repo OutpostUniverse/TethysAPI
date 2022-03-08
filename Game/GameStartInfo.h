@@ -8,6 +8,7 @@ namespace Tethys {
 namespace TethysAPI { enum class MissionType : int; }
 
 BEGIN_PACKED
+
 enum class GameTermReasons : int {
   Running = 0,          ///< Game still running
   U1,

@@ -12,7 +12,7 @@ class TFileDialog;
 class GameNetLayer;
 class StreamIO;
 
-/// Internal game manager class (wrapped by TethysGame).
+/// Internal game manager class (wrapped by Game).
 class GameImpl : public OP2Class<GameImpl> {
 public:
    GameImpl() { InternalCtor<0x489130>(); }

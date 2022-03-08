@@ -13,6 +13,8 @@ Compared to Outpost2DLL, the public API exposed in TethysAPI has been changed to
 
 # Usage
 
+**ATTENTION: TethysAPI is a work in progress. You should expect breaking major interface changes between releases prior to 1.0.**
+
 TethysAPI is intended to be added as a Git submodule to projects. It must reside in a subdirectory called `Tethys` (not "TethysAPI"!)
 
 The public mission API headers are located under the `API` directory. For your convenience, you may use `#include "Tethys/API/API.h"` to include all public API headers, but you are also free to include individual headers. `Tethys/API/Mission.h` documents how to interface a mission with the game.
@@ -26,6 +28,20 @@ Headers containing internals, non-exported enums, or non-mission public APIs are
 The public mission APIs are within the `TethysAPI` namespace, while everything else is within the `Tethys` namespace. You may wish to do `using namespace TethysAPI` and/or `using namespace Tethys`.
 
 # Change log
+
+## Version 0.8.2
+* Change `Create*Trigger()` functions to take `triggerFunction` as a `std::string_view` instead of a `const char*`. This is a backwards-compatible interface change.
+* Rename `OnProcessCommandArgs` to `OnGameCommandArgs`
+* Add `Unit::GetMapObject()` template overloads that take a `MapID` as a template arg
+* Add `TethysUtil::AutoDestroy<>` template class
+* Rename `TethysUtil::Span::Data()`, `Length()`, and `IsEmpty()` to `data(`), `length()`, and `empty()` in preparation to switch to C++20 std::span eventually
+* Fix `IDirectDraw` forward declaration in `TApp.h`
+* Add some member function definitions to `ScriptDataBlock` and `FuncReference`
+* Define vtbl info for `TriggerImpl` and `VictoryConditionImpl`
+* Add post-increment operators for unit iterator types
+* Remove decrement operator for `GroupIterator`
+* Remove `Location` operator+/- overload for scalar integers
+
 
 ## Version 0.8.1
 * Rework Enumerator interfaces to more closely match `std::iterator` semantics.
