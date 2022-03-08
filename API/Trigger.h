@@ -97,6 +97,8 @@ Trigger CreateSetTrigger(
 
 /// Creates a trigger used for victory condition in Last One Standing and later part of Land Rush.
 inline Trigger CreateLastOneStandingTrigger(
+  std::string_view triggerFunction = "", bool oneShot = true, bool enabled = true)
+    { return OP2Thunk<0x478F30, Trigger FASTCALL(ibool, ibool, const char*)>(enabled, oneShot, triggerFunction.data());}
 
 /// Creates a trigger used for victory condition in Space Race.
 inline Trigger CreateSpaceRaceTrigger(
