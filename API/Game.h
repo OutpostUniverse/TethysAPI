@@ -102,14 +102,16 @@ public:
     { SoundManager::GetInstance()->AddMapSound(location.GetPixelX(), location.GetPixelY(), soundID); }
 
   /// Outputs a game message at the specified map pixel coordinates.  @note (0, -1) = no associated coordinates.
-  static void AddMessage(std::string_view msg, SoundID soundID, int toPlayerNum = -1, int pixelX = 0, int pixelY = -1) {
-    ((toPlayerNum == AllPlayers) || (toPlayerNum == LocalPlayer())) ?
-    MessageLog::GetInstance()->AddMessage(pixelX, pixelY, msg.data(), soundID) : 0;
+  static void AddMessage(std::string_view msg, SoundID soundID, int toPlayerNum, int pixelX, int pixelY) {
+    if ((toPlayerNum == AllPlayers) || (toPlayerNum == LocalPlayer()))
+      MessageLog::GetInstance()->AddMessage(pixelX, pixelY, msg.data(), soundID);
   }
 
-  /// Outputs a game message at the specified map tile location.
-  static void AddMessage(std::string_view msg, SoundID soundID, int toPlayerNum, Location tile)
-    { AddMessage(msg.data(), soundID, toPlayerNum, tile.GetPixelX(), tile.GetPixelY()); }
+  /// Outputs a game message at the specified map tile location.  @note Location{ } = no associated coordinates.
+  static void AddMessage(std::string_view msg, SoundID soundID, int toPlayerNum = AllPlayers, Location tile = { }) {
+    const auto pixel = tile ? tile.GetPixel() : POINT{ 0, -1 };
+    AddMessage(msg.data(), soundID, toPlayerNum, pixel.x, pixel.y);
+  }
 
   /// Outputs a game message at the specified Unit's location.
   static void AddMessage(std::string_view msg, SoundID soundID, int toPlayerNum, Unit owner)

@@ -71,6 +71,7 @@ namespace Tethys {
 
 namespace TethysImpl {
 ///@{ @internal  Helper metafunctions to get this and function pointer types from pointers-to-member-functions.
+// ** TODO Handle aggregate return pointer correctly
 template <typename T, typename = void>  struct PmfTraitsImpl{};
 template <auto Pmf>                     using  PmfThisPtr   = typename PmfTraitsImpl<decltype(Pmf)>::This;
 template <auto Pmf>                     using  PmfToPfnType = typename PmfTraitsImpl<decltype(Pmf)>::Pfn;
@@ -200,7 +201,7 @@ public:                                                                         
   VtblType*& Vfptr()       { return *reinterpret_cast<VtblType**>(this);      }  \
   VtblType*  Vfptr() const { return *reinterpret_cast<VtblType*const*>(this); }  \
   DEFINE_VTBL_GETTER(__VA_ARGS__)
-#define VTBL_GENERATE_PFN_DEFS_IMPL(method)  TethysImpl::PmfToPfnType<&$::method> pfn##method;
+#define VTBL_GENERATE_PFN_DEFS_IMPL(method)  TethysImpl::PmfToPfnType<&$::method>  pfn##method;
 
 /// Defines a static member function getting the class's vtbl.
 /// This can be used by itself if a base class has used DEFINE_VTBL_TYPE().
