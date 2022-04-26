@@ -224,41 +224,45 @@ struct PerPlayerUnitStats {
   uint16    field_1E;
   int       field_20;
 
+  struct BuildingStats {
+    int powerRequired;       ///< 'Power_Required'
+    int workersRequired;     ///< 'Workers_Required'
+    int scientistsRequired;  ///< 'Production_Rate' or 'Penetration_Damage' (aliased)
+    int storageCapacity;     ///< 'Storage_Capacity'
+    int productionCapacity;  ///< 'Production_Capacity'
+    int storageBays;         ///< 'Storage_Bays'
+  };
+
+  struct VehicleStats {
+    int moveSpeed;           ///< 'Move_Speed'
+    int turnRate;            ///< 'Turn_Rate'
+    int productionRate;      ///< 'Production_Rate'
+    int reloadTime;          ///< 'Rate_Of_Fire'
+    int field_38;            
+    int cargoCapacity;       ///< 'Storage_Bays' (aliased)
+  };
+
+  struct WeaponStats {
+    int moveSpeed;           ///< 'Move_Speed'
+    int concussionDamage;    ///< 'Concussion_Damage'
+    int penetrationDamage;   ///< 'Penetration_Damage'
+    int reloadTime;          ///< 'Rate_Of_Fire'
+    int weaponSightRange;    ///< 'Production_Capacity' (aliased)
+    int field_3C;
+  };
+
   union {
-    struct {
-      int powerRequired;       ///< 'Power_Required'
-      int workersRequired;     ///< 'Workers_Required'
-      int scientistsRequired;  ///< 'Production_Rate' or 'Penetration_Damage' (aliased)
-      int storageCapacity;     ///< 'Storage_Capacity'
-      int productionCapacity;  ///< 'Production_Capacity'
-      int storageBays;         ///< 'Storage_Bays'
-    } building;
-
-    struct {
-      int moveSpeed;           ///< 'Move_Speed'
-      int turnRate;            ///< 'Turn_Rate'
-      int productionRate;      ///< 'Production_Rate'
-      int reloadTime;          ///< 'Rate_Of_Fire'
-      int field_38;            
-      int cargoCapacity;       ///< 'Storage_Bays' (aliased)
-    } vehicle;
-
-    struct {
-      int moveSpeed;           ///< 'Move_Speed'
-      int concussionDamage;    ///< 'Concussion_Damage'
-      int penetrationDamage;   ///< 'Penetration_Damage'
-      int reloadTime;          ///< 'Rate_Of_Fire'
-      int weaponSightRange;    ///< 'Production_Capacity' (aliased)
-      int field_3C;
-    } weapon;
+    BuildingStats building;
+    VehicleStats vehicle;
+    WeaponStats weapon;
   };
 
   int completedUpgradeTechIDs[2];  // ** TODO int[2] or uint16[4]?
 };
 static_assert(sizeof(PerPlayerUnitStats) == 68, "Incorrect PerPlayerUnitStats size.");
 
-union GlobalUnitStats {
-  struct {
+struct GlobalUnitStats {
+  struct GlobalBuildingStats {
     uint16 width;
     uint16 height;
     uint32 flags;
@@ -273,17 +277,23 @@ union GlobalUnitStats {
 
     uint8 edenDockLocation;
     uint8 plyDockLocation;
-  } building;
+  };
 
-  struct {
+  struct GlobalVehicleStats {
     uint16 flags;
-  } vehicle;
+  };
 
-  struct {
+  struct GlobalWeaponStats {
     uint16 radius;
     uint16 field_246;
     uint32 pixelsSkipped;
-  } weapon;
+  };
+
+  union {
+    GlobalBuildingStats building;
+    GlobalVehicleStats vehicle;
+    GlobalWeaponStats weapon;
+  };
 };
 
 #define OP2_MO_TYPE_CLASS_MAP_ID(id)              \
@@ -341,7 +351,8 @@ public:
   uint32             ownerFlags_;
   char               unitName_[40];
   char               produceName_[40];
-  GlobalUnitStats    stats_;
+
+  GlobalUnitStats stats_;
 };
 
 //  ====================================================================================================================

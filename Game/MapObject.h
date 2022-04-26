@@ -1,6 +1,7 @@
 
 #pragma once
 
+#include "Tethys/Game/CommandPacket.h"
 #include "Tethys/Game/MapObjectType.h"
 #include "Tethys/Game/MapImpl.h"
 #include "Tethys/Game/MineManager.h"
@@ -132,7 +133,7 @@ public:
   MapObject()                  { InternalCtor<0x439C10>(); }
   MapObject(InternalCtorChain) {                           }
 
-#if defined(_DEBUG)
+#if TETHYS_SANITY_CHECK
   /// Placement new override sanity checking derived object sizes are no larger than MapObjectSize.
   void* operator new(size_t size, void* pMemory) noexcept { assert(size <= MapObjectSize);  return pMemory; }
 #endif
