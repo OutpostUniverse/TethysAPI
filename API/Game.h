@@ -102,14 +102,16 @@ public:
     { SoundManager::GetInstance()->AddMapSound(location.GetPixelX(), location.GetPixelY(), soundID); }
 
   /// Outputs a game message at the specified map pixel coordinates.  @note (0, -1) = no associated coordinates.
-  static void AddMessage(std::string_view msg, SoundID soundID, int toPlayerNum = -1, int pixelX = 0, int pixelY = -1) {
-    ((toPlayerNum == AllPlayers) || (toPlayerNum == LocalPlayer())) ?
-    MessageLog::GetInstance()->AddMessage(pixelX, pixelY, msg.data(), soundID) : 0;
+  static void AddMessage(std::string_view msg, SoundID soundID, int toPlayerNum, int pixelX, int pixelY) {
+    if ((toPlayerNum == AllPlayers) || (toPlayerNum == LocalPlayer()))
+      MessageLog::GetInstance()->AddMessage(pixelX, pixelY, msg.data(), soundID);
   }
 
-  /// Outputs a game message at the specified map tile location.
-  static void AddMessage(std::string_view msg, SoundID soundID, int toPlayerNum, Location tile)
-    { AddMessage(msg.data(), soundID, toPlayerNum, tile.GetPixelX(), tile.GetPixelY()); }
+  /// Outputs a game message at the specified map tile location.  @note Location{ } = no associated coordinates.
+  static void AddMessage(std::string_view msg, SoundID soundID, int toPlayerNum = AllPlayers, Location tile = { }) {
+    const auto pixel = tile ? tile.GetPixel() : POINT{ 0, -1 };
+    AddMessage(msg.data(), soundID, toPlayerNum, pixel.x, pixel.y);
+  }
 
   /// Outputs a game message at the specified Unit's location.
   static void AddMessage(std::string_view msg, SoundID soundID, int toPlayerNum, Unit owner)
@@ -142,15 +144,18 @@ public:
   static Unit CreateMarker(Location location, MarkerType type)
     { Unit u; OP2Thunk<0x478BB0, int FASTCALL(Unit&, int, int, int)>(u, location.x, location.y, int(type)); return u; }
 
-  /// Creates a wall or tube on the given tile.
-  static void CreateWallOrTube(MapID type, Location location)
+  /// Creates a wall on the given tile.
+  static void CreateWall(MapID type, Location location)
     { OP2Thunk<0x478AA0, ibool FASTCALL(int, int, int, MapID)>(location.x, location.y, 0, type); }
 
-  /// Creates a block of walls or tubes over the given area.
-  static void CreateWallOrTube(MapID type, const MapRect& area) {
+  /// Creates a block of walls over the given area.
+  static void CreateWall(MapID type, const MapRect& area) {
     for (int y = area.y1; y <= area.y2; ++y)
-      for (int x = area.x1; x <= area.x2; CreateWallOrTube(type, Location(x++, y)));
+      for (int x = area.x1; x <= area.x2; CreateWall(type, Location(x++, y)));
   }
+
+  static void CreateTube(Location       location) { CreateWall(MapID::Tube, location); }  ///< Creates a tube.
+  static void CreateTube(const MapRect& area)     { CreateWall(MapID::Tube, area);     }  ///< Creates a block of tubes.
 
   /// Let morale vary according to colony state & events for the specified player.  @note toPlayerNum: -1 = all players
   static void FreeMoraleLevel(int player = AllPlayers) { SetGameOpt(GameOpt::FreeMoraleLevel, player); }
@@ -291,7 +296,8 @@ inline Unit Game::CreateMine(
   OreVariant  variant)
 {
   const MapID mapID = (type == MineType::MagmaVent) ? MapID::MagmaVent :
-    (type == MineType::Fumarole)  ? MapID::Fumarole  : MapID::MiningBeacon;
+                      (type == MineType::Fumarole)  ? MapID::Fumarole  :
+                                                      MapID::MiningBeacon;
 
   if ((mapID == MapID::MiningBeacon) && (yield == OreYield::Random) && (variant != OreVariant::Random)) {
     // We must pre-generate the random yield in order to be able to look up the internal variant number.

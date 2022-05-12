@@ -407,25 +407,25 @@ public:
   ibool          IsVisible(Viewport* pViewport) override { return Thunk<0x4A2960, &$::IsVisible>(pViewport);         }
   void*          Destroy(ibool freeMem = 0)     override { return Thunk<0x4A2810, &$::Destroy>(freeMem);             }
 
-  virtual void Func_31(int a, int b)      { return Thunk<0x4A3EE0, &$::Func_31>(a, b);   }
-  virtual void DoExplode(MapObject* pSrc) { return Thunk<0x4A3EB0, &$::DoExplode>(pSrc); }
-  virtual void Func_33(int a)             { return Thunk<0x4A3E80, &$::Func_33>(a);      }
-  virtual void DoDamage()                 { return Thunk<0x4A3690, &$::DoDamage>();      }
+  virtual void DoFire(int pixelX, int pixelY)     { return Thunk<0x4A3EE0, &$::DoFire>(pixelX, pixelY); }
+  virtual void DoAttackUnit(MapObject* pTarget)   { return Thunk<0x4A3EB0, &$::DoAttackUnit>(pTarget);  }
+  virtual void DoAttackGround(CommandTarget tile) { return Thunk<0x4A3E80, &$::DoAttackGround>(tile);   }
+  virtual void DoDamage()                         { return Thunk<0x4A3690, &$::DoDamage>();             }
 
   virtual int GetSecondaryAnimationIndex() { return Thunk<0x4A2950, &$::GetSecondaryAnimationIndex>(); }
   virtual int GetNumAnimationFrames()      { return Thunk<0x4A2890, &$::GetNumAnimationFrames>();      }
 
   virtual void SetWeaponSource(int unitIndex) { return Thunk<0x4A28B0, &$::SetWeaponSource>(unitIndex); }
 
-#define OP2_MO_MAPCHILDENTITY_VTBL($)                                                                         \
-  $(Func_31)  $(DoExplode)  $(Func_33)  $(DoDamage)  $(GetSecondaryAnimationIndex)  $(GetNumAnimationFrames)  \
+#define OP2_MO_MAPCHILDENTITY_VTBL($)                                                                                  \
+  $(DoFire)  $(DoAttackUnit)  $(DoAttackGround)  $(DoDamage)  $(GetSecondaryAnimationIndex)  $(GetNumAnimationFrames)  \
   $(SetWeaponSource)
   DEFINE_VTBL_TYPE(OP2_MO_MAPCHILDENTITY_VTBL, 0x4D6B58);
 
 public:
-  int parentIndex_;  ///< Owner MapObject index.
+  int           parentIndex_;  ///< Owner MapObject index, e.g. the chassis unit.
+  CommandTarget target_;       ///< Tile X/Y coordinates if ground-attacking, (unitID | 0xFFFF0000) if attacking a unit.
 
-  int field_4C;
   int field_50;
   int field_54;
 
@@ -467,8 +467,8 @@ public:
 
   using MapChildEntity::MapChildEntity;
 
-  void DoExplode(MapObject* pSrc) override { return Thunk<0x4A4100, &$::DoExplode>(pSrc); }
-  void DoDamage()                 override { return Thunk<0x4A4160, &$::DoDamage>();      }
+  void DoAttackUnit(MapObject* pSrc) override { return Thunk<0x4A4100, &$::DoAttackUnit>(pSrc); }
+  void DoDamage()                    override { return Thunk<0x4A4160, &$::DoDamage>();         }
 
   // Object size = 0x58
 };
@@ -482,9 +482,9 @@ public:
 
   using MapChildEntity::MapChildEntity;
 
-  void Draw(Viewport* pViewport)    override { return Thunk<0x4A2E20, &$::Draw>(pViewport);              }
-  void Func_31(int a, int b)        override { return Thunk<0x4A3B70, &$::Func_31>(a, b);                }
-  int  GetSecondaryAnimationIndex() override { return Thunk<0x4A2940, &$::GetSecondaryAnimationIndex>(); }
+  void Draw(Viewport* pViewport)      override { return Thunk<0x4A2E20, &$::Draw>(pViewport);              }
+  void DoFire(int pixelX, int pixelY) override { return Thunk<0x4A3B70, &$::DoFire>(pixelX, pixelY);       }
+  int  GetSecondaryAnimationIndex()   override { return Thunk<0x4A2940, &$::GetSecondaryAnimationIndex>(); }
 
   // Object size = 0x6C
 };
@@ -1189,7 +1189,7 @@ public:
   void  Draw(Viewport* pViewport)          override { return Thunk<0x48AE40, &$::Draw>(pViewport);          }
   void* Destroy(ibool freeMem = 0)         override { return Thunk<0x48A790, &$::Destroy>(freeMem);         }
   void  DrawSecondary(Viewport* pViewport) override { return Thunk<0x48AD40, &$::DrawSecondary>(pViewport); }
-  void  Func_31(int a, int b)              override { return Thunk<0x48B030, &$::Func_31>(a, b);            }
+  void  DoFire(int pixelX, int pixelY)     override { return Thunk<0x48B030, &$::DoFire>(pixelX, pixelY);   }
 
   DEFINE_VTBL_GETTER(0x4D63A8);
 

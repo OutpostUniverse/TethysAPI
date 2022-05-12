@@ -29,15 +29,15 @@
  *   MISSION_API void  OnEndMission(OnEndArgsMission*       pArgs) {           } // On mission win/lose/abort.
  *   MISSION_API void  OnChat(OnChatArgs*                   pArgs) { } // Called when any player sends a chat message.
  *   MISSION_API void  OnCreateUnit(OnCreateUnitArgs*       pArgs) { } // Called when a unit/entity is created.
- *   MISSION_API void  OnDestroyUnit(OnCreateUnitArgs*      pArgs) { } // Called when a unit/entity is destroyed.
+ *   MISSION_API void  OnDestroyUnit(OnDestroyUnitArgs*     pArgs) { } // Called when a unit/entity is destroyed.
  *   MISSION_API void  MyTriggerFunction(OnTriggerArgs*     pArgs) { } // Trigger function with access to extended info,
  *                                                                     // such as the source Trigger.
  * The following extended APIs are introduced in OPU mod 1.4.2:
- *   MISSION_API ibool OnSaveGame(OnSaveGameArgs*             pArgs) { return 1; } // Saving the game. Return 0 = error.
- *   MISSION_API ibool OnLoadSavedGame(OnLoadSavedGameArgs*   pArgs) { return 1; } // Loading a save.  Return 0 = error.
- *   MISSION_API void  OnDamageUnit(OnDamageUnitArgs*         pArgs) { } // Called when a unit is damaged.
- *   MISSION_API void  OnTransferUnit(OnTransferUnitArgs*     pArgs) { } // Called when a unit is transferred.
- *   MISSION_API void  OnProcessCommand(OnProcessCommandArgs* pArgs) { } // Called when processing a command packet.
+ *   MISSION_API ibool OnSaveGame(OnSaveGameArgs*           pArgs) { return 1; } // Saving the game. Return 0 = error.
+ *   MISSION_API ibool OnLoadSavedGame(OnLoadSavedGameArgs* pArgs) { return 1; } // Loading a save.  Return 0 = error.
+ *   MISSION_API void  OnDamageUnit(OnDamageUnitArgs*       pArgs) { } // Called when a unit is damaged.
+ *   MISSION_API void  OnTransferUnit(OnTransferUnitArgs*   pArgs) { } // Called when a unit is transferred.
+ *   MISSION_API void  OnGameCommand(OnGameCommandArgs*     pArgs) { } // Called when processing a game command packet.
  ***********************************************************************************************************************
  */
 

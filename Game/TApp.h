@@ -23,11 +23,30 @@ class UIState;
 class NetTransportLayer;
 class GurManager;
 
+/// Structure containing the game version (major.minor.stepping).
+union GameVersion {
+  constexpr GameVersion(int major = 0, int minor = 0, int stepping = 0)
+    : stepping(stepping), unused(0), minor(minor), major(major) { }
+  constexpr GameVersion(uint32 version)
+    : stepping(version & 0xFF), unused(0), minor((version >> (8 * 2)) & 0xFF), major(version >> (8 * 3)) { }
+
+  constexpr operator uint32() const { return (major << (8 * 3)) | (minor << (8 * 2)) | stepping; }
+
+  struct {
+    uint8 stepping;
+    uint8 unused;
+    uint8 minor;
+    uint8 major;
+  };
+  uint32  version;
+};
+
+
 /// Exported API controlling the main game instance.
 class TApp : public OP2Class<TApp> {
 public:
-  uint32 GetVersion()           { return Thunk<0x488200, &$::GetVersion>();     }
-  void   GetAppDesc(char* pBuf) { return Thunk<0x487A40, &$::GetAppDesc>(pBuf); }
+  GameVersion GetVersion()           { return Thunk<0x488200, uint32()>();           }
+  void        GetAppDesc(char* pBuf) { return Thunk<0x487A40, &$::GetAppDesc>(pBuf); }
 
   int  Init()                           { return Thunk<0x485B20, &$::Init>();                     }
   int  InitForDirectDraw()              { return Thunk<0x485EC0, &$::InitForDirectDraw>();        }
@@ -39,8 +58,8 @@ public:
   int  ActivateShell(GameTermReasons gameTermReasons, MissionResults* pMissionResults)
     { return Thunk<0x486DB0, &$::ActivateShell>(gameTermReasons, pMissionResults); }
 
-  ibool AppActive() const { return Thunk<0x401d60, &$::AppActive>(); }
-  ibool AppPaused() const { return Thunk<0x401d70, &$::AppPaused>(); }
+  ibool AppActive() const { return Thunk<0x401D60, &$::AppActive>(); }
+  ibool AppPaused() const { return Thunk<0x401D70, &$::AppPaused>(); }
 
   void BeginWaitCursor() { return Thunk<0x487150, &$::BeginWaitCursor>(); }
   void EndWaitCursor()   { return Thunk<0x487180, &$::EndWaitCursor>();   }

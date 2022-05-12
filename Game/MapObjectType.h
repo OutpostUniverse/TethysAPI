@@ -257,7 +257,7 @@ struct PerPlayerUnitStats {
     WeaponStats weapon;
   };
 
-  int completedUpgradeTechIDs[2];  // ** TODO int[2] or uint16[4]?
+  int completedUpgradeTechIDs[2];
 };
 static_assert(sizeof(PerPlayerUnitStats) == 68, "Incorrect PerPlayerUnitStats size.");
 
@@ -351,8 +351,7 @@ public:
   uint32             ownerFlags_;
   char               unitName_[40];
   char               produceName_[40];
-
-  GlobalUnitStats stats_;
+  GlobalUnitStats    stats_;
 };
 
 //  ====================================================================================================================
