@@ -21,6 +21,12 @@ union Waypoint {
   uint32 u32All;
 };
 
+/// Compatified struct typically representing a tile location on the map.
+struct PackedLocation {
+  uint16 x;
+  uint16 y;
+};
+
 /// Compactified struct typically representing a rectangular tile area on the map.
 struct PackedMapRect {
   uint16 x1;
@@ -61,6 +67,8 @@ public:
 
   constexpr Waypoint AsWaypoint(bool xCentered = true, bool yCentered = true) const
     { return { uint32(GetPixelX(xCentered)), uint32(GetPixelY(yCentered)) }; }
+
+  constexpr PackedLocation AsPacked() const { return { uint16(x), uint16(y) }; }
 
 public:
   int x;
