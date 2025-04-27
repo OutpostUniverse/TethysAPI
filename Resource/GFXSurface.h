@@ -47,7 +47,7 @@ public:
   virtual void  Draw(const RECT& rect);
   virtual void  Draw();
   virtual void  VF30(int, int, int);
-  
+
 public:
   int   field_04;
   int   field_08;

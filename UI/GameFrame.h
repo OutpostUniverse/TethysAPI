@@ -115,7 +115,7 @@ static_assert(sizeof(StatusBar) == 0xB0, "Incorrect StatusBar size.");
 /// Template type to allow returning different variations of this struct (e.g. bitmap handles, resource IDs, etc)
 template <typename T>
 struct UIFrameImages {
-  // ** TODO: this whole thing is probably just a member of Dans_RULE_UIFrame.
+  // ** TODO: this whole thing is probably just a member of GameFrame.
   static UIFrameImages<T>* Get() { return OP2Mem<0x4D6990, UIFrameImages<T>*>(); }
 
   T upperLeftCorner;

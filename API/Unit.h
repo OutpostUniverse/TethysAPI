@@ -148,7 +148,7 @@ public:
   int         GetActionTimer() const { return IsValid() ?  GetMapObject()->actionTimer_ : 0;                }
   bool        IsBusy()         const { return IsValid() && GetMapObject()->isBusy_;                         }
   ///@}
-  
+
   ///@{ Gets or sets the Unit's EMPed status.
   int  GetEMPTimer() const
     { return IsBuilding() ? GetMapObject<Building>()->timerEMP_ : IsVehicle() ? GetMapObject<Vehicle>()->timerEMP_ :0; }
@@ -224,7 +224,7 @@ public:
   void DoAttack(Location where);                                                  ///< Orders unit to attack the ground
   void DoGuard(Unit what);                                                        ///< [TankVehicle]
   void DoStandGround(Location where);                                             ///< [TankVehicle]
-  
+
   ///@{ Gets or sets 2x fire rate mode for this Unit (normally applied to Tigers).
   bool HasDoubleFireRate() const  { return IsLive() && HasFlag(MoFlagDoubleFireRate);       }
   void SetDoubleFireRate(bool on) {    if (IsLive()) { SetFlag(MoFlagDoubleFireRate, on); } }
@@ -257,7 +257,7 @@ public:
   ///@}
 
   bool GetLights() { return IsLive() && HasFlag(MoFlagVecHeadlights); }  ///< Vehicle's headlights are turned on?
-  
+
   void DoSetLights(bool on);                                                  ///< Turns vehicle's headlights on or off.
   void DoMove(Location where) { if (IsLive()) { const auto [x, y] = where.GetPixel(); GetMapObject()->CmdMove(x, y); } }
   void DoDock(Unit at)                                                        ///< Docks this Unit at a structure.

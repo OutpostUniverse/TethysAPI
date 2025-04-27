@@ -8,7 +8,7 @@
 /**
  ***********************************************************************************************************************
  * Mission DLLs should always include this header.
- * 
+ *
  * Mission DLLs are required to export mission description data, which can be done with either of the following macros:
  *   EXPORT_OP2_MULTIPLAYER_SCRIPT("Mission Name", missionType, numHumans, "map_file.map", "tech_file.txt"(, numAIs))
  *     ** OR **

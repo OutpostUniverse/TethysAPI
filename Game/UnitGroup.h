@@ -51,8 +51,8 @@ public:
 
 class UnitGroup : public OP2Class<UnitGroup> {
 public:
-  int        GetNumUnits() const { return Thunk<0x41A9A0, &$::GetNumUnits>();  }
-  const int* GetUnitIDs()  const { return Thunk<0x41A9B0, &$::GetUnitIDs>(); }
+  int        GetNumUnits() const { return Thunk<0x41A9A0, &$::GetNumUnits>(); }
+  const int* GetUnitIDs()  const { return Thunk<0x41A9B0, &$::GetUnitIDs>();  }
 
   void* WriteUnitIDs(void* pUnitIDBuffer, uint32 filterMoFlags = UINT32_MAX)
     { return Thunk<0x41A900, &$::WriteUnitIDs>(pUnitIDBuffer, filterMoFlags); }

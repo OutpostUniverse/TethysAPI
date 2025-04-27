@@ -69,7 +69,7 @@ struct TechInfo : public OP2Class<TechInfo> {
   TechLabType lab;            ///< Lab type research is done at.
 
   PlayerBitmask playerHasTechMask;  ///< Bitmask of which players have this technology.
-  
+
   int numUpgrades;        ///< Number of unit upgrades it performs ("UNIT_PROP"s in tech file).
   int numRequiredTechs;   ///< Number of other techs required to research this one ("REQUIRES"s in tech file).
 

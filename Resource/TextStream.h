@@ -25,7 +25,7 @@ public:
 
 public:
   StreamIO* pStream_;
-  int       position_; 
+  int       position_;
 };
 
 

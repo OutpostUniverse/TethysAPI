@@ -329,11 +329,11 @@ public:
   void F1()                                    override { return Thunk<0x464D00, &$::F1>();                           }
   void F2(int a)                               override { return Thunk<0x464D40, &$::F2>(a);                          }
   void UpdateListSelection(int itemIndex)      override { return Thunk<0x464D60, &$::UpdateListSelection>(itemIndex); }
-  
+
   // ** TODO
   virtual void F3() { }  // 0x464C20
   virtual void F4() { }  // 0x464DA0
-  
+
 #define OP2_FACTORYREPORTVIEW_VTBL($)  $(F3)  $(F4)
   DEFINE_VTBL_TYPE(OP2_FACTORYREPORTVIEW_VTBL, 0x4D55C8);
 

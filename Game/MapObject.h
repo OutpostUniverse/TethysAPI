@@ -97,6 +97,7 @@ enum class ActionType : uint8 {
 enum class CargoType : int {
   Any   = -1,
   Empty =  0,
+
   Food,
   CommonOre,
   RareOre,
@@ -105,6 +106,7 @@ enum class CargoType : int {
   CommonRubble,
   RareRubble,
   Spacecraft,    ///< Starship module/satellite;  MapID = truckCargoAmount
+
   Wreckage,      ///< Wreckage;  Tech ID = 8000 + truckCargoAmount
   GeneBank,
 
@@ -265,7 +267,7 @@ public:
 
   /// Helper function to access an element of the map object array by index.
   static MapObject* GetInstance(int index);
-  
+
 public:
   MapObject* pNext_;        ///< Next MapObject in list (sorted descending by pixelY_), or -1 if this MapObject is dead.
   MapObject* pPrev_;        ///< Previous MapObject in list.
@@ -697,7 +699,7 @@ public:
 };
 
 //  ====================================================================================================================
-/// Base class for all lab structures.  This is also the class mapped to MapID = 0 and mapMaxObject.
+/// Base class for all lab structures.  (This is also the class mapped to MapID = 0 and mapMaxObject.)
 class LabBuilding : public Building {
   using $ = LabBuilding;
 public:
@@ -1164,7 +1166,7 @@ public:
 
 public:
   int numTruckLoads_;  ///< Number of truck loads so far for ore yield peaking calculation.
-  
+
   OreYield mineYield_;    ///< Bar yield type (major impact on output).
   int      mineVariant_;  ///< Yield variant  (minor impact on output).
   OreType  mineType_;     ///< Common or rare ore.
@@ -1732,14 +1734,14 @@ public:
   void  OnSave()                            override { return Thunk<0x41CEE0, &$::OnSave>();                    }
   void  OnLoad()                            override { return Thunk<0x41CF40, &$::OnLoad>();                    }
   void  DrawSecondary(Viewport* pViewport)  override { return Thunk<0x41CFB0, &$::DrawSecondary>(pViewport);    }
-  void  Explode(ibool explode)              override { return Thunk<0x41C8F0, &$::Explode>(explode);           }
+  void  Explode(ibool explode)              override { return Thunk<0x41C8F0, &$::Explode>(explode);            }
   void  SetEnabled()                        override { return Thunk<0x41CA30, &$::SetEnabled>();                }
   void  ProcessDeath()                      override { return Thunk<0x41D320, &$::ProcessDeath>();              }
 
   virtual int  GetNumOccupiedBays() const  { return Thunk<0x41CAE0, &$::GetNumOccupiedBays>();    }
   virtual int  DoRepairs()                 { return Thunk<0x41CB50, &$::DoRepairs>();             }
   virtual void LoadUnloadBay(int bayIndex) { return Thunk<0x41C6F0, &$::LoadUnloadBay>(bayIndex); }
-  
+
 #define OP2_MO_GARAGE_VTBL($)  $(GetNumOccupiedBays)  $(DoRepairs)  $(LoadUnloadBay)
   DEFINE_VTBL_TYPE(OP2_MO_GARAGE_VTBL, 0x4CFCA0);
 
@@ -1786,7 +1788,7 @@ public:
 
   virtual void  Func_63(uint8 a, void* pB)        { return Thunk<0x423F70, &$::Func_63>(a, pB);            }
   virtual ibool IsInRange(int pixelX, int pixelY) { return Thunk<0x42D260, &$::IsInRange>(pixelX, pixelY); }
-  
+
 #define OP2_MO_GUARDPOST_VTBL($)  $(Func_63)  $(IsInRange)
   DEFINE_VTBL_TYPE(OP2_MO_GUARDPOST_VTBL, 0x4CFFB0);
 
@@ -1940,7 +1942,7 @@ public:
   void* Destroy(ibool freeMem = 0)          override { return Thunk<0x409580, &$::Destroy>(freeMem);            }
   void  DrawSecondary(Viewport* pViewport)  override { return Thunk<0x409840, &$::DrawSecondary>(pViewport);    }
   void  UpdateTotalCapacities(int a, int b) override { return Thunk<0x409B60, &$::UpdateTotalCapacities>(a, b); }
-  
+
   DEFINE_VTBL_GETTER(0x4CF6F8);
 
   // Object size = 0x60
@@ -1992,7 +1994,7 @@ public:
   Type* GetType()                     const override { return Thunk<0x449110, &$::GetType>();                   }
   void* Destroy(ibool freeMem = 0)          override { return Thunk<0x442AE0, &$::Destroy>(freeMem);            }
   void  UpdateTotalCapacities(int a, int b) override { return Thunk<0x449120, &$::UpdateTotalCapacities>(a, b); }
-  
+
   DEFINE_VTBL_GETTER(0x4D19D0);
 
   // Object size = 0x60
@@ -2368,7 +2370,7 @@ public:
   virtual void SetCargoToLoad(CargoType cargoType, int amount, ibool a)
     { return Thunk<0x406630, &$::SetCargoToLoad>(cargoType, amount, a); }
   virtual void TransferCargo() { return Thunk<0x406710, &$::TransferCargo>(); }
-  
+
 #define OP2_MO_CARGOTRUCK_VTBL($)  $(SetCargoToLoad)  $(TransferCargo)
   DEFINE_VTBL_TYPE(OP2_MO_CARGOTRUCK_VTBL, 0x4CF4A8);
 

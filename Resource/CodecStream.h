@@ -226,8 +226,8 @@ public:
 
 public:
   StreamIO* wrappedStream_;
-  uint8     charToRepeat_; 
-  uint8     numTimesToRepeat_; 
+  uint8     charToRepeat_;
+  uint8     numTimesToRepeat_;
   uint8     chunkSize_;         ///< Raw data copy size
   uint8     field_13[0x7B];
   size_t    streamPosition_;
@@ -250,7 +250,7 @@ public:
   ibool  Write(size_t size, const void* pBuffer) override { return Thunk<0x4B0B00, &$::Write>(size, pBuffer); }
   ibool  Read(size_t size, void* pBuffer)        override { return Thunk<0x4B0CD0, &$::Read>(size, pBuffer);  }
   void   Close()                                 override { return Thunk<0x4B0910, &$::Close>();              }
-  
+
   DEFINE_VTBL_GETTER(0x4D7694);
 
   void Init()                                   { return Thunk<0x4B08A0, &$::Init>();                         }
