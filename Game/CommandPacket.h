@@ -210,6 +210,16 @@ struct MoveCommand : public SimpleCommand {
   Waypoint waypoint[1];  ///< In pixels
 };
 
+/// Used with ctMoCargoRoute
+struct CargoRouteCommand : public SimpleCommand {
+  uint16   numWaypoints;          ///< 3
+  Waypoint waypoint[3];           ///< In pixels.  Mine -> smelter -> mine again
+  uint16   mineWaypointIndex;
+  uint16   smelterWaypointIndex;
+  uint16   mineUnitId;
+  uint16   smelterUnitId;
+};
+
 /// Used with ctMoDoze
 struct DozeCommand : public SimpleCommand {
   PackedMapRect rect;  ///< In tiles (inclusive)
@@ -368,6 +378,7 @@ union CommandPacketData {
   CreateCommand           create;
   LightToggleCommand      lightToggle;
   AttackCommand           attack;
+  CargoRouteCommand       cargoRoute;
   GameOptCommand          gameOpt;
   ChatCommand             chat;
   QuitCommand             quit;
@@ -431,7 +442,7 @@ OP2_CMD_PACKET_DATA_FOR_DEF(CommandType::LightToggle,     LightToggleCommand);
 OP2_CMD_PACKET_DATA_FOR_DEF(CommandType::Attack,          AttackCommand);
 OP2_CMD_PACKET_DATA_FOR_DEF(CommandType::Guard,           AttackCommand);
 OP2_CMD_PACKET_DATA_FOR_DEF(CommandType::StandGround,     MoveCommand);
-OP2_CMD_PACKET_DATA_FOR_DEF(CommandType::CargoRoute,      MoveCommand);
+OP2_CMD_PACKET_DATA_FOR_DEF(CommandType::CargoRoute,      CargoRouteCommand);
 OP2_CMD_PACKET_DATA_FOR_DEF(CommandType::Patrol,          MoveCommand);
 OP2_CMD_PACKET_DATA_FOR_DEF(CommandType::Poof,            SingleUnitSimpleCommand);
 OP2_CMD_PACKET_DATA_FOR_DEF(CommandType::GameOpt,         GameOptCommand);

@@ -265,15 +265,14 @@ public:
   void DoDockAtGarage(Unit garage);                                           ///< Docks this Unit at a Garage.
   void DoBuild(Location  bottomRight);                                        ///< [ConVec] Build a structure.
   void DoDeploy(Location center);                                             ///< [Robo-Miner, GeoCon] Deploy building.
-  void DoDismantle(Unit what);                                                ///< [ConVec] Dismantle a structure.
-  void DoRepair(Unit    what)                                                 ///< Repair a structure or vehicle.
-    { if (IsLive()) { GetMapObject()->CmdRepair(what.id_); }    }
-  void DoReprogram(Unit what)                                                 ///< [Spider] Reprogram a vehicle.
-    { if (IsLive()) { GetMapObject()->CmdReprogram(what.id_); } }
+  void DoDismantle(Unit what) { DoRepairHelper<CommandType::Dismantle>(what); } ///< [ConVec] Dismantle a structure.
+  void DoRepair(Unit    what) { DoRepairHelper<CommandType::RepairObj>(what); } ///< Repair a structure or vehicle.
+  void DoReprogram(Unit what) { DoRepairHelper<CommandType::Reprogram>(what); } ///< [Spider] Reprogram a vehicle.
   void DoBuildWall(MapID tubeWallType, MapRect area);                         ///< [Earthworker] Build walls in an area.
   void DoRemoveWall(MapRect area);                                            ///< [Earthworker] Remove walls in an area
   void DoDoze(MapRect area);                                                  ///< [Robo-Dozer]  Bulldoze an area.
-  void DoSalvage(MapRect area, Unit gorf);                                    ///< [Cargo Truck] Salvage rubble.
+  void DoMiningRoute(Unit mine, Unit smelter);                                ///< [Cargo Truck] Mine <-> Smelter route.
+  void DoSalvage(MapRect  area, Unit gorf);                                   ///< [Cargo Truck] Salvage rubble.
   void DoDumpCargo()   { if (IsLive()) { GetMapObject()->CmdDumpCargo(); } }  ///< [Cargo Truck] Dispose of cargo.
   void DoLoadCargo()   { DoSimpleCommand(CommandType::LoadCargo);          }  ///< [Cargo Truck] Load truck cargo.
   void DoUnloadCargo() { DoSimpleCommand(CommandType::UnloadCargo);        }  ///< [Cargo Truck] Unload truck cargo.
@@ -360,6 +359,14 @@ public:
 protected:
   bool ProcessCommandPacket(const CommandPacket& packet) const
     { auto*const p = GameImpl::GetInstance()->GetPlayer(GetOwner());  return p && p->ProcessCommandPacket(packet); }
+
+  template <CommandType Cmd>  // CommandType::RepairObj, Reprogram, Dismantle
+  void DoRepairHelper(Unit what);
+
+  // ** TODO clean up DoLaunch using this
+  using BldEnableRestoreState = std::pair<uint32, int16>;  // flags, damage
+  BldEnableRestoreState ForceEnable(bool on = true);
+  void ResetForceEnable(const BldEnableRestoreState& state);
 
 public:
   int id_;
@@ -582,15 +589,40 @@ inline void Unit::DoRemoveWall(
 }
 
 // =====================================================================================================================
-inline void Unit::DoDismantle(
+template <CommandType Cmd>
+void Unit::DoRepairHelper(
   Unit what)
 {
   if (IsLive() && what.IsLive()) {
-    CommandPacket packet = { CommandType::Dismantle, sizeof(RepairCommand) };
+    CommandPacket packet = { Cmd, sizeof(RepairCommand) };
     packet.data.repair.numUnits  = 1;
     packet.data.repair.unitID[0] = id_;
     packet.data.repair.unknown1  = 0;
     packet.data.repair.target    = { uint16(what.id_), UINT16_MAX };
+    ProcessCommandPacket(packet);
+  }
+}
+
+// =====================================================================================================================
+inline void Unit::DoMiningRoute(
+  Unit mine,
+  Unit smelter)
+{
+  if (IsLive() && mine.IsLive() && smelter.IsLive()) {
+    CommandPacket packet = { CommandType::CargoRoute, sizeof(CargoRouteCommand) };
+    packet.data.cargoRoute.numUnits  = id_;
+    packet.data.cargoRoute.unitID[1] = id_;
+
+    packet.data.cargoRoute.numWaypoints         = 3;
+    packet.data.cargoRoute.waypoint[0]          = mine.GetDockLocation().AsWaypoint();
+    packet.data.cargoRoute.waypoint[1]          = smelter.GetDockLocation().AsWaypoint();
+    packet.data.cargoRoute.waypoint[2]          = mine.GetDockLocation().AsWaypoint();
+    packet.data.cargoRoute.mineWaypointIndex    = 0;
+    packet.data.cargoRoute.smelterWaypointIndex = 1;
+
+    packet.data.cargoRoute.mineUnitId    = mine.GetID();
+    packet.data.cargoRoute.smelterUnitId = smelter.GetID();
+
     ProcessCommandPacket(packet);
   }
 }
@@ -635,6 +667,8 @@ inline void Unit::DoLaunch(
   bool     forceEnable)
 {
   if (IsLive()) {
+    // ForceEnable requires us to force off all disable flags, DoLaunch, then set them back.
+    // ** TODO Can this be done in a better way?
     constexpr uint32 SetMask   = (MoFlagBldActive | MoFlagBldCmdCenterConnected | MoFlagBldEnabledPower |
                                   MoFlagBldEnabledWorkers | MoFlagBldEnabledScientists);
     constexpr uint32 UnsetMask = MoFlagEMPed | MoFlagBldInfected;
