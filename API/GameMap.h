@@ -115,4 +115,7 @@ public:
   uint8 field_00;
 };
 
+/// Translates in-game map (x, y) coordinates to real map coordinates.  Convenience alias for GameMap::At().
+inline Location At(int x, int y) { return GameMap::At(x, y); }
+
 } // Tethys::TethysAPI
