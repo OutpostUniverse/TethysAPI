@@ -17,21 +17,27 @@ namespace Tethys::TethysAPI {
 
 class UnitBlock;
 
+// =====================================================================================================================
 /// Iterates over units in a ScGroup (FightGroup, MiningGroup, BuildingGroup).
 class GroupIterator : public TethysImpl::UnitIteratorBase {
 public:
   explicit GroupIterator(const ScGroupImpl::UnitNode* pNode = nullptr) : pNode_(pNode) { }
+
   GroupIterator& operator++()    { pNode_ = (pNode_ != nullptr) ? pNode_->pNext : nullptr;  return *this; }
   GroupIterator  operator++(int) { auto old = *this;  operator++();  return old; }
+
   bool operator==(GroupIterator other) const { return pNode_ == other.pNode_; }
   bool operator!=(GroupIterator other) const { return !(*this == other);      }
+
   operator bool()  const { return (pNode_ != nullptr); }
+
   Unit operator*() const { return Unit(pNode_->pUnit); }
 
 private:
   const ScGroupImpl::UnitNode* pNode_;
 };
 
+// =====================================================================================================================
 /// Exported interface for AI unit groups (wraps ScGroupImpl).
 class ScGroup : public ScStub {
   using $ = ScGroup;
@@ -42,6 +48,9 @@ public:
   const auto* GetImpl() const { return IsValid() ? ScGroupImpl::GetInstance(id_) : nullptr; }
 
   /// Sets this ScGroup to auto-delete when all units are dead.
+  /// If you want this specific group's type, its orders, etc. to be preserved even when all its current units are dead,
+  /// then leave auto-delete off.  That way you can add new units to it to resume the group's orders.
+  /// If you're using script (or Pinwheel) to spawn temporary ScGroups, then consider enabling auto-delete.
   void SetDeleteWhenEmpty(ibool state) { return Thunk<0x479B80, &$::SetDeleteWhenEmpty>(state); }
 
   ///@{ Adds or removes units to/from the ScGroup.
@@ -83,6 +92,7 @@ public:
 };
 
 
+// =====================================================================================================================
 /// Exported interface for AI construction unit groups (wraps BuildingGroupImpl).
 class BuildingGroup : public ScGroup {
   using $ = BuildingGroup;
@@ -115,6 +125,7 @@ public:
 };
 
 
+// =====================================================================================================================
 /// Exported interface for AI mining unit groups (wraps MiningGroupImpl).
 class MiningGroup : public ScGroup {
 public:
@@ -131,6 +142,7 @@ public:
 };
 
 
+// =====================================================================================================================
 /// Exported interface for AI combat unit groups (wraps FightGroupImpl).
 class FightGroup : public ScGroup {
   using $ = FightGroup;
@@ -165,6 +177,32 @@ public:
 };
 
 
+struct MrRec;
+struct PWDef;
+
+// =====================================================================================================================
+/// Exported interface for AI strategy manager.  Can spawn ScGroups.
+class Pinwheel : public ScStub {
+  using $ = Pinwheel;
+public:
+  using ScStub::ScStub;
+
+  void SendWaveNow(int a)                      { return Thunk<0x47AA40, &$::SendWaveNow>(a);                  }
+  void SetWavePeriod(int minTime, int maxTime) { return Thunk<0x47A970, &$::SetWavePeriod>(minTime, maxTime); }
+
+  void SetGuardComp(int  minUnits, int maxUnits, TethysUtil::Span<MrRec> mrRecList)
+    { return Thunk<0x47A9E0, void(int, int, const MrRec*)>(minUnits, maxUnits, mrRecList.data()); }
+  void SetAttackComp(int minUnits, int maxUnits, TethysUtil::Span<MrRec> mrRecList)
+    { return Thunk<0x47A9B0, void(int, int, const MrRec*)>(minUnits, maxUnits, mrRecList.data()); }
+  void SetSapperComp(int minUnits, int maxUnits, TethysUtil::Span<MrRec> mrRecList)
+    { return Thunk<0x47AA10, void(int, int, const MrRec*)>(minUnits, maxUnits, mrRecList.data()); }
+
+  void SetAttackFraction(int attackFraction)        { return Thunk<0x47AA60, &$::SetAttackFraction>(attackFraction); }
+  void SetContactDelay(int delay)                   { return Thunk<0x47A990, &$::SetContactDelay>(delay);            }
+  void SetNoRange(int a, int b)                     { return Thunk<0x47A950, &$::SetNoRange>(a, b);                  }
+  void SetPoints(TethysUtil::Span<PWDef> pwDefList) { return Thunk<0x47A8B0, void(const PWDef*)>(pwDefList.data());  }
+};
+
 struct MrRec {
   MrRec(MapID unit, MapID weapon = MapID::None, int u1 = 0, int u2 = 0)
     : unitType(unit), weaponType(weapon), unknown1(u1), unknown2(u2) {}
@@ -194,29 +232,6 @@ struct PWDef {
   int time1;
   int time2;
   int time3;
-};
-
-
-/// Exported interface for AI strategy manager.  Can spawn ScGroups.
-class Pinwheel : public ScStub {
-  using $ = Pinwheel;
-public:
-  using ScStub::ScStub;
-
-  void SendWaveNow(int a)                      { return Thunk<0x47AA40, &$::SendWaveNow>(a);                  }
-  void SetWavePeriod(int minTime, int maxTime) { return Thunk<0x47A970, &$::SetWavePeriod>(minTime, maxTime); }
-
-  void SetGuardComp(int  minUnits, int maxUnits, TethysUtil::Span<MrRec> mrRecList)
-    { return Thunk<0x47A9E0, void(int, int, const MrRec*)>(minUnits, maxUnits, mrRecList.data()); }
-  void SetAttackComp(int minUnits, int maxUnits, TethysUtil::Span<MrRec> mrRecList)
-    { return Thunk<0x47A9B0, void(int, int, const MrRec*)>(minUnits, maxUnits, mrRecList.data()); }
-  void SetSapperComp(int minUnits, int maxUnits, TethysUtil::Span<MrRec> mrRecList)
-    { return Thunk<0x47AA10, void(int, int, const MrRec*)>(minUnits, maxUnits, mrRecList.data()); }
-
-  void SetAttackFraction(int attackFraction)        { return Thunk<0x47AA60, &$::SetAttackFraction>(attackFraction); }
-  void SetContactDelay(int delay)                   { return Thunk<0x47A990, &$::SetContactDelay>(delay);            }
-  void SetNoRange(int a, int b)                     { return Thunk<0x47A950, &$::SetNoRange>(a, b);                  }
-  void SetPoints(TethysUtil::Span<PWDef> pwDefList) { return Thunk<0x47A8B0, void(const PWDef*)>(pwDefList.data());  }
 };
 
 } // Tethys::TethysAPI
