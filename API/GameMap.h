@@ -50,8 +50,10 @@ public:
   /// Gets the daylight level at the specified map tile coordinates.
   static int GetLightLevel(Location where, bool forSprite = false){ return GetImpl()->GetLightLevel(where, forSprite); }
 
-  /// Damages a wall.  Damage state change is based on RNG.
-  static void DamageWall(Location where, int damage) { GetImpl()->DamageWall(where.x, where.y, damage); }
+  ///@{ Damages or destroys a wall.  Damage state change is based on RNG.
+  static void DamageWall(Location  where, int damage) { GetImpl()->DamageWall(where.x, where.y, damage); }
+  static void DestroyWall(Location where)             { GetImpl()->DestroyWall(where.x, where.y);        }
+  ///@}
 
   ///@{ Returns the map dimensions.
   static int GetWidth()  { return GetPaddedWidth() / ((GetPaddingWidth() != 0) ? 2 : 1); }
