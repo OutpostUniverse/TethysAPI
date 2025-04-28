@@ -261,22 +261,22 @@ union GlobalUnitStats {
   struct {
     uint16 width;
     uint16 height;
-    uint32 flags;
+    uint32 flags;  ///< @see BuildingFlags
 
-    int edenAnimationIndex[10];
-    int plyAnimationIndex[10];
+    int edenAnimationIndex[10];  ///< As defined in op2art.prt - @see SpriteManager.h
+    int plyAnimationIndex[10];   ///< As defined in op2art.prt - @see SpriteManager.h
 
     uint8 resPriority;
     uint8 rareRubble;
     uint8 unk4;
     uint8 commonRubble;
 
-    uint8 edenDockLocation;
-    uint8 plyDockLocation;
+    uint8 edenDockLocation;  // ** TODO enum 0-3?
+    uint8 plyDockLocation;   // ** TODO enum 0-3?
   } building;
 
   struct {
-    uint16 flags;
+    uint16 flags;  ///< @see VehicleFlags
   } vehicle;
 
   struct {
