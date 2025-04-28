@@ -95,20 +95,20 @@ public:
     { SetTile(where, GetImpl()->pTerrainManager_->GetRareRubbleTileIndex(GetTile(where))); }
 
   ///@{ Create lava flow animations on the side of a volcano (only valid for default tileset).
-  static void CreateLavaFlowSW(Location where) { SetLavaFlowHelper(where, 0x447, 0x45E, 0x453, 0x469);           }
-  static void CreateLavaFlowS(Location  where) { SetTile(where, 0x474);  SetTile(where + Location(0, 1), 0x47E); }
-  static void CreateLavaFlowSE(Location where) { SetLavaFlowHelper(where, 0x489, 0x4A0, 0x494, 0x4AB);           }
-  static void FreezeLavaFlowSW(Location where) { SetLavaFlowHelper(where, 0x44F, 0x465, 0x45A, 0x470);           }
-  static void FreezeLavaFlowS(Location  where) { SetTile(where, 0x47B);  SetTile(where + Location(0, 1), 0x486); }
-  static void FreezeLavaFlowSE(Location where) { SetLavaFlowHelper(where, 0x490, 0x4A8, 0x49C, 0x4B2);           }
+  static void CreateLavaFlowSW(Location where) { SetLavaFlowHelper(where, 0x447, 0x45E, 0x453, 0x469); }
+  static void CreateLavaFlowS(Location  where) { SetLavaFlowHelper(where, 0x474, 0x47E);               }
+  static void CreateLavaFlowSE(Location where) { SetLavaFlowHelper(where, 0x489, 0x4A0, 0x494, 0x4AB); }
+  static void FreezeLavaFlowSW(Location where) { SetLavaFlowHelper(where, 0x44F, 0x465, 0x45A, 0x470); }
+  static void FreezeLavaFlowS(Location  where) { SetLavaFlowHelper(where, 0x47B, 0x486);               }
+  static void FreezeLavaFlowSE(Location where) { SetLavaFlowHelper(where, 0x490, 0x4A8, 0x49C, 0x4B2); }
   ///@}
 
 private:
-  static void SetLavaFlowHelper(Location where, int topLeft, int topRight, int bottomLeft, int bottomRight) {
-    SetTile(where,                  topLeft);
-    SetTile(where + Location(0, 1), topRight);
-    SetTile(where + Location(1, 0), bottomLeft);
-    SetTile(where + Location(1, 1), bottomRight);
+  static void SetLavaFlowHelper(Location where, int topLeft, int topRight, int bottomLeft = -1, int bottomRight = -1) {
+                             SetTile(where,                  topLeft);
+                             SetTile(where + Location(0, 1), topRight);
+    if (bottomLeft  != -1) { SetTile(where + Location(1, 0), bottomLeft);  }
+    if (bottomRight != -1) { SetTile(where + Location(1, 1), bottomRight); }
   }
 
 public:
