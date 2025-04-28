@@ -108,6 +108,7 @@ private:
 } // TethysAPI
 
 namespace TethysImpl {
+// =====================================================================================================================
 /// @internal  Base class for player unit enumerators (e.g. PlayerVehicleEnum, PlayerBuildingEnum, PlayerEntityEnum).
 class PlayerUnitEnumBase {
 public:
@@ -133,6 +134,7 @@ public:
   Iterator begin() { return Iterator(GameImpl::GetInstance()->GetPlayer(playerNum_)->pVehicleList_, type_); }
 };
 
+// =====================================================================================================================
 /// Enumerates all buildings (of the specified type) belonging to the specified player.
 class PlayerBuildingEnum : public TethysImpl::PlayerUnitEnumBase {
 public: 
@@ -140,6 +142,7 @@ public:
   Iterator begin() { return Iterator(GameImpl::GetInstance()->GetPlayer(playerNum_)->pBuildingList_, type_); }
 };
 
+// =====================================================================================================================
 /// Enumerates all entities (of the specified type) belonging to the specified player.
 class PlayerEntityEnum : public TethysImpl::PlayerUnitEnumBase {
 public:
@@ -148,6 +151,7 @@ public:
   Iterator begin() { return Iterator(GameImpl::GetInstance()->GetPlayer(playerNum_)->pEntityList_, type_); }
 };
 
+// =====================================================================================================================
 /// Enumerates all units within a given distance of a given location.
 class InRangeEnumerator : public OP2Class<InRangeEnumerator> {
 public:
@@ -170,6 +174,7 @@ private:
   int      maxTileDistance_;
 };
 
+// =====================================================================================================================
 /// Eenumerates all units within a given rectangle.
 class InRectEnumerator : public OP2Class<InRectEnumerator> {
 public:
@@ -189,6 +194,7 @@ private:
   MapRect rect_;
 };
 
+// =====================================================================================================================
 /// Enumerates all units at a given location.
 class LocationEnumerator : public OP2Class<LocationEnumerator> {
 public:
@@ -208,6 +214,7 @@ private:
   Location location_;
 };
 
+// =====================================================================================================================
 /// Enumerates all units ordered by their distance to a given location.
 class ClosestEnumerator : public OP2Class<ClosestEnumerator> {
 public:

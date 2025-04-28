@@ -10,6 +10,7 @@ struct GameStartInfo;
 class  StreamIO;
 class  TextStream;
 
+// =====================================================================================================================
 /// "CATEGORY" values (for both items and upgrades to these items)
 enum class TechCategory : int {
   Free                =  0,  ///< Free technologies (and unavailable technologies)
@@ -39,6 +40,7 @@ enum class TechUpgradeType : int {
   FunctionResult = 2,  ///< 'FUNCTION_RESULT'
 };
 
+// =====================================================================================================================
 struct TechProperty {
   TechUpgradeType type;          ///< Type of upgrade.
   char*           pUpgradeType;  ///< String that follows the "UNIT_PROP"/etc. tag in the sheets.
@@ -50,12 +52,14 @@ struct TechProperty {
   };
 };
 
+// =====================================================================================================================
 struct TechUpgradeInfo {
   TechProperty* pType;     ///< Pointer to struct describing the type of upgrade.
   MapID         unitType;  ///< Type of unit this upgrade applies to.
   int           newValue;  ///< New value of property being upgraded.
 };
 
+// =====================================================================================================================
 struct TechInfo : public OP2Class<TechInfo> {
   ibool ParseTech(TextStream* pTechParser) { return Thunk<0x473A80, &$::ParseTech>(pTechParser); }
 
@@ -85,6 +89,7 @@ struct TechInfo : public OP2Class<TechInfo> {
 };
 
 
+// =====================================================================================================================
 /// Internal research manager class.
 class Research : public OP2Class<Research> {
 public:
@@ -145,6 +150,7 @@ public:
   int field_24;
 };
 
+/// Convenience alias for the Research singleton object.
 inline auto& g_research = *Research::GetInstance();
 
 } // Tethys

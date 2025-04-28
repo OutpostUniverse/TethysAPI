@@ -111,7 +111,7 @@ struct ModDesc {
 
   MissionType missionType;      ///< Campaign mission (positive values) or other mission type (negative values).
   int         numPlayers;       ///< Number of players (1-6), including AIs on single-player maps, but excluding
-                                ///  them on multiplayer maps;  @see AIModDescEx::numMultiplayerAISlots.
+                                ///  them on multiplayer maps;  @see ModDescEx::numMultiplayerAIs.
   int         maxTechLevel;     ///< Maximum tech level.  Set to 12 to enable all techs for standard tech trees.
   ibool       unitMission;      ///< Set to 1 to disable most reports.  Suitable for unit-only missions.
 };

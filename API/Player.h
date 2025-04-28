@@ -88,9 +88,9 @@ public:
   /// Gives all techs with techID <= (techLevel * 1000), and all free subsequent techs.
   void  SetTechLevel(int techLevel)            { Research::GetInstance()->SetTechLevel(id_, techLevel * 1000); }
 
+  bool IsAlly(int     playerNum) const { return IsValid() &&  GetImpl()->IsAlly(playerNum);         } ///< Fully allied?
   bool IsAlliedTo(int playerNum) const { return IsValid() && (GetImpl()->GetAlliedTo()[playerNum]); } ///< Allied to?
   bool IsAlliedBy(int playerNum) const { return IsValid() && (GetImpl()->alliedBy_[playerNum]);     } ///< Allied by?
-  bool IsAlly(int     playerNum) const { return IsValid() &&  GetImpl()->IsAlly(playerNum);         } ///< Fully allied?
 
   /// Allies with the specified player (one-way).
   void AllyWith(int         playerNum) { return Thunk<0x4774C0, &$::AllyWith>(playerNum);             }

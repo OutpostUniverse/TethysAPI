@@ -10,10 +10,12 @@
 namespace Tethys {
 
 class ScBase;
+class ScStubFactory;
 class StreamIO;
 class MapObject;
 namespace TethysAPI { struct OnTriggerArgs; }
 
+// =====================================================================================================================
 /// Internal class managing the ScStub list.
 class ScStubList : public OP2Class<ScStubList> {
 public:
@@ -57,19 +59,20 @@ public:
   ScBase* (FASTCALL* pfnCreateStub_)(void* pMemory);
 };
 
-
+// =====================================================================================================================
 /// Internal base class for mission objects such as triggers, groups, victory/failure conditions, etc.
 class ScBase : public OP2Class<ScBase> {
 public:
-  virtual void*          Destroy(ibool freeMem)     { return Thunk<0x424A60, &$::Destroy>(freeMem);   }
-  virtual ScStubFactory* GetScStubFactory()         { return Thunk<0x424A10, &$::GetScStubFactory>(); }
-  virtual void           Init()                     { return Thunk<0x424A20, &$::Init>();             }
-  virtual void           Enable()                   { return Thunk<0x424A30, &$::Enable>();           }
-  virtual void           Disable()                  { return Thunk<0x424A40, &$::Disable>();          }
-  virtual void           Save(StreamIO* pSavedGame) { return Thunk<0x47B5B0, &$::Save>(pSavedGame);   }
-  virtual ibool          Load(StreamIO* pSavedGame) { return Thunk<0x47B5E0, &$::Load>(pSavedGame);   }
-  virtual void           RaiseEvent()               { return Thunk<0x424A50, &$::RaiseEvent>();       }
-  virtual ibool          IsEnabled()                { return Thunk<0x47B620, &$::IsEnabled>();        }
+  using Factory = ScStubFactory;
+  virtual void*    Destroy(ibool freeMem)     { return Thunk<0x424A60, &$::Destroy>(freeMem);   }
+  virtual Factory* GetScStubFactory()         { return Thunk<0x424A10, &$::GetScStubFactory>(); }
+  virtual void     Init()                     { return Thunk<0x424A20, &$::Init>();             }
+  virtual void     Enable()                   { return Thunk<0x424A30, &$::Enable>();           }
+  virtual void     Disable()                  { return Thunk<0x424A40, &$::Disable>();          }
+  virtual void     Save(StreamIO* pSavedGame) { return Thunk<0x47B5B0, &$::Save>(pSavedGame);   }
+  virtual ibool    Load(StreamIO* pSavedGame) { return Thunk<0x47B5E0, &$::Load>(pSavedGame);   }
+  virtual void     RaiseEvent()               { return Thunk<0x424A50, &$::RaiseEvent>();       }
+  virtual ibool    IsEnabled()                { return Thunk<0x47B620, &$::IsEnabled>();        }
 
 #define OP2_SCBASE_VTBL($)  \
   $(Destroy)  $(GetScStubFactory)  $(Init)  $(Enable)  $(Disable)  $(Save)  $(Load)  $(RaiseEvent)  $(IsEnabled)
@@ -86,6 +89,7 @@ public:
 };
 
 
+// =====================================================================================================================
 /// Internal implementation class for entities from the mission DLL.
 class ScriptDataBlock : public ScBase {
   using $ = ScriptDataBlock;
@@ -108,6 +112,7 @@ public:
   void* pFuncAddress_;
 };
 
+// =====================================================================================================================
 /// Internal implementation class for mission DLL function references.
 class FuncReference : public ScriptDataBlock {
   using $ = FuncReference;
@@ -128,6 +133,8 @@ public:
 };
 
 /// Internal implementation class for triggers.
+// =====================================================================================================================
+/// Internal base implementation class for triggers.
 class TriggerImpl : public ScBase {
   using $ = TriggerImpl;
 public:
@@ -160,8 +167,10 @@ public:
   FuncReference* pFuncRef_;
 };
 
-// ** TODO TriggerImpl subclasses
+// =====================================================================================================================
+/// Internal implementation class for set triggers.
 
+// =====================================================================================================================
 /// Internal implementation class for victory conditions.
 class VictoryConditionImpl : public TriggerImpl {
   using $ = VictoryConditionImpl;
@@ -182,6 +191,7 @@ public:
 };
 
 
+// =====================================================================================================================
 class TargetCount {
 public:
   // ** TODO member functions
@@ -203,6 +213,7 @@ public:
 static_assert(sizeof(TargetCount) == 0x14, "Incorrect TargetCount size.");
 
 
+// =====================================================================================================================
 /// Internal implementation for ScGroups.
 class ScGroupImpl : public ScBase {
   using $ = ScGroupImpl;
@@ -253,6 +264,7 @@ public:
 };
 
 
+// =====================================================================================================================
 struct RecordedBuilding {
   MapRect buildingTileRect;
   MapID   buildingType;
@@ -293,6 +305,7 @@ struct RecordInfo {
   int  factoryBayIndex;         ///< TransferCargo related
 };
 
+// =====================================================================================================================
 /// Internal implementation for BuildingGroups.
 class BuildingGroupImpl : public ScGroupImpl {
 public:
@@ -314,6 +327,7 @@ public:
 };
 
 
+// =====================================================================================================================
 enum class CombatGroupObjective : int {
   GuardRect = 0,
   Patrol,
@@ -351,6 +365,7 @@ public:
 static_assert(sizeof(FightGroupImpl) == 0x3E8, "Incorrect CombatBase size.");
 
 
+// =====================================================================================================================
 /// Internal implementation for MineGroups.
 class MineGroupImpl : public ScGroupImpl {
 public:
@@ -371,6 +386,7 @@ public:
 };
 
 
+// =====================================================================================================================
 /// Internal implementation for Pinwheel.
 class ScStrategyImpl : public ScBase {
 public:
@@ -380,5 +396,7 @@ public:
 
   // ** TODO
 };
+
+// ** TODO More ScStubFactory subclasses
 
 } // Tethys

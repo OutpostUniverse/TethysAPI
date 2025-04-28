@@ -58,7 +58,7 @@ public:
   ibool HasFired(int playerNum) { return Thunk<0x478CC0, &$::HasFired>(playerNum); }  ///< @note Do not use AllPlayers.
 };
 
-
+// =====================================================================================================================
 /// Info passed to trigger callbacks.  (1.4.0+)
 struct OnTriggerArgs {
   size_t        structSize;       ///< Size of this structure.
