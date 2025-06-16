@@ -156,7 +156,8 @@ public:
 /// Macro that allows a class's virtual functions to be accessed via a struct of function pointers, allowing them to be
 /// hooked via Vtbl() (static) or Vfptr() (non-static).  Vfptr() also allows an object's vfptr to be reassigned.
 ///
-/// @note  Do not specify virtual function overrides.  It is assumed the visibility where the macro is used is public.
+/// @note  Do not specify virtual function overrides.  Assumes the visibility where the macro is used is public.
+///        Assumes oversize object return types are never used.
 ///
 /// Example:
 /// ========
@@ -168,11 +169,11 @@ public:
 ///   virtual bool  Func2() const        { ... }
 ///
 /// #define MYCLASS_VTBL($)  $(_DestroyVirtual)  $(Func1)  $(Func2)
-///   DEFINE_VTBL_TYPE(MYCLASS_VTBL);  // Or DEFINE_VTBL_TYPE(macro, address) to also define a static vtbl getter.
+///   TETHYS_DEFINE_VTBL_TYPE(MYCLASS_VTBL); // Or TETHYS_DEFINE_VTBL_TYPE(macro, addr) to also add a static vtbl getter
 /// };
 ///
 /// Expands to:
-/// ===========
+/// -----------
 /// class MyClass : public OP2Class<MyClass> {
 /// public:
 ///   virtual       ~MyClass()           { ... }
@@ -188,24 +189,24 @@ public:
 ///   VtblType*& Vfptr()       { return *reinterpret_cast<VtblType**>(this);      }
 ///   VtblType*  Vfptr() const { return *reinterpret_cast<VtblType*const*>(this); }
 ///
-///   // If you used DEFINE_VTBL_TYPE(macro, address):
+///   // If you used TETHYS_DEFINE_VTBL_TYPE(macro, address):
 ///   static VtblFuncs* Vtbl() { return OP2Mem<address, VtblType*>(); }
 /// }; */
-#define DEFINE_VTBL_TYPE(vtbl, ...)                                              \
+#define TETHYS_DEFINE_VTBL_TYPE(vtbl, ...)                                       \
   struct VtblType : public decltype(_GetBaseVtblType()) {                        \
-    vtbl(VTBL_GENERATE_PFN_DEFS_IMPL)                                            \
+    vtbl(TETHYS_VTBL_GENERATE_PFN_DEFS_IMPL)                                     \
   };                                                                             \
 protected:                                                                       \
   static constexpr VtblType _GetBaseVtblType();                                  \
 public:                                                                          \
   VtblType*& Vfptr()       { return *reinterpret_cast<VtblType**>(this);      }  \
   VtblType*  Vfptr() const { return *reinterpret_cast<VtblType*const*>(this); }  \
-  DEFINE_VTBL_GETTER(__VA_ARGS__)
-#define VTBL_GENERATE_PFN_DEFS_IMPL(method)  TethysImpl::PmfToPfnType<&$::method>  pfn##method;
+  TETHYS_DEFINE_VTBL_GETTER(__VA_ARGS__)
+#define TETHYS_VTBL_GENERATE_PFN_DEFS_IMPL(method)  TethysImpl::PmfToPfnType<&$::method>  pfn##method;
 
 /// Defines a static member function getting the class's vtbl.
-/// This can be used by itself if a base class has used DEFINE_VTBL_TYPE().
-#define DEFINE_VTBL_GETTER(...)  template <size_t Address = size_t{__VA_ARGS__}>  static auto Vtbl()  \
+/// This can be used by itself if a base class has used TETHYS_DEFINE_VTBL_TYPE().
+#define TETHYS_DEFINE_VTBL_GETTER(...)  template <size_t Address = size_t{__VA_ARGS__}>  static auto Vtbl()  \
   -> std::enable_if_t<Address != 0, VtblType*> { return OP2Mem<Address, VtblType*>(); }
 
 } // Tethys

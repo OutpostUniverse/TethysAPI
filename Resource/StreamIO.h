@@ -26,7 +26,7 @@ public:
   virtual void Close() { return Thunk<0x4AB3A0, &$::Close>(); }
 
 #define OP2_STREAMIO_VTBL($)  $(GetStatus)  $(Destroy)  $(Tell)  $(Seek)  $(F1)  $(Flush)  $(Write)  $(Read)  $(Close)
-  DEFINE_VTBL_TYPE(OP2_STREAMIO_VTBL, 0x4D74FC);
+  TETHYS_DEFINE_VTBL_TYPE(OP2_STREAMIO_VTBL, 0x4D74FC);
 
   ibool WriteString(const char* pString) { return OP2Thunk<0x49DB40, ibool FASTCALL($*, const char*)>(this, pString); }
   const char* ReadString()               { return    Thunk<0x49DBC0, &$::ReadString>();                               }
@@ -57,7 +57,7 @@ public:
   ibool  Read(size_t size, void* pBuffer)        override { return Thunk<0x4AB7D0, &$::Read>(size, pBuffer);  }
   void   Close()                                 override { return Thunk<0x4AB590, &$::Close>();              }
 
-  DEFINE_VTBL_GETTER(0x4D7524);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D7524);
 
   void SetOpenFileHandle(HANDLE hFile) { return Thunk<0x4AB550, &$::SetOpenFileHandle>(hFile); }
   int  OpenFile(const char* pFilename) { return Thunk<0x4AB5E0, &$::OpenFile>(pFilename);      }
@@ -95,7 +95,7 @@ public:
   ibool  Read(size_t size, void* pBuffer)        override { return Thunk<0x4ABD20, &$::Read>(size, pBuffer);  }
   void   Close()                                 override { return Thunk<0x4ABAF0, &$::Close>();              }
 
-  DEFINE_VTBL_GETTER(0x4D754C);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D754C);
 
   void SetOpenFileHandle(HANDLE hFile) { return Thunk<0x4ABAB0, &$::SetOpenFileHandle>(hFile); }
   int  OpenFile(const char* pFilename) { return Thunk<0x4ABB30, &$::OpenFile>(pFilename);      }
@@ -129,7 +129,7 @@ public:
   ibool  Read(size_t size, void* pBuffer)        override { return Thunk<0x4B1070, &$::Read>(size, pBuffer);  }
   void   Close()                                 override { return Thunk<0x4B0E40, &$::Close>();              }
 
-  DEFINE_VTBL_GETTER(0x4D76BC);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D76BC);
 
   void SetOpenFileHandle(HANDLE hFile) { return Thunk<0x4B0E00, &$::SetOpenFileHandle>(hFile); }
   int  OpenFile(const char* pFilename) { return Thunk<0x4B0E80, &$::OpenFile>(pFilename);      }
@@ -161,7 +161,7 @@ public:
   ibool  Read(size_t size, void* pBuffer)        override { return Thunk<0x4B0020, &$::Read>(size, pBuffer);  }
   void   Close()                                 override { return Thunk<0x4AFEA0, &$::Close>();              }
 
-  DEFINE_VTBL_GETTER(0x4D7644);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D7644);
 
   void SetBuffer(size_t size, void* pAddress) { return Thunk<0x4AFE80, &$::SetBuffer>(size, pAddress); }
   int  F2(int a)                              { return Thunk<0x4AFEC0, &$::F2>(a);                     }

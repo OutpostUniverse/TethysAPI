@@ -311,7 +311,7 @@ public:
   virtual MapObject* FindTarget() { return Thunk<0x4A7F20, &$::FindTarget>(); }
 
 #define OP2_MO_MAPOBJECTTYPE_VTBL($)  $(Create)  $(GetCodeName)  $(Save)  $(Load)  $(Init)  $(Process)  $(FindTarget)
-  DEFINE_VTBL_TYPE(OP2_MO_MAPOBJECTTYPE_VTBL, 0x4D46F0);
+  TETHYS_DEFINE_VTBL_TYPE(OP2_MO_MAPOBJECTTYPE_VTBL, 0x4D46F0);
 
   static MapObject* STDCALL AllocateMapObj(size_t sizeInBytes, int pixelX, int pixelY, int forceIndex = 0)
     { return OP2Thunk<0x439A10, &$::AllocateMapObj>(sizeInBytes, pixelX, pixelY, forceIndex); }
@@ -375,7 +375,7 @@ public:
 #define OP2_MO_MAPENTITYTYPE_VTBL($)                                                               \
   $(SelectGuardPostGraphic)  $(SelectTigerGraphic)  $(SelectPantherGraphic)  $(SelectLynxGraphic)  \
   $(GetMovementAimOffset)
-  DEFINE_VTBL_TYPE(OP2_MO_MAPENTITYTYPE_VTBL);
+  TETHYS_DEFINE_VTBL_TYPE(OP2_MO_MAPENTITYTYPE_VTBL);
 };
 
 
@@ -392,7 +392,7 @@ public:
   const char* GetCodeName() override { return Thunk<0x448570, &$::GetCodeName>(); }
   ibool       Init()        override { return Thunk<0x448580, &$::Init>();        }
 
-  DEFINE_VTBL_GETTER(0x4D2FB8);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D2FB8);
 };
 
 // =====================================================================================================================
@@ -406,7 +406,7 @@ public:
   const char* GetCodeName() override { return Thunk<0x449250, &$::GetCodeName>(); }
   ibool       Init()        override { return Thunk<0x449260, &$::Init>();        }
 
-  DEFINE_VTBL_GETTER(0x4D3218);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D3218);
 };
 
 // =====================================================================================================================
@@ -420,7 +420,7 @@ public:
   const char* GetCodeName() override { return Thunk<0x4475B0, &$::GetCodeName>(); }
   ibool       Init()        override { return Thunk<0x4475C0, &$::Init>();        }
 
-  DEFINE_VTBL_GETTER(0x4D23D0);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D23D0);
 };
 
 // =====================================================================================================================
@@ -434,7 +434,7 @@ public:
   const char* GetCodeName() override { return Thunk<0x447040, &$::GetCodeName>(); }
   ibool       Init()        override { return Thunk<0x447050, &$::Init>();        }
 
-  DEFINE_VTBL_GETTER(0x4D28A0);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D28A0);
 };
 
 // =====================================================================================================================
@@ -448,7 +448,7 @@ public:
   const char* GetCodeName() override { return Thunk<0x4483C0, &$::GetCodeName>(); }
   ibool       Init()        override { return Thunk<0x4483D0, &$::Init>();        }
 
-  DEFINE_VTBL_GETTER(0x4D1D10);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D1D10);
 };
 
 // =====================================================================================================================
@@ -462,7 +462,7 @@ public:
   const char* GetCodeName() override { return Thunk<0x447590, &$::GetCodeName>(); }
   ibool       Init()        override { return Thunk<0x405E60, &$::Init>();        }
 
-  DEFINE_VTBL_GETTER(0x4D0560);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D0560);
 };
 
 // =====================================================================================================================
@@ -475,7 +475,7 @@ public:
     { return Thunk<0x444BF0, &$::Create>(pixelX, pixelY, unitIndex); }
   const char* GetCodeName() override { return Thunk<0x449960, &$::GetCodeName>(); }
 
-  DEFINE_VTBL_GETTER(0x4D42C0);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D42C0);
 };
 
 // =====================================================================================================================
@@ -489,7 +489,7 @@ public:
   const char* GetCodeName() override { return Thunk<0x448C00, &$::GetCodeName>(); }
   ibool       Init()        override { return Thunk<0x448C10, &$::Init>();        }
 
-  DEFINE_VTBL_GETTER(0x4D1770);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D1770);
 };
 
 // =====================================================================================================================
@@ -502,7 +502,7 @@ public:
     { return Thunk<0x4448F0, &$::Create>(pixelX, pixelY, unitIndex); }
   const char* GetCodeName() override { return Thunk<0x4498A0, &$::GetCodeName>(); }
 
-  DEFINE_VTBL_GETTER(0x4D4140);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D4140);
 };
 
 // =====================================================================================================================
@@ -515,7 +515,7 @@ public:
     { return Thunk<0x444B30, &$::Create>(pixelX, pixelY, unitIndex); }
   const char* GetCodeName() override { return Thunk<0x449930, &$::GetCodeName>(); }
 
-  DEFINE_VTBL_GETTER(0x4D4260);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D4260);
 };
 
 // =====================================================================================================================
@@ -529,7 +529,7 @@ public:
   const char* GetCodeName() override { return Thunk<0x447E30, &$::GetCodeName>(); }
   ibool       Init()        override { return Thunk<0x447E40, &$::Init>();        }
 
-  DEFINE_VTBL_GETTER(0x4D1140);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D1140);
 };
 
 // =====================================================================================================================
@@ -543,7 +543,7 @@ public:
   const char* GetCodeName() override { return Thunk<0x449570, &$::GetCodeName>(); }
   ibool       Init()        override { return Thunk<0x449580, &$::Init>();        }
 
-  DEFINE_VTBL_GETTER(0x4D3338);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D3338);
 };
 
 // =====================================================================================================================
@@ -557,7 +557,7 @@ public:
   const char* GetCodeName() override { return Thunk<0x448260, &$::GetCodeName>(); }
   ibool       Init()        override { return Thunk<0x448270, &$::Init>();        }
 
-  DEFINE_VTBL_GETTER(0x4D1610);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D1610);
 };
 
 // =====================================================================================================================
@@ -571,7 +571,7 @@ public:
   const char* GetCodeName() override { return Thunk<0x4470E0, &$::GetCodeName>(); }
   ibool       Init()        override { return Thunk<0x4470F0, &$::Init>();        }
 
-  DEFINE_VTBL_GETTER(0x4D2AF0);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D2AF0);
 };
 
 // =====================================================================================================================
@@ -585,7 +585,7 @@ public:
   const char* GetCodeName() override { return Thunk<0x447660, &$::GetCodeName>(); }
   ibool       Init()        override { return Thunk<0x410C80, &$::Init>();        }
 
-  DEFINE_VTBL_GETTER(0x4D0580);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D0580);
 };
 
 // =====================================================================================================================
@@ -599,7 +599,7 @@ public:
   const char* GetCodeName() override { return Thunk<0x448190, &$::GetCodeName>(); }
   ibool       Init()        override { return Thunk<0x4481A0, &$::Init>();        }
 
-  DEFINE_VTBL_GETTER(0x4D23F0);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D23F0);
 };
 
 // =====================================================================================================================
@@ -613,7 +613,7 @@ public:
   const char* GetCodeName() override { return Thunk<0x448640, &$::GetCodeName>(); }
   ibool       Init()        override { return Thunk<0x448650, &$::Init>();        }
 
-  DEFINE_VTBL_GETTER(0x4D0DA8);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D0DA8);
 };
 
 // =====================================================================================================================
@@ -626,7 +626,7 @@ public:
     { return Thunk<0x4447F0, &$::Create>(pixelX, pixelY, unitIndex); }
   const char* GetCodeName() override { return Thunk<0x449860, &$::GetCodeName>(); }
 
-  DEFINE_VTBL_GETTER(0x4D40C0);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D40C0);
 };
 
 // =====================================================================================================================
@@ -639,7 +639,7 @@ public:
     { return Thunk<0x444D30, &$::Create>(pixelX, pixelY, unitIndex); }
   const char* GetCodeName() override { return Thunk<0x449990, &$::GetCodeName>(); }
 
-  DEFINE_VTBL_GETTER(0x4D4430);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D4430);
 };
 
 // =====================================================================================================================
@@ -652,7 +652,7 @@ public:
     { return Thunk<0x444BB0, &$::Create>(pixelX, pixelY, unitIndex); }
   const char* GetCodeName() override { return Thunk<0x449950, &$::GetCodeName>(); }
 
-  DEFINE_VTBL_GETTER(0x4D42A0);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D42A0);
 };
 
 // =====================================================================================================================
@@ -666,7 +666,7 @@ public:
   const char* GetCodeName() override { return Thunk<0x448A70, &$::GetCodeName>(); }
   ibool       Init()        override { return Thunk<0x448A80, &$::Init>();        }
 
-  DEFINE_VTBL_GETTER(0x4D0C38);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D0C38);
 };
 
 // =====================================================================================================================
@@ -679,7 +679,7 @@ public:
     { return Thunk<0x444B70, &$::Create>(pixelX, pixelY, unitIndex); }
   const char* GetCodeName() override { return Thunk<0x449940, &$::GetCodeName>(); }
 
-  DEFINE_VTBL_GETTER(0x4D4280);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D4280);
 };
 
 // =====================================================================================================================
@@ -693,7 +693,7 @@ public:
   const char* GetCodeName() override { return Thunk<0x448F60, &$::GetCodeName>(); }
   ibool       Init()        override { return Thunk<0x448F70, &$::Init>();        }
 
-  DEFINE_VTBL_GETTER(0x4D1650);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D1650);
 };
 
 // =====================================================================================================================
@@ -706,7 +706,7 @@ public:
     { return Thunk<0x444930, &$::Create>(pixelX, pixelY, unitIndex); }
   const char* GetCodeName() override { return Thunk<0x4498B0, &$::GetCodeName>(); }
 
-  DEFINE_VTBL_GETTER(0x4D4160);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D4160);
 };
 
 // =====================================================================================================================
@@ -719,7 +719,7 @@ public:
     { return Thunk<0x4448B0, &$::Create>(pixelX, pixelY, unitIndex); }
   const char* GetCodeName() override { return Thunk<0x449890, &$::GetCodeName>(); }
 
-  DEFINE_VTBL_GETTER(0x4D4120);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D4120);
 };
 
 // =====================================================================================================================
@@ -733,7 +733,7 @@ public:
   const char* GetCodeName() override { return Thunk<0x44A110, &$::GetCodeName>(); }
   ibool       Init()        override { return Thunk<0x44A120, &$::Init>();        }
 
-  DEFINE_VTBL_GETTER(0x4D2510);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D2510);
 };
 
 // =====================================================================================================================
@@ -747,7 +747,7 @@ public:
   const char* GetCodeName() override { return Thunk<0x447C60, &$::GetCodeName>(); }
   ibool       Init()        override { return Thunk<0x447C70, &$::Init>();        }
 
-  DEFINE_VTBL_GETTER(0x4D0AA8);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D0AA8);
 };
 
 // =====================================================================================================================
@@ -761,7 +761,7 @@ public:
   const char* GetCodeName() override { return Thunk<0x449D00, &$::GetCodeName>(); }
   ibool       Init()        override { return Thunk<0x449D10, &$::Init>();        }
 
-  DEFINE_VTBL_GETTER(0x4D2780);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D2780);
 };
 
 // =====================================================================================================================
@@ -775,7 +775,7 @@ public:
   const char* GetCodeName() override { return Thunk<0x449E70, &$::GetCodeName>(); }
   ibool       Init()        override { return Thunk<0x449E80, &$::Init>();        }
 
-  DEFINE_VTBL_GETTER(0x4D36B0);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D36B0);
 };
 
 // =====================================================================================================================
@@ -789,7 +789,7 @@ public:
   const char* GetCodeName() override { return Thunk<0x448110, &$::GetCodeName>(); }
   ibool       Init()        override { return Thunk<0x448120, &$::Init>();        }
 
-  DEFINE_VTBL_GETTER(0x4D14D0);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D14D0);
 };
 
 // =====================================================================================================================
@@ -802,7 +802,7 @@ public:
     { return Thunk<0x444970, &$::Create>(pixelX, pixelY, unitIndex); }
   const char* GetCodeName() override { return Thunk<0x4498C0, &$::GetCodeName>(); }
 
-  DEFINE_VTBL_GETTER(0x4D4180);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D4180);
 };
 
 // =====================================================================================================================
@@ -815,7 +815,7 @@ public:
     { return Thunk<0x444DB0, &$::Create>(pixelX, pixelY, unitIndex); }
   const char* GetCodeName() override { return Thunk<0x4499A0, &$::GetCodeName>(); }
 
-  DEFINE_VTBL_GETTER(0x4D44D8);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D44D8);
 };
 
 // =====================================================================================================================
@@ -828,7 +828,7 @@ public:
     { return Thunk<0x444870, &$::Create>(pixelX, pixelY, unitIndex); }
   const char* GetCodeName() override { return Thunk<0x449880, &$::GetCodeName>(); }
 
-  DEFINE_VTBL_GETTER(0x4D4100);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D4100);
 };
 
 // =====================================================================================================================
@@ -842,7 +842,7 @@ public:
   const char* GetCodeName() override { return Thunk<0x448020, &$::GetCodeName>(); }
   ibool       Init()        override { return Thunk<0x408960, &$::Init>();        }
 
-  DEFINE_VTBL_GETTER(0x4D1160);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D1160);
 };
 
 // =====================================================================================================================
@@ -856,7 +856,7 @@ public:
   const char* GetCodeName() override { return Thunk<0x448060, &$::GetCodeName>(); }
   ibool       Init()        override { return Thunk<0x448070, &$::Init>();        }
 
-  DEFINE_VTBL_GETTER(0x4D14F0);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D14F0);
 };
 
 // =====================================================================================================================
@@ -869,7 +869,7 @@ public:
     { return Thunk<0x444E30, &$::Create>(pixelX, pixelY, unitIndex); }
   const char* GetCodeName() override { return Thunk<0x4499C0, &$::GetCodeName>(); }
 
-  DEFINE_VTBL_GETTER(0x4D4518);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D4518);
 };
 
 // =====================================================================================================================
@@ -883,7 +883,7 @@ public:
   const char* GetCodeName() override { return Thunk<0x4476D0, &$::GetCodeName>(); }
   ibool       Init()        override { return Thunk<0x485630, &$::Init>();        }
 
-  DEFINE_VTBL_GETTER(0x4D0860);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D0860);
 };
 
 // =====================================================================================================================
@@ -897,7 +897,7 @@ public:
   const char* GetCodeName() override { return Thunk<0x448DA0, &$::GetCodeName>(); }
   ibool       Init()        override { return Thunk<0x448DB0, &$::Init>();        }
 
-  DEFINE_VTBL_GETTER(0x4D2530);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D2530);
 };
 
 // =====================================================================================================================
@@ -910,7 +910,7 @@ public:
     { return Thunk<0x441AE0, &$::Create>(pixelX, pixelY, unitIndex); }
   const char* GetCodeName() override { return Thunk<0x446E40, &$::GetCodeName>(); }
 
-  DEFINE_VTBL_GETTER(0x4D0540);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D0540);
 };
 
 // =====================================================================================================================
@@ -924,7 +924,7 @@ public:
   const char* GetCodeName() override { return Thunk<0x449AF0, &$::GetCodeName>(); }
   ibool       Init()        override { return Thunk<0x449B00, &$::Init>();        }
 
-  DEFINE_VTBL_GETTER(0x4D1E30);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D1E30);
 };
 
 // =====================================================================================================================
@@ -938,7 +938,7 @@ public:
   const char* GetCodeName() override { return Thunk<0x44A190, &$::GetCodeName>(); }
   ibool       Init()        override { return Thunk<0x44A1A0, &$::Init>();        }
 
-  DEFINE_VTBL_GETTER(0x4D2660);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D2660);
 };
 
 // =====================================================================================================================
@@ -952,7 +952,7 @@ public:
   const char* GetCodeName() override { return Thunk<0x44A070, &$::GetCodeName>(); }
   ibool       Init()        override { return Thunk<0x44A080, &$::Init>();        }
 
-  DEFINE_VTBL_GETTER(0x4D1890);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D1890);
 };
 
 // =====================================================================================================================
@@ -966,7 +966,7 @@ public:
   const char* GetCodeName() override { return Thunk<0x448040, &$::GetCodeName>(); }
   ibool       Init()        override { return Thunk<0x408960, &$::Init>();        }
 
-  DEFINE_VTBL_GETTER(0x4D1280);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D1280);
 };
 
 // =====================================================================================================================
@@ -980,7 +980,7 @@ public:
   const char* GetCodeName() override { return Thunk<0x449C00, &$::GetCodeName>(); }
   ibool       Init()        override { return Thunk<0x449C10, &$::Init>();        }
 
-  DEFINE_VTBL_GETTER(0x4D1F50);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D1F50);
 };
 
 // =====================================================================================================================
@@ -994,7 +994,7 @@ public:
   const char* GetCodeName() override { return Thunk<0x449A20, &$::GetCodeName>(); }
   ibool       Init()        override { return Thunk<0x449A30, &$::Init>();        }
 
-  DEFINE_VTBL_GETTER(0x4D2FD8);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D2FD8);
 };
 
 // =====================================================================================================================
@@ -1007,7 +1007,7 @@ public:
     { return Thunk<0x444A70, &$::Create>(pixelX, pixelY, unitIndex); }
   const char* GetCodeName() override { return Thunk<0x449900, &$::GetCodeName>(); }
 
-  DEFINE_VTBL_GETTER(0x4D4200);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D4200);
 };
 
 // =====================================================================================================================
@@ -1021,7 +1021,7 @@ public:
   const char* GetCodeName() override { return Thunk<0x4476B0, &$::GetCodeName>(); }
   ibool       Init()        override { return Thunk<0x485810, &$::Init>();        }
 
-  DEFINE_VTBL_GETTER(0x4D0918);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D0918);
 };
 
 // =====================================================================================================================
@@ -1034,7 +1034,7 @@ public:
     { return Thunk<0x444AB0, &$::Create>(pixelX, pixelY, unitIndex); }
   const char* GetCodeName() override { return Thunk<0x449910, &$::GetCodeName>(); }
 
-  DEFINE_VTBL_GETTER(0x4D4220);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D4220);
 };
 
 // =====================================================================================================================
@@ -1047,7 +1047,7 @@ public:
     { return Thunk<0x444AF0, &$::Create>(pixelX, pixelY, unitIndex); }
   const char* GetCodeName() override { return Thunk<0x449920, &$::GetCodeName>(); }
 
-  DEFINE_VTBL_GETTER(0x4D4240);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D4240);
 };
 
 // =====================================================================================================================
@@ -1061,7 +1061,7 @@ public:
   const char* GetCodeName() override { return Thunk<0x447EE0, &$::GetCodeName>(); }
   ibool       Init()        override { return Thunk<0x447EF0, &$::Init>();        }
 
-  DEFINE_VTBL_GETTER(0x4D13A0);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D13A0);
 };
 
 // =====================================================================================================================
@@ -1075,7 +1075,7 @@ public:
   const char* GetCodeName() override { return Thunk<0x449680, &$::GetCodeName>(); }
   ibool       Init()        override { return Thunk<0x449690, &$::Init>();        }
 
-  DEFINE_VTBL_GETTER(0x4D3590);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D3590);
 };
 
 // =====================================================================================================================
@@ -1089,7 +1089,7 @@ public:
   const char* GetCodeName() override { return Thunk<0x448310, &$::GetCodeName>(); }
   ibool       Init()        override { return Thunk<0x448320, &$::Init>();        }
 
-  DEFINE_VTBL_GETTER(0x4D1630);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D1630);
 };
 
 // =====================================================================================================================
@@ -1103,7 +1103,7 @@ public:
   const char* GetCodeName() override { return Thunk<0x449340, &$::GetCodeName>(); }
   ibool       Init()        override { return Thunk<0x449350, &$::Init>();        }
 
-  DEFINE_VTBL_GETTER(0x4D2190);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D2190);
 };
 
 // =====================================================================================================================
@@ -1117,7 +1117,7 @@ public:
   const char* GetCodeName() override { return Thunk<0x449160, &$::GetCodeName>(); }
   ibool       Init()        override { return Thunk<0x449170, &$::Init>();        }
 
-  DEFINE_VTBL_GETTER(0x4D30F8);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D30F8);
 };
 
 // =====================================================================================================================
@@ -1131,7 +1131,7 @@ public:
   const char* GetCodeName() override { return Thunk<0x448870, &$::GetCodeName>(); }
   ibool       Init()        override { return Thunk<0x448880, &$::Init>();        }
 
-  DEFINE_VTBL_GETTER(0x4D0CF0);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D0CF0);
 };
 
 // =====================================================================================================================
@@ -1145,7 +1145,7 @@ public:
   const char* GetCodeName() override { return Thunk<0x449040, &$::GetCodeName>(); }
   ibool       Init()        override { return Thunk<0x449050, &$::Init>();        }
 
-  DEFINE_VTBL_GETTER(0x4D19B0);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D19B0);
 };
 
 // =====================================================================================================================
@@ -1158,7 +1158,7 @@ public:
     { return Thunk<0x444CB0, &$::Create>(pixelX, pixelY, unitIndex); }
   const char* GetCodeName() override { return Thunk<0x449980, &$::GetCodeName>(); }
 
-  DEFINE_VTBL_GETTER(0x4D4388);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D4388);
 };
 
 // =====================================================================================================================
@@ -1172,7 +1172,7 @@ public:
   const char* GetCodeName() override { return Thunk<0x4475A0, &$::GetCodeName>(); }
   ibool       Init()        override { return Thunk<0x409BA0, &$::Init>();        }
 
-  DEFINE_VTBL_GETTER(0x4D0C18);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D0C18);
 };
 
 // =====================================================================================================================
@@ -1186,7 +1186,7 @@ public:
   const char* GetCodeName() override { return Thunk<0x447AD0, &$::GetCodeName>(); }
   ibool       Init()        override { return Thunk<0x447AE0, &$::Init>();        }
 
-  DEFINE_VTBL_GETTER(0x4D09F0);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D09F0);
 };
 
 // =====================================================================================================================
@@ -1200,7 +1200,7 @@ public:
   const char* GetCodeName() override { return Thunk<0x447AC0, &$::GetCodeName>(); }
   ibool       Init()        override { return Thunk<0x4841D0, &$::Init>();        }
 
-  DEFINE_VTBL_GETTER(0x4D09D0);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D09D0);
 };
 
 // =====================================================================================================================
@@ -1214,7 +1214,7 @@ public:
   const char* GetCodeName() override { return Thunk<0x448CC0, &$::GetCodeName>(); }
   ibool       Init()        override { return Thunk<0x448CD0, &$::Init>();        }
 
-  DEFINE_VTBL_GETTER(0x4D1AD0);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D1AD0);
 };
 
 // =====================================================================================================================
@@ -1228,7 +1228,7 @@ public:
   const char* GetCodeName() override { return Thunk<0x447910, &$::GetCodeName>(); }
   ibool       Init()        override { return Thunk<0x447920, &$::Init>();        }
 
-  DEFINE_VTBL_GETTER(0x4D07A8);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D07A8);
 };
 
 // =====================================================================================================================
@@ -1242,7 +1242,7 @@ public:
   const char* GetCodeName() override { return Thunk<0x447AB0, &$::GetCodeName>(); }
   ibool       Init()        override { return Thunk<0x481780, &$::Init>();        }
 
-  DEFINE_VTBL_GETTER(0x4D4558);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D4558);
 };
 
 // =====================================================================================================================
@@ -1256,7 +1256,7 @@ public:
   const char* GetCodeName() override { return Thunk<0x447DD0, &$::GetCodeName>(); }
   ibool       Init()        override { return Thunk<0x474950, &$::Init>();        }
 
-  DEFINE_VTBL_GETTER(0x4D0B60);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D0B60);
 };
 
 // =====================================================================================================================
@@ -1269,7 +1269,7 @@ public:
     { return Thunk<0x4449B0, &$::Create>(pixelX, pixelY, unitIndex); }
   const char* GetCodeName() override { return Thunk<0x4498D0, &$::GetCodeName>(); }
 
-  DEFINE_VTBL_GETTER(0x4D41A0);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D41A0);
 };
 
 // =====================================================================================================================
@@ -1282,7 +1282,7 @@ public:
     { return Thunk<0x4449F0, &$::Create>(pixelX, pixelY, unitIndex); }
   const char* GetCodeName() override { return Thunk<0x4498E0, &$::GetCodeName>(); }
 
-  DEFINE_VTBL_GETTER(0x4D41C0);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D41C0);
 };
 
 // =====================================================================================================================
@@ -1296,7 +1296,7 @@ public:
   const char* GetCodeName() override { return Thunk<0x447E00, &$::GetCodeName>(); }
   ibool       Init()        override { return Thunk<0x474770, &$::Init>();        }
 
-  DEFINE_VTBL_GETTER(0x4D0E60);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D0E60);
 };
 
 // =====================================================================================================================
@@ -1310,7 +1310,7 @@ public:
   const char* GetCodeName() override { return Thunk<0x449FA0, &$::GetCodeName>(); }
   ibool       Init()        override { return Thunk<0x449FB0, &$::Init>();        }
 
-  DEFINE_VTBL_GETTER(0x4D2070);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D2070);
 };
 
 // =====================================================================================================================
@@ -1323,7 +1323,7 @@ public:
     { return Thunk<0x444830, &$::Create>(pixelX, pixelY, unitIndex); }
   const char* GetCodeName() override { return Thunk<0x449870, &$::GetCodeName>(); }
 
-  DEFINE_VTBL_GETTER(0x4D40E0);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D40E0);
 };
 
 // =====================================================================================================================
@@ -1337,7 +1337,7 @@ public:
   const char* GetCodeName() override { return Thunk<0x449780, &$::GetCodeName>(); }
   ibool       Init()        override { return Thunk<0x449790, &$::Init>();        }
 
-  DEFINE_VTBL_GETTER(0x4D3458);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D3458);
 };
 
 // =====================================================================================================================
@@ -1351,7 +1351,7 @@ public:
   const char* GetCodeName() override { return Thunk<0x4476F0, &$::GetCodeName>(); }
   ibool       Init()        override { return Thunk<0x447700, &$::Init>();        }
 
-  DEFINE_VTBL_GETTER(0x4D06F0);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D06F0);
 };
 
 // =====================================================================================================================
@@ -1365,7 +1365,7 @@ public:
   const char* GetCodeName() override { return Thunk<0x447AA0, &$::GetCodeName>(); }
   ibool       Init()        override { return Thunk<0x481710, &$::Init>();        }
 
-  DEFINE_VTBL_GETTER(0x4D4538);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D4538);
 };
 
 // =====================================================================================================================
@@ -1379,7 +1379,7 @@ public:
   const char* GetCodeName() override { return Thunk<0x448480, &$::GetCodeName>(); }
   ibool       Init()        override { return Thunk<0x448490, &$::Init>();        }
 
-  DEFINE_VTBL_GETTER(0x4D2E98);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D2E98);
 };
 
 // =====================================================================================================================
@@ -1392,7 +1392,7 @@ public:
     { return Thunk<0x444A30, &$::Create>(pixelX, pixelY, unitIndex); }
   const char* GetCodeName() override { return Thunk<0x4498F0, &$::GetCodeName>(); }
 
-  DEFINE_VTBL_GETTER(0x4D41E0);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D41E0);
 };
 
 // =====================================================================================================================
@@ -1406,7 +1406,7 @@ public:
   const char* GetCodeName() override { return Thunk<0x446EA0, &$::GetCodeName>(); }
   ibool       Init()        override { return Thunk<0x446EB0, &$::Init>();        }
 
-  DEFINE_VTBL_GETTER(0x4D2C28);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D2C28);
 };
 
 // =====================================================================================================================
@@ -1419,7 +1419,7 @@ public:
     { return Thunk<0x444C30, &$::Create>(pixelX, pixelY, unitIndex); }
   const char* GetCodeName() override { return Thunk<0x449970, &$::GetCodeName>(); }
 
-  DEFINE_VTBL_GETTER(0x4D42E0);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D42E0);
 };
 
 // =====================================================================================================================
@@ -1433,7 +1433,7 @@ public:
   const char* GetCodeName() override { return Thunk<0x447680, &$::GetCodeName>(); }
   ibool       Init()        override { return Thunk<0x4859C0, &$::Init>();        }
 
-  DEFINE_VTBL_GETTER(0x4D05A0);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D05A0);
 };
 
 // =====================================================================================================================
@@ -1447,7 +1447,7 @@ public:
   const char* GetCodeName() override { return Thunk<0x449DA0, &$::GetCodeName>(); }
   ibool       Init()        override { return Thunk<0x449DB0, &$::Init>();        }
 
-  DEFINE_VTBL_GETTER(0x4D37D0);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D37D0);
 };
 
 // =====================================================================================================================
@@ -1461,7 +1461,7 @@ public:
   const char* GetCodeName() override { return Thunk<0x449480, &$::GetCodeName>(); }
   ibool       Init()        override { return Thunk<0x449490, &$::Init>();        }
 
-  DEFINE_VTBL_GETTER(0x4D1BF0);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D1BF0);
 };
 
 // =====================================================================================================================
@@ -1475,7 +1475,7 @@ public:
   const char* GetCodeName() override { return Thunk<0x447FE0, &$::GetCodeName>(); }
   ibool       Init()        override { return Thunk<0x408960, &$::Init>();        }
 
-  DEFINE_VTBL_GETTER(0x4D0F00);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D0F00);
 };
 
 // =====================================================================================================================
@@ -1489,7 +1489,7 @@ public:
   const char* GetCodeName() override { return Thunk<0x448E40, &$::GetCodeName>(); }
   ibool       Init()        override { return Thunk<0x448E50, &$::Init>();        }
 
-  DEFINE_VTBL_GETTER(0x4D22B0);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D22B0);
 };
 
 // =====================================================================================================================
@@ -1503,7 +1503,7 @@ public:
   const char* GetCodeName() override { return Thunk<0x446F80, &$::GetCodeName>(); }
   ibool       Init()        override { return Thunk<0x446F90, &$::Init>();        }
 
-  DEFINE_VTBL_GETTER(0x4D2D60);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D2D60);
 };
 
 // =====================================================================================================================
@@ -1517,7 +1517,7 @@ public:
   const char* GetCodeName() override { return Thunk<0x448000, &$::GetCodeName>(); }
   ibool       Init()        override { return Thunk<0x408960, &$::Init>();        }
 
-  DEFINE_VTBL_GETTER(0x4D1020);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D1020);
 };
 
 // =====================================================================================================================
@@ -1530,7 +1530,7 @@ public:
     { return Thunk<0x444DF0, &$::Create>(pixelX, pixelY, unitIndex); }
   const char* GetCodeName() override { return Thunk<0x4499B0, &$::GetCodeName>(); }
 
-  DEFINE_VTBL_GETTER(0x4D44F8);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D44F8);
 };
 
 // =====================================================================================================================
@@ -1561,7 +1561,7 @@ public:
   int GetMovementAimOffset(int pixelDistance) override
     { return Thunk<0x4471E0, &$::GetMovementAimOffset>(pixelDistance); }
 
-  DEFINE_VTBL_GETTER(0x4D38F0);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D38F0);
 };
 
 // =====================================================================================================================
@@ -1575,7 +1575,7 @@ public:
   const char* GetCodeName() override { return Thunk<0x4473E0, &$::GetCodeName>(); }
   ibool       Init()        override { return Thunk<0x4A5700, &$::Init>();        }
 
-  DEFINE_VTBL_GETTER(0x4D4640);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D4640);
 };
 
 // =====================================================================================================================
@@ -1604,7 +1604,7 @@ public:
   int GetMovementAimOffset(int pixelDistance) override
     { return Thunk<0x447380, &$::GetMovementAimOffset>(pixelDistance); }
 
-  DEFINE_VTBL_GETTER(0x4D3C88);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D3C88);
 };
 
 // =====================================================================================================================
@@ -1618,7 +1618,7 @@ public:
   const char* GetCodeName() override { return Thunk<0x4473C0, &$::GetCodeName>(); }
   ibool       Init()        override { return Thunk<0x4A56B0, &$::Init>();        }
 
-  DEFINE_VTBL_GETTER(0x4D3BC0);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D3BC0);
 };
 
 // =====================================================================================================================
@@ -1632,7 +1632,7 @@ public:
   const char* GetCodeName() override { return Thunk<0x4474C0, &$::GetCodeName>(); }
   ibool       Init()        override { return Thunk<0x4A28E0, &$::Init>();        }
 
-  DEFINE_VTBL_GETTER(0x4D3D18);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D3D18);
 };
 
 // =====================================================================================================================
@@ -1663,7 +1663,7 @@ public:
   int GetMovementAimOffset(int pixelDistance) override
     { return Thunk<0x447210, &$::GetMovementAimOffset>(pixelDistance); }
 
-  DEFINE_VTBL_GETTER(0x4D3920);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D3920);
 };
 
 // =====================================================================================================================
@@ -1681,7 +1681,7 @@ public:
   int GetMovementAimOffset(int pixelDistance) override
     { return Thunk<0x4473B0, &$::GetMovementAimOffset>(pixelDistance); }
 
-  DEFINE_VTBL_GETTER(0x4D3B90);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D3B90);
 };
 
 // =====================================================================================================================
@@ -1695,7 +1695,7 @@ public:
   const char* GetCodeName() override { return Thunk<0x4474E0, &$::GetCodeName>(); }
   ibool       Init()        override { return Thunk<0x4A28E0, &$::Init>();        }
 
-  DEFINE_VTBL_GETTER(0x4D3D78);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D3D78);
 };
 
 // =====================================================================================================================
@@ -1724,7 +1724,7 @@ public:
   int GetMovementAimOffset(int pixelDistance) override
     { return Thunk<0x447570, &$::GetMovementAimOffset>(pixelDistance); }
 
-  DEFINE_VTBL_GETTER(0x4D3B00);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D3B00);
 };
 
 // =====================================================================================================================
@@ -1738,7 +1738,7 @@ public:
   const char* GetCodeName() override { return Thunk<0x447520, &$::GetCodeName>(); }
   ibool       Init()        override { return Thunk<0x4A28E0, &$::Init>();        }
 
-  DEFINE_VTBL_GETTER(0x4D3E08);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D3E08);
 };
 
 // =====================================================================================================================
@@ -1752,7 +1752,7 @@ public:
   const char* GetCodeName() override { return Thunk<0x447490, &$::GetCodeName>(); }
   ibool       Init()        override { return Thunk<0x47C9B0, &$::Init>();        }
 
-  DEFINE_VTBL_GETTER(0x4D4578);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D4578);
 };
 
 // =====================================================================================================================
@@ -1766,7 +1766,7 @@ public:
   const char* GetCodeName() override { return Thunk<0x447460, &$::GetCodeName>(); }
   ibool       Init()        override { return Thunk<0x4A66D0, &$::Init>();        }
 
-  DEFINE_VTBL_GETTER(0x4D3FF8);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D3FF8);
 };
 
 // =====================================================================================================================
@@ -1796,7 +1796,7 @@ public:
   int GetMovementAimOffset(int pixelDistance) override
     { return Thunk<0x447240, &$::GetMovementAimOffset>(pixelDistance); }
 
-  DEFINE_VTBL_GETTER(0x4D3950);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D3950);
 };
 
 // =====================================================================================================================
@@ -1810,7 +1810,7 @@ public:
   const char* GetCodeName() override { return Thunk<0x4474B0, &$::GetCodeName>(); }
   ibool       Init()        override { return Thunk<0x4A28E0, &$::Init>();        }
 
-  DEFINE_VTBL_GETTER(0x4D3CB8);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D3CB8);
 };
 
 // =====================================================================================================================
@@ -1824,7 +1824,7 @@ public:
   const char* GetCodeName() override { return Thunk<0x447510, &$::GetCodeName>(); }
   ibool       Init()        override { return Thunk<0x4A28E0, &$::Init>();        }
 
-  DEFINE_VTBL_GETTER(0x4D3DD8);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D3DD8);
 };
 
 // =====================================================================================================================
@@ -1838,7 +1838,7 @@ public:
   const char* GetCodeName() override { return Thunk<0x447430, &$::GetCodeName>(); }
   ibool       Init()        override { return Thunk<0x4A6680, &$::Init>();        }
 
-  DEFINE_VTBL_GETTER(0x4D3F30);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D3F30);
 };
 
 // =====================================================================================================================
@@ -1852,7 +1852,7 @@ public:
   const char* GetCodeName() override { return Thunk<0x4474D0, &$::GetCodeName>(); }
   ibool       Init()        override { return Thunk<0x4A28E0, &$::Init>();        }
 
-  DEFINE_VTBL_GETTER(0x4D3D48);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D3D48);
 };
 
 // =====================================================================================================================
@@ -1883,7 +1883,7 @@ public:
   int GetMovementAimOffset(int pixelDistance) override
     { return Thunk<0x447260, &$::GetMovementAimOffset>(pixelDistance); }
 
-  DEFINE_VTBL_GETTER(0x4D3980);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D3980);
 };
 
 // =====================================================================================================================
@@ -1897,7 +1897,7 @@ public:
   const char* GetCodeName() override { return Thunk<0x447500, &$::GetCodeName>(); }
   ibool       Init()        override { return Thunk<0x4A28E0, &$::Init>();        }
 
-  DEFINE_VTBL_GETTER(0x4D3DA8);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D3DA8);
 };
 
 // =====================================================================================================================
@@ -1911,7 +1911,7 @@ public:
   const char* GetCodeName() override { return Thunk<0x447330, &$::GetCodeName>(); }
   ibool       Init()        override { return Thunk<0x4A6240, &$::Init>();        }
 
-  DEFINE_VTBL_GETTER(0x4D3AD0);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D3AD0);
 };
 
 // =====================================================================================================================
@@ -1942,7 +1942,7 @@ public:
   int GetMovementAimOffset(int pixelDistance) override
     { return Thunk<0x447280, &$::GetMovementAimOffset>(pixelDistance); }
 
-  DEFINE_VTBL_GETTER(0x4D39B0);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D39B0);
 };
 
 // =====================================================================================================================
@@ -1973,7 +1973,7 @@ public:
   int GetMovementAimOffset(int pixelDistance) override
     { return Thunk<0x4472B0, &$::GetMovementAimOffset>(pixelDistance); }
 
-  DEFINE_VTBL_GETTER(0x4D39E0);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D39E0);
 };
 
 // =====================================================================================================================
@@ -1987,7 +1987,7 @@ public:
   const char* GetCodeName() override { return Thunk<0x447400, &$::GetCodeName>(); }
   ibool       Init()        override { return Thunk<0x4A6630, &$::Init>();        }
 
-  DEFINE_VTBL_GETTER(0x4D3E68);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D3E68);
 };
 
 // =====================================================================================================================
@@ -2011,7 +2011,7 @@ public:
   void SelectLynxGraphic(MapObject* pChassis, int rotation) override
     { return Thunk<0x4A6100, &$::SelectLynxGraphic>(pChassis, rotation); }
 
-  DEFINE_VTBL_GETTER(0x4D3A10);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D3A10);
 };
 
 // =====================================================================================================================
@@ -2028,7 +2028,7 @@ public:
   void SelectGuardPostGraphic(MapObject* pChassis, int rotation) override
     { return Thunk<0x4A6010, &$::SelectGuardPostGraphic>(pChassis, rotation); }
 
-  DEFINE_VTBL_GETTER(0x4D3A70);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D3A70);
 };
 
 // =====================================================================================================================
@@ -2059,7 +2059,7 @@ public:
   int GetMovementAimOffset(int pixelDistance) override
     { return Thunk<0x447350, &$::GetMovementAimOffset>(pixelDistance); }
 
-  DEFINE_VTBL_GETTER(0x4D3B30);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D3B30);
 };
 
 // =====================================================================================================================
@@ -2083,7 +2083,7 @@ public:
   void SelectLynxGraphic(MapObject* pChassis, int rotation) override
     { return Thunk<0x4A6210, &$::SelectLynxGraphic>(pChassis, rotation); }
 
-  DEFINE_VTBL_GETTER(0x4D3A40);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D3A40);
 };
 
 // =====================================================================================================================
@@ -2100,7 +2100,7 @@ public:
   void SelectGuardPostGraphic(MapObject* pChassis, int rotation) override
     { return Thunk<0x4A61A0, &$::SelectGuardPostGraphic>(pChassis, rotation); }
 
-  DEFINE_VTBL_GETTER(0x4D3AA0);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D3AA0);
 };
 
 // =====================================================================================================================
@@ -2129,7 +2129,7 @@ public:
   int GetMovementAimOffset(int pixelDistance) override
     { return Thunk<0x447550, &$::GetMovementAimOffset>(pixelDistance); }
 
-  DEFINE_VTBL_GETTER(0x4D3B60);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D3B60);
 };
 
 // =====================================================================================================================
@@ -2143,7 +2143,7 @@ public:
   const char* GetCodeName() override { return Thunk<0x4474F0, &$::GetCodeName>(); }
   ibool       Init()        override { return Thunk<0x4A28E0, &$::Init>();        }
 
-  DEFINE_VTBL_GETTER(0x4D3CE8);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D3CE8);
 };
 
 // =====================================================================================================================
@@ -2157,7 +2157,7 @@ public:
   const char* GetCodeName() override { return Thunk<0x447530, &$::GetCodeName>(); }
   ibool       Init()        override { return Thunk<0x4A28E0, &$::Init>();        }
 
-  DEFINE_VTBL_GETTER(0x4D3E38);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D3E38);
 };
 
 END_PACKED

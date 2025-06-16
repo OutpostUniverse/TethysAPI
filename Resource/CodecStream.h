@@ -58,7 +58,7 @@ public:
   ibool  Read(size_t size, void* pBuffer)        override { return Thunk<0x434280, &$::Read>(size, pBuffer);  }
   void   Close()                                 override { return Thunk<0x434110, &$::Close>();              }
 
-  DEFINE_VTBL_GETTER(0x4D0410);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D0410);
 
   void Init()                                   { return Thunk<0x433FE0, &$::Init>();                         }
   void AttachToStream(StreamIO* pWrappedStream) { return Thunk<0x434080, &$::AttachToStream>(pWrappedStream); }
@@ -92,7 +92,7 @@ public:
   ibool  Read(size_t size, void* pBuffer)        override { return Thunk<0x4B0800, &$::Read>(size, pBuffer);  }
   void   Close()                                 override { return Thunk<0x4B0260, &$::Close>();              }
 
-  DEFINE_VTBL_GETTER(0x4D766C);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D766C);
 
   void Init()                                   { return Thunk<0x4B0160, &$::Init>();            }
   void AttachToStream(StreamIO* pWrappedStream) { return Thunk<0x4B01D0, &$::AttachToStream>(pWrappedStream); }
@@ -136,7 +136,7 @@ public:
   ibool  Read(size_t size, void* pBuffer)        override { return Thunk<0x434800, &$::Read>(size, pBuffer);  }
   void   Close()                                 override { return Thunk<0x4345D0, &$::Close>();              }
 
-  DEFINE_VTBL_GETTER(0x4D0438);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D0438);
 
   void Init()                                   { return Thunk<0x434500, &$::Init>();                         }
   void AttachToStream(StreamIO* pWrappedStream) { return Thunk<0x434560, &$::AttachToStream>(pWrappedStream); }
@@ -175,7 +175,7 @@ public:
   ibool  Read(size_t size, void* pBuffer)        override { return Thunk<0x4352E0, &$::Read>(size, pBuffer);  }
   void   Close()                                 override { return Thunk<0x434B90, &$::Close>();              }
 
-  DEFINE_VTBL_GETTER(0x4D0460);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D0460);
 
   void Init()                                   { return Thunk<0x434B00, &$::Init>();                         }
   void AttachToStream(StreamIO* pWrappedStream) { return Thunk<0x434B40, &$::AttachToStream>(pWrappedStream); }
@@ -218,7 +218,7 @@ public:
   ibool  Read(size_t size, void* pBuffer)        override { return Thunk<0x4AFCB0, &$::Read>(size, pBuffer);  }
   void   Close()                                 override { return Thunk<0x4AFB80, &$::Close>();              }
 
-  DEFINE_VTBL_GETTER(0x4D761C);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D761C);
 
   void Init()                                  { return Thunk<0x4AFB10, &$::Init>();                        }
   void AttachToStream(StreamIO* wrappedStream) { return Thunk<0x4AFB30, &$::AttachToStream>(wrappedStream); }
@@ -251,7 +251,7 @@ public:
   ibool  Read(size_t size, void* pBuffer)        override { return Thunk<0x4B0CD0, &$::Read>(size, pBuffer);  }
   void   Close()                                 override { return Thunk<0x4B0910, &$::Close>();              }
 
-  DEFINE_VTBL_GETTER(0x4D7694);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D7694);
 
   void Init()                                   { return Thunk<0x4B08A0, &$::Init>();                         }
   void AttachToStream(StreamIO* pWrappedStream) { return Thunk<0x4B08C0, &$::AttachToStream>(pWrappedStream); }

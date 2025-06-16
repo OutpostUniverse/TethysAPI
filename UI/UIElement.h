@@ -39,7 +39,7 @@ public:
 
 #define OP2_UIELEMENT_VTBL($)  \
   $(Destroy)  $(Draw)  $(OnUIEvent)  $(OnAdd)  $(OnRemove)  $(SetEnabledState)  $(InvalidateRect)
-  DEFINE_VTBL_TYPE(OP2_UIELEMENT_VTBL, 0x4CF898)
+  TETHYS_DEFINE_VTBL_TYPE(OP2_UIELEMENT_VTBL, 0x4CF898)
 
   void SetCapture(IWnd* pWnd)             { return Thunk<0x40A7A0, &$::SetCapture>(pWnd);         }
   void ReleaseCapture(IWnd* pWnd)         { return Thunk<0x40A7C0, &$::ReleaseCapture>(pWnd);     }
@@ -79,7 +79,7 @@ public:
   virtual void OnClick()                                     = 0;
 
 #define OP2_UIBUTTON_VTBL($)  $(GetHelpText)  $(OnClick)
-  DEFINE_VTBL_TYPE(OP2_UIBUTTON_VTBL, 0x4CF8B8)
+  TETHYS_DEFINE_VTBL_TYPE(OP2_UIBUTTON_VTBL, 0x4CF8B8)
 
   void SetHotKey(int nVirtKey) { return Thunk<0x40A9F0, &$::SetHotKey>(nVirtKey); }
 
