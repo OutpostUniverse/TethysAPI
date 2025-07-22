@@ -1,7 +1,7 @@
 /**
  ***********************************************************************************************************************
  * @file  Odasl.h
- * @brief ODASL is Sierra's commonn lib for skinning Win32 dialogs.
+ * @brief ODASL is Sierra's commonn lib for skinning Win32 dialogs.  Used by OP2Shell.
  ***********************************************************************************************************************
  */
 

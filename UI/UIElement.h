@@ -1,7 +1,7 @@
 
 #pragma once
 
-#include "Tethys/Resource/GFXSurface.h"
+#include "Tethys/GFX/Surface.h"
 #include "Tethys/UI/IWnd.h"
 #include "Tethys/UI/Filter.h"
 
