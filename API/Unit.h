@@ -259,7 +259,19 @@ public:
   bool GetLights() { return IsLive() && HasFlag(MoFlagVecHeadlights); }  ///< Vehicle's headlights are turned on?
 
   void DoSetLights(bool on);                                                  ///< Turns vehicle's headlights on or off.
-  void DoMove(Location where) { if (IsLive()) { const auto [x, y] = where.GetPixel(); GetMapObject()->CmdMove(x, y); } }
+  /// Orders the unit to move to a location. Issued via the command-packet system (CommandType::Move),
+  /// not the raw GetMapObject()->CmdMove() thunk - that direct call crashes OP2's pathfinder (eip jumps
+  /// into the heap), whereas the packet path (the same one DoAttack / DoStandGround use) is safe.
+  void DoMove(Location where) {
+    if (IsLive()) {
+      CommandPacket packet = { CommandType::Move, sizeof(MoveCommand) };
+      packet.data.move.numUnits     = 1;
+      packet.data.move.unitID[0]    = id_;
+      packet.data.move.numWaypoints = 1;
+      packet.data.move.waypoint[0]  = where.AsWaypoint();
+      ProcessCommandPacket(packet);
+    }
+  }
   void DoDock(Unit at)                                                        ///< Docks this Unit at a structure.
     { auto d = at.GetDockLocation();  if (IsLive() && d) { GetMapObject()->CmdDock(d.GetPixelX(), d.GetPixelY()); } }
   void DoDockAtGarage(Unit garage);                                           ///< Docks this Unit at a Garage.
