@@ -634,8 +634,8 @@ inline void Unit::DoMiningRoute(
 {
   if (IsLive() && mine.IsLive() && smelter.IsLive()) {
     CommandPacket packet = { CommandType::CargoRoute, sizeof(CargoRouteCommand) };
-    packet.data.cargoRoute.numUnits  = id_;
-    packet.data.cargoRoute.unitID[1] = id_;
+    packet.data.cargoRoute.numUnits  = 1;
+    packet.data.cargoRoute.unitID[0] = id_;
 
     packet.data.cargoRoute.numWaypoints         = 3;
     packet.data.cargoRoute.waypoint[0]          = mine.GetDockLocation().AsWaypoint();
