@@ -272,8 +272,20 @@ public:
       ProcessCommandPacket(packet);
     }
   }
-  void DoDock(Unit at)                                                        ///< Docks this Unit at a structure.
-    { auto d = at.GetDockLocation();  if (IsLive() && d) { GetMapObject()->CmdDock(d.GetPixelX(), d.GetPixelY()); } }
+  /// Docks this Unit at a structure.  Issued via the command-packet system (CommandType::Dock, which
+  /// uses MoveCommand with the structure's dock tile as the waypoint), not the raw CmdDock thunk - that
+  /// direct call does not dock the unit (same class of bug as DoMove's raw CmdMove call).
+  void DoDock(Unit at) {
+    const auto d = at.GetDockLocation();
+    if (IsLive() && d) {
+      CommandPacket packet = { CommandType::Dock, sizeof(MoveCommand) };
+      packet.data.move.numUnits     = 1;
+      packet.data.move.unitID[0]    = id_;
+      packet.data.move.numWaypoints = 1;
+      packet.data.move.waypoint[0]  = d.AsWaypoint();
+      ProcessCommandPacket(packet);
+    }
+  }
   void DoDockAtGarage(Unit garage);                                           ///< Docks this Unit at a Garage.
   void DoBuild(Location  bottomRight);                                        ///< [ConVec] Build a structure.
   void DoDeploy(Location center);                                             ///< [Robo-Miner, GeoCon] Deploy building.
