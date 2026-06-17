@@ -375,8 +375,18 @@ public:
   void DoProduce(                                                  ///< [Factory] Issue a factory build command.
     MapID itemType, MapID weaponType = MapID::None, uint16 scGroupIndex = -1, bool recycleIfFull = false);
   void DoLaunch(Location target = { }, bool forceEnable = false);  ///< [Spaceport] Launch the rocket on launch pad.
-  void DoTransferCargo(int bay)                                    ///< [Factory, Garage] Move cargo to a bay.
-    { if (IsLive()) { GetMapObject()->CmdTransferCargo(bay); } }
+  /// Moves cargo to a bay.  Issued via the command-packet system (CommandType::TransferCargo),
+  /// not the raw CmdTransferCargo thunk - that direct call corrupts state and crashes the engine
+  /// a tick later (same class of bug as DoMove/DoDumpCargo).  [Factory, Garage]
+  void DoTransferCargo(int bay) {
+    if (IsLive()) {
+      CommandPacket packet = { CommandType::TransferCargo, sizeof(TransferCargoCommand) };
+      packet.data.transferCargo.unitID  = id_;
+      packet.data.transferCargo.bay     = bay;
+      packet.data.transferCargo.unknown = 0;
+      ProcessCommandPacket(packet);
+    }
+  }
   void DoResearch(int techID, int numScientists);                  ///< [Lab] Begin researching a technology.
   void DoTrainScientists(int numToTrain);                          ///< [University] Begin training new scientists.
 
