@@ -297,7 +297,7 @@ public:
   void DoDoze(MapRect area);                                                  ///< [Robo-Dozer]  Bulldoze an area.
   void DoMiningRoute(Unit mine, Unit smelter);                                ///< [Cargo Truck] Mine <-> Smelter route.
   void DoSalvage(MapRect  area, Unit gorf);                                   ///< [Cargo Truck] Salvage rubble.
-  void DoDumpCargo()   { if (IsLive()) { GetMapObject()->CmdDumpCargo(); } }  ///< [Cargo Truck] Dispose of cargo.
+  void DoDumpCargo()   { DoSimpleCommand(CommandType::DumpCargo);          }  ///< [Cargo Truck] Dispose of cargo.
   void DoLoadCargo()   { DoSimpleCommand(CommandType::LoadCargo);          }  ///< [Cargo Truck] Load truck cargo.
   void DoUnloadCargo() { DoSimpleCommand(CommandType::UnloadCargo);        }  ///< [Cargo Truck] Unload truck cargo.
 
