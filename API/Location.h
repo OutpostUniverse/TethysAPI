@@ -79,6 +79,7 @@ public:
 /// Exported struct typically representing a rectangular tile area on the map.
 struct MapRect : public OP2Class<MapRect> {
 public:
+  // ** TODO Reorder {x1, y1} and {x2, y2} so 1 is always top-left and 2 is always bottom-right
   constexpr MapRect(const Location& topLeftTile = { -1, -1 }, const Location& bottomRightTile = { -1, -1 })
     : x1(topLeftTile.x), y1(topLeftTile.y), x2(bottomRightTile.x), y2(bottomRightTile.y) { }
   constexpr MapRect(int leftTile, int topTile, int rightTile, int bottomTile)

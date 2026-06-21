@@ -92,10 +92,11 @@ public:
   template <MapID I> const auto* GetMapObject() const { return IsValid() ? MapObjFor<I>::GetInstance(size_t(id_)) : 0; }
   ///@}
 
-  ///@{ Get the internal MapObjectType that this unit is managed by.  (Returns MaxObjectType if !IsValid())
+  ///@{ Get the internal MapObjectType, which defines the type of unit this is an instance of.
         MapEntityType* GetMapObjectType()       { return MapEntityType::GetInstance(GetType()); }
   const MapEntityType* GetMapObjectType() const { return MapEntityType::GetInstance(GetType()); }
   ///@}
+  // ** TODO this + GetType() + GetTypeID() need to be cleaned up somehow
 
   int GetOwner()       const { return IsValid() ? GetMapObject()->ownerNum_            : -1; } ///< Owner player ID.
   int GetCreator()     const { return IsValid() ? GetMapObject()->creatorNum_          : -1; } ///< Creator player ID.
@@ -232,6 +233,7 @@ public:
 
   // ---------------------------------------------- Specific to vehicles -----------------------------------------------
 
+  // ** TODO can these be overloads cleaned up using a type-erasure wrapper?
   ///@{ [ConVec]  Gets or sets ConVec cargo.
   CargoKit GetConVecCargo() const {
     return IsVehicle() ?
@@ -280,6 +282,7 @@ public:
   // ---------------------------------------------- Specific to buildings ----------------------------------------------
 
   ///@{ [Factory]  Gets or sets factory cargo in the specified cargo bay.
+  // ** TODO let bay=-1 mean "select first empty bay"?
   CargoKit GetFactoryCargo(int bay) const {
     auto*const pMo = (IsFactory() && (bay >= 0) && (bay < 6)) ? GetMapObject<FactoryBuilding>() : nullptr;
     return (pMo != nullptr) ? CargoKit{ MapID(pMo->cargoBayContents_[bay]), MapID(pMo->cargoBayCargoOrWeapon_[bay]) }
@@ -373,6 +376,7 @@ public:
 };
 
 
+// =====================================================================================================================
 /// Info passed to OnCreateUnit() user callback.  (1.4.0)
 struct OnCreateUnitArgs {
   size_t structSize;  ///< Size of this structure.
@@ -391,6 +395,7 @@ struct OnDamageUnitArgs {
   Unit   sourceUnit;  ///< Attacking unit.
   Unit   targetUnit;  ///< Target unit.
   int    damage;      ///< Amount of damage (or EMP time) applied.
+  // ** TODO add empDuration, stickyDuration, esgDuration?
 };
 
 /// Info passed to OnTransferUnit() user callback.  (1.4.2)

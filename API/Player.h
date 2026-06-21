@@ -103,7 +103,7 @@ public:
   ///@}
 
   /// Returns (strength / 8), where strength is the sum of all units owned by the player in the given map rectangle
-  /// 
+  ///
   /// @note  Unit Strengths are as follows:
   ///  Spider/Scorpion : 4
   ///  Lynx            : Laser/Microwave: 5 Other: 6 ThorsHammer: 7

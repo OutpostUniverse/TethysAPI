@@ -18,6 +18,7 @@ public:
   static Random* GetInstance()      { return OP2Mem<0x56BE20, Random*>(); }  ///< Main RNG used in gameplay logic.
   static Random* GetLocalInstance() { return OP2Mem<0x574428, Random*>(); }  ///< RNG not synced over the network.
 
+  // ** TODO can we expand the random range to 0..UINT_MAX?
   ///@{ Fulfill C++ UniformRandomBitGenerator requirements.
   ///   This allows for usage such as e.g. std::shuffle(list.begin(), list.end(), g_gameRNG)
   using result_type = uint32;

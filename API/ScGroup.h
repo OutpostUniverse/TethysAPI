@@ -110,6 +110,7 @@ public:
     return Thunk<0x47A410, void(Location&, MapID, MapID, ScGroup&)>(where, unitType, cargoOrWeapon, produceGroup);
   }
 
+  // ** TODO PyOP2 RecordTube/Wall maybe broken?
   void RecordTube(Location         where)   { return Thunk<0x47A390, void(Location&)>(where);   }
   void RecordConnectTubes(Location toWhere) { return Thunk<0x47A370, void(Location&)>(toWhere); }
   void RecordWall(Location where, MapID type = MapID::Wall)
@@ -119,6 +120,7 @@ public:
   void RecordUnitBlock(const UnitBlock& units, ScGroup produceGroup)
     { return Thunk<0x47A350, void(const UnitBlock&, ScGroup&)>(units, produceGroup); }
 
+  // ** TODO PyOP2 RecordVehReinforceGroup maybe broken?
   void RecordVehReinforceGroup(ScGroup targetGroup, int priority)  ///< 0 = lowest priority, 0xFFFF = highest
     { return Thunk<0x47A440, void(ScGroup&, int)>(targetGroup, priority); }
   void UnRecordVehGroup(ScGroup        targetGroup) { return Thunk<0x47A460, void(ScGroup&)>(targetGroup); }

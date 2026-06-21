@@ -7,6 +7,8 @@
  ***********************************************************************************************************************
  */
 
+// ** TODO many Triggers are busted if playerId != AllPlayers?
+
 #pragma once
 
 #include "Tethys/Game/MapObjectType.h"
