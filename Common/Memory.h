@@ -123,7 +123,8 @@ protected:
     { return OP2Thunk<Address, TethysImpl::ToMemPfnType<Fn, decltype(this)>>(this, std::forward<Args>(args)...); }
 
   /// Thunks to an internal constructor.  This implicitly chains to all internal parent constructors.
-  /// Example:  BaseClass()                  { InternalCtor<0x470000>(); }
+  /// @warning This assumes Derived does not contain any non-POD fields!
+  /// @example  BaseClass()                  { InternalCtor<0x470000>(); }
   ///           BaseClass(InternalCtorChain) {                           }
   ///           SubClass()                  : BaseClass(UseInternalCtorChain) { InternalCtor<0x500000>(); }
   ///           SubClass(InternalCtorChain) : BaseClass(UseInternalCtorChain) {                           }
@@ -136,13 +137,25 @@ protected:
   struct InternalCtorChain { explicit constexpr InternalCtorChain() { } }  static constexpr UseInternalCtorChain{};
 
   /// Dummy placeholder used to represent a virtual destructor in DEFINE_VTBL_TYPE().
-  void* _DestroyVirtual(ibool freeMem = false);
+  //
+  // ** TODO i finally figured out this mystery
+  // MSVC indeed generates flag 0x4 on virtual destructors, under one specific circumstance: if the class has its operator delete overloaded
+  // the flag, if set, uses the global ::operator delete instead of the overload :)
+  // so it's basically ::delete versus delete
+  void* _DestroyVirtual(uint32 flags = false);
 
   /// @internal  A dummy overridden function declaration is used to get a base class's @ref VtblType rather than
   /// referring to VtblType directly, since C++ dominance rules are more robust for functions than types.
   static constexpr VtblType _GetBaseVtblType();
 };
 static_assert(std::is_empty_v<OP2Class<void>>, "OP2Class<> should be empty.");
+
+/*
+// ** TODO expr-SSFINAE isn't legal in MSVC; is there is a C++20 way to do this?
+// This might not be what I want for round-trip purposes either?  See the FuncTraits "return tag" round-trip problem?
+template<typename Derived>
+class OP2Class<OP2Class<Derived>> : public OP2Class<Derived>{};
+*/
 
 /// Template class wrapping any OP2 internal class, which automatically calls Destroy() upon destruction.
 /// @note Do not specify virtual destructor overrides for subclasses of this type.  Instead, override Destroy().
@@ -181,7 +194,7 @@ public:
 ///   virtual bool  Func2() const        { ... }
 ///
 ///   struct VtblType : public (BaseClass::)VtblType {
-///     void* (__thiscall*  pfnDestroyVirtual)(MyClass* pThis, ibool freeMem);
+///     void* (__thiscall*  pfnDestroyVirtual)(MyClass* pThis, uint32 flags);
 ///     void* (__thiscall*  pfnFunc1)(MyClass* pThis, void*, size_t);
 ///     bool  (__thiscall*  pfnFunc2)(const MyClass* pThis);
 ///   };
@@ -191,7 +204,7 @@ public:
 ///
 ///   // If you used TETHYS_DEFINE_VTBL_TYPE(macro, address):
 ///   static VtblFuncs* Vtbl() { return OP2Mem<address, VtblType*>(); }
-/// }; */
+/// };
 #define TETHYS_DEFINE_VTBL_TYPE(vtbl, ...)                                       \
   struct VtblType : public decltype(_GetBaseVtblType()) {                        \
     vtbl(TETHYS_VTBL_GENERATE_PFN_DEFS_IMPL)                                     \
