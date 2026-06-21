@@ -13,7 +13,8 @@ namespace Tethys {
 namespace MapIDImpl { enum MapID : int; }
 using MapID = MapIDImpl::MapID;
 
-constexpr int AllPlayers = -1;
+enum PlayerNum : int;
+constexpr PlayerNum AllPlayers{-1};
 
 constexpr size_t CommandPacketSize     = 113;
 constexpr size_t CommandPacketDataSize = CommandPacketSize - 0x0E;
