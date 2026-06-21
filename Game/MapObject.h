@@ -49,6 +49,7 @@ enum MapObjectFlags : uint32 {
   MoFlagBldActive             = (1u <<  0),  ///< Building is unidled.
   MoFlagBldFactory            = (1u <<  3),  ///< Building is a FactoryBuilding.
   MoFlagBldCmdCenterConnected = (1u <<  7),  ///< Building has an active Command Center connection.
+                                             ///  Guard Posts gain +1 range and +50% extra damage.
   MoFlagBldEnabledPower       = (1u << 13),  ///< Building has sufficient power.
   MoFlagBldEnabledWorkers     = (1u << 14),  ///< Building has sufficient workers.
   MoFlagBldEnabledScientists  = (1u << 15),  ///< Building has sufficient scientists.
