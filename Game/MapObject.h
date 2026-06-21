@@ -362,7 +362,7 @@ public:
 #define OP2_MO_MAPENTITY_VTBL($)  $(DrawSecondary)
   TETHYS_DEFINE_VTBL_TYPE(OP2_MO_MAPENTITY_VTBL);
 
-  // Object size = 0x48?
+  static constexpr size_t ObjectSize = 0x48;  // ** TODO Minimum size?
 };
 
 //  ====================================================================================================================
@@ -389,7 +389,7 @@ public:
   void StartDisaster()
     { flags_ |= (MoFlagEntDisasterDidFirstWarn | MoFlagEntDisasterDidSecondWarn);  actionTimer_ = 6; }
 
-  // Object size = between 0x48 and 0x54?
+  static constexpr size_t ObjectSize = 0x48; // ** TODO Minimum size, between 0x48 and 0x54?
 };
 
 //  ====================================================================================================================
@@ -430,7 +430,7 @@ public:
   int field_50;
   int field_54;
 
-  // Object size = 0x58
+  static constexpr size_t ObjectSize = 0x58;
 };
 
 //  ====================================================================================================================
@@ -456,7 +456,7 @@ public:
 
   // NOTE: Uses MapObject::targetPixelX_ and ::targetPixelY_.
 
-  // Object size = 0x54
+  static constexpr size_t ObjectSize = 0x54;
 };
 
 //  ====================================================================================================================
@@ -471,7 +471,7 @@ public:
   void DoAttackUnit(MapObject* pSrc) override { return Thunk<0x4A4100, &$::DoAttackUnit>(pSrc); }
   void DoDamage()                    override { return Thunk<0x4A4160, &$::DoDamage>();         }
 
-  // Object size = 0x58
+  static constexpr size_t ObjectSize = 0x58;
 };
 
 //  ====================================================================================================================
@@ -487,7 +487,7 @@ public:
   void DoFire(int pixelX, int pixelY) override { return Thunk<0x4A3B70, &$::DoFire>(pixelX, pixelY);       }
   int  GetSecondaryAnimationIndex()   override { return Thunk<0x4A2940, &$::GetSecondaryAnimationIndex>(); }
 
-  // Object size = 0x6C
+  static constexpr size_t ObjectSize = 0x6C;
 };
 
 //  ====================================================================================================================
@@ -514,7 +514,7 @@ public:
   void DrawUIOverlay(uint32 drawFlags, Viewport* pViewport, uint32 counter = UINT32_MAX)
     { return Thunk<0x43EA60, &$::DrawUIOverlay>(drawFlags, pViewport, counter); }
 
-  // Object size = 0x48?
+  static constexpr size_t ObjectSize = 0x48;  // ** TODO Minimum size?
 };
 
 //  ====================================================================================================================
@@ -543,7 +543,7 @@ public:
 #define OP2_MO_AIRUNIT_VTBL($)  $(GetSecondaryAnimationIndex)
   TETHYS_DEFINE_VTBL_TYPE(OP2_MO_AIRUNIT_VTBL, 0x4D5D50);
 
-  // Object size = between 0x5A and 0x5C?
+  static constexpr size_t ObjectSize = 0x5A;  // Minimum size, between 0x5A and 0x5C?
 };
 
 //  ====================================================================================================================
@@ -560,7 +560,7 @@ public:
 #define OP2_MO_LANDUNIT_VTBL($)  $(DrawSecondary)
   TETHYS_DEFINE_VTBL_TYPE(OP2_MO_LANDUNIT_VTBL);
 
-  // Object size = 0x48?
+  static constexpr size_t ObjectSize = 0x48;  // ** TODO Minimum size?
 };
 
 //  ====================================================================================================================
@@ -642,11 +642,11 @@ public:
   $(Func_53)  $(GetFoodProduction)  $(Func_55)  $(GetNumScientistsRequired)  $(GetNumScientistsResearching)            \
   $(GetNumWorkersRequired)  $(Func_59)  $(GetPowerRequiredAndEnable)  $(GetNumWorkersRequiredAndEnable)                \
   $(GetNumScientistsRequiredAndEnable)
-
-  void KillOccupants() { return Thunk<0x482BF0, &$::KillOccupants>(); }
   TETHYS_DEFINE_VTBL_TYPE(OP2_MO_BUILDING_VTBL, 0x4D6030);
 
   int GetDockLocation(Location* pOut) const { return Thunk<0x482F40, &$::GetDockLocation>(pOut); }
+
+  void KillOccupants() { return Thunk<0x482BF0, &$::KillOccupants>(); }
 
 public:
   uint8 cargoBayCargoOrWeapon_[6];  ///< [Factory, Garage] MapID cargo/weapon associated with cargo bay contents.
@@ -660,7 +660,7 @@ public:
   int field_58;
   int field_5C;
 
-  // Object size = 0x60
+  static constexpr size_t ObjectSize = 0x60;
 };
 
 //  ====================================================================================================================
@@ -690,12 +690,12 @@ public:
 
 public:
   uint8  itemToProduce_;        ///< MapID item to produce.
-  uint8  cargoBayContents_[6];  ///< MapID cargo bay contents' unit type.
+  uint8  cargoBayContents_[6];  ///< MapID cargo bay contents' unit type.  @ref cargoBayCargoOrWeapon_ stores the weapon
   uint8  field_67;
   int    field_68;
   uint16 field_6C;
 
-  // Object size = 0x6E
+  static constexpr size_t ObjectSize = 0x6E;
 };
 
 //  ====================================================================================================================
@@ -716,7 +716,7 @@ public:
 
   TETHYS_DEFINE_VTBL_GETTER(0x4D0160);
 
-  // Object size = 0x60?
+  static constexpr size_t ObjectSize = 0x60;  // ** TODO Minimum size?
 };
 
 //  ====================================================================================================================
@@ -752,7 +752,7 @@ public:
   //int      variant_;
   //OreYield barYield_;
 
-  // Object size = 0x74
+  static constexpr size_t ObjectSize = 0x74;
 };
 
 //  ====================================================================================================================
@@ -769,7 +769,7 @@ public:
   ibool IsActivePowerGenerator()      const override { return Thunk<0x46E830, &$::IsActivePowerGenerator>();    }
   int   GetPowerProduction()          const override { return Thunk<0x483A90, &$::GetPowerProduction>();        }
 
-  // Object size = 0x60
+  static constexpr size_t ObjectSize = 0x60;
 };
 
 //  ====================================================================================================================
@@ -853,7 +853,7 @@ public:
   int    field_6E;
   int    field_72;
 
-  // Object size = 0x62
+  static constexpr size_t ObjectSize = 0x62;
 };
 
 //  ====================================================================================================================
@@ -874,7 +874,7 @@ public:
 
   TETHYS_DEFINE_VTBL_GETTER(0x4D0658);
 
-  // Object size = 0x62
+  static constexpr size_t ObjectSize = 0x62;
 };
 
 
@@ -895,7 +895,7 @@ public:
 
   TETHYS_DEFINE_VTBL_GETTER(0x4D4670);
 
-  // Object size = 0x68
+  static constexpr size_t ObjectSize = 0x68;
 };
 
 // =====================================================================================================================
@@ -914,7 +914,7 @@ public:
 
   TETHYS_DEFINE_VTBL_GETTER(0x4CFB10);
 
-  // Object size = 0x5C
+  static constexpr size_t ObjectSize = 0x5C;
 };
 
 // =====================================================================================================================
@@ -932,7 +932,7 @@ public:
 
   TETHYS_DEFINE_VTBL_GETTER(0x4D7430);
 
-  // Object size = 0x54
+  static constexpr size_t ObjectSize = 0x54;
 };
 
 // =====================================================================================================================
@@ -963,7 +963,7 @@ public:
   uint16 endTileX_;  ///< End map tile X (may not reach before timeout).  If -1, then gets initialized when triggered.
   uint16 endTileY_;  ///< End map tile Y (may not reach before timeout).  If -1, then gets initialized when triggered.
 
-  // Object size = 0x68
+  static constexpr size_t ObjectSize = 0x68;
 };
 
 // =====================================================================================================================
@@ -985,7 +985,7 @@ public:
 
   // Note: Uses MapObject::targetTileX_ and targetTileY_.
 
-  // Object size = 0x5C
+  static constexpr size_t ObjectSize = 0x5C;
 };
 
 // =====================================================================================================================
@@ -1029,7 +1029,7 @@ public:
   uint16 endTileX_;  ///< End map tile X (may not reach before timeout).  If -1, then gets initialized when triggered.
   uint16 endTileY_;  ///< End map tile Y (may not reach before timeout).  If -1, then gets initialized when triggered.
 
-  // Object size = 0x69
+  static constexpr size_t ObjectSize = 0x69;
 };
 
 // =====================================================================================================================
@@ -1049,7 +1049,7 @@ public:
 
   TETHYS_DEFINE_VTBL_GETTER(0x4D3BF0);
 
-  // Object size = 0x58
+  static constexpr size_t ObjectSize = 0x58;
 };
 
 // =====================================================================================================================
@@ -1066,7 +1066,7 @@ public:
 
   TETHYS_DEFINE_VTBL_GETTER(0x4D7310);
 
-  // Object size = 0x58
+  static constexpr size_t ObjectSize = 0x58;
 };
 
 // =====================================================================================================================
@@ -1083,7 +1083,7 @@ public:
 
   TETHYS_DEFINE_VTBL_GETTER(0x4CF368);
 
-  // Object size = 0x58
+  static constexpr size_t ObjectSize = 0x58;
 };
 
 // =====================================================================================================================
@@ -1100,7 +1100,7 @@ public:
 
   TETHYS_DEFINE_VTBL_GETTER(0x4D6C88);
 
-  // Object size = 0x58
+  static constexpr size_t ObjectSize = 0x58;
 };
 
 // =====================================================================================================================
@@ -1118,7 +1118,7 @@ public:
 
   TETHYS_DEFINE_VTBL_GETTER(0x4CF2D0);
 
-  // Object size = 0x58
+  static constexpr size_t ObjectSize = 0x58;
 };
 
 // =====================================================================================================================
@@ -1135,7 +1135,7 @@ public:
 
   TETHYS_DEFINE_VTBL_GETTER(0x4D6D20);
 
-  // Object size = 0x58
+  static constexpr size_t ObjectSize = 0x58;
 };
 
 // =====================================================================================================================
@@ -1175,7 +1175,7 @@ public:
 
   PackedPlayerBitmask playerSurveyedMask_;  ///< Which players have surveyed this beacon
 
-  // Object size = 0x6B
+  static constexpr size_t ObjectSize = 0x6B;
 };
 
 // =====================================================================================================================
@@ -1197,7 +1197,7 @@ public:
 public:
   int field_58;
 
-  // Object size = 0x64
+  static constexpr size_t ObjectSize = 0x64;
 };
 
 // =====================================================================================================================
@@ -1224,7 +1224,7 @@ public:
   PlayerBitmask playerDiscoveredMask_;
   int           techID_;                ///< Tech ID of technology granted when wreckage is turned in at a Spaceport.
 
-  // Object size = 0x60
+  static constexpr size_t ObjectSize = 0x60;
 };
 
 // =====================================================================================================================
@@ -1242,7 +1242,7 @@ public:
 
   TETHYS_DEFINE_VTBL_GETTER(0x4D4028);
 
-  // Object size = 0x58
+  static constexpr size_t ObjectSize = 0x58;
 };
 
 // =====================================================================================================================
@@ -1260,7 +1260,7 @@ public:
 
   TETHYS_DEFINE_VTBL_GETTER(0x4D3F60);
 
-  // Object size = 0x58
+  static constexpr size_t ObjectSize = 0x58;
 };
 
 // =====================================================================================================================
@@ -1278,7 +1278,7 @@ public:
 
   TETHYS_DEFINE_VTBL_GETTER(0x4D3E98);
 
-  // Object size = 0x58
+  static constexpr size_t ObjectSize = 0x58;
 };
 
 // =====================================================================================================================
@@ -1296,7 +1296,7 @@ public:
 
   TETHYS_DEFINE_VTBL_GETTER(0x4D7018);
 
-  // Object size = 0x58
+  static constexpr size_t ObjectSize = 0x58;
 };
 
 // =====================================================================================================================
@@ -1313,7 +1313,7 @@ public:
 
   TETHYS_DEFINE_VTBL_GETTER(0x4D6EE8);
 
-  // Object size = 0x58
+  static constexpr size_t ObjectSize = 0x58;
 };
 
 // =====================================================================================================================
@@ -1330,7 +1330,7 @@ public:
 
   TETHYS_DEFINE_VTBL_GETTER(0x4D70B0);
 
-  // Object size = 0x58
+  static constexpr size_t ObjectSize = 0x58;
 };
 
 //  ====================================================================================================================
@@ -1347,7 +1347,7 @@ public:
 
   TETHYS_DEFINE_VTBL_GETTER(0x4D6F80);
 
-  // Object size = 0x58
+  static constexpr size_t ObjectSize = 0x58;
 };
 
 // =====================================================================================================================
@@ -1364,7 +1364,7 @@ public:
 
   TETHYS_DEFINE_VTBL_GETTER(0x4D7148);
 
-  // Object size = 0x58
+  static constexpr size_t ObjectSize = 0x58;
 };
 
 // =====================================================================================================================
@@ -1386,7 +1386,7 @@ public:
 
   TETHYS_DEFINE_VTBL_GETTER(0x4CF058);
 
-  // Object size = 0x6C
+  static constexpr size_t ObjectSize = 0x6C;
 };
 
 // =====================================================================================================================
@@ -1402,7 +1402,7 @@ public:
 
   TETHYS_DEFINE_VTBL_GETTER(0x4D7278);
 
-  // Object size = 0x6C
+  static constexpr size_t ObjectSize = 0x6C;
 };
 
 // =====================================================================================================================
@@ -1421,7 +1421,7 @@ public:
 
   TETHYS_DEFINE_VTBL_GETTER(0x4D6BF0);
 
-  // Object size = 0x6C
+  static constexpr size_t ObjectSize = 0x6C;
 };
 
 // =====================================================================================================================
@@ -1443,10 +1443,11 @@ public:
 
   TETHYS_DEFINE_VTBL_GETTER(0x4D5F60);
 
-  // Object size = 0x70
+  static constexpr size_t ObjectSize = 0x70;
 };
 
 // =====================================================================================================================
+/// Unimplemented, based on Projectile.  May be related to SmallCapacityAirTransport?
 class InterColonyShuttle : public Projectile {
   using $ = InterColonyShuttle;
 public:
@@ -1462,7 +1463,7 @@ public:
 
   TETHYS_DEFINE_VTBL_GETTER(0x4D45A8);
 
-  // Object size = 0x6C
+  static constexpr size_t ObjectSize = 0x6C;
 };
 
 // =====================================================================================================================
@@ -1480,7 +1481,7 @@ public:
 
   TETHYS_DEFINE_VTBL_GETTER(0x4D6DB8);
 
-  // Object size = 0x6C
+  static constexpr size_t ObjectSize = 0x6C;
 };
 
 // =====================================================================================================================
@@ -1496,7 +1497,7 @@ public:
 
   TETHYS_DEFINE_VTBL_GETTER(0x4D6E50);
 
-  // Object size = 0x6C
+  static constexpr size_t ObjectSize = 0x6C;
 };
 
 // =====================================================================================================================
@@ -1514,7 +1515,7 @@ public:
 
   TETHYS_DEFINE_VTBL_GETTER(0x4D71E0);
 
-  // Object size = 0x6C
+  static constexpr size_t ObjectSize = 0x6C;
 };
 
 // =====================================================================================================================
@@ -1534,7 +1535,7 @@ public:
 
   TETHYS_DEFINE_VTBL_GETTER(0x4D4450);
 
-  // Object size = 0x58
+  static constexpr size_t ObjectSize = 0x58;
 };
 
 // =====================================================================================================================
@@ -1552,7 +1553,7 @@ public:
 
   TETHYS_DEFINE_VTBL_GETTER(0x4D43A8);
 
-  // Object size = 0x54
+  static constexpr size_t ObjectSize = 0x54;
 };
 
 // =====================================================================================================================
@@ -1568,7 +1569,7 @@ public:
 
   TETHYS_DEFINE_VTBL_GETTER(0x4D4300);
 
-  // Object size = 0x54
+  static constexpr size_t ObjectSize = 0x54;
 };
 
 // =====================================================================================================================
@@ -1586,7 +1587,7 @@ public:
 
   TETHYS_DEFINE_VTBL_GETTER(0x4D0E80);
 
-  // Object size = 0x5C
+  static constexpr size_t ObjectSize = 0x5C;
 };
 
 // =====================================================================================================================
@@ -1604,7 +1605,7 @@ public:
 
   TETHYS_DEFINE_VTBL_GETTER(0x4D3238);
 
-  // Object size = 0x60
+  static constexpr size_t ObjectSize = 0x60;
 };
 
 // =====================================================================================================================
@@ -1625,7 +1626,7 @@ public:
 
   TETHYS_DEFINE_VTBL_GETTER(0x4CF0F0);
 
-  // Object size = 0x60
+  static constexpr size_t ObjectSize = 0x60;
 };
 
 // =====================================================================================================================
@@ -1645,7 +1646,7 @@ public:
 
   TETHYS_DEFINE_VTBL_GETTER(0x4D1790);
 
-  // Object size = 0x60
+  static constexpr size_t ObjectSize = 0x60;
 };
 
 // =====================================================================================================================
@@ -1662,7 +1663,7 @@ public:
 
   TETHYS_DEFINE_VTBL_GETTER(0x4D3358);
 
-  // Object size = 0x60
+  static constexpr size_t ObjectSize = 0x60;
 };
 
 // =====================================================================================================================
@@ -1682,7 +1683,7 @@ public:
 
   TETHYS_DEFINE_VTBL_GETTER(0x4CF5F8);
 
-  // Object size = 0x60
+  static constexpr size_t ObjectSize = 0x60;
 };
 
 // =====================================================================================================================
@@ -1699,7 +1700,7 @@ public:
 
   TETHYS_DEFINE_VTBL_GETTER(0x4D2410);
 
-  // Object size = 0x60
+  static constexpr size_t ObjectSize = 0x60;
 };
 
 // =====================================================================================================================
@@ -1716,7 +1717,7 @@ public:
 
   TETHYS_DEFINE_VTBL_GETTER(0x4D1670);
 
-  // Object size = 0x60
+  static constexpr size_t ObjectSize = 0x60;
 };
 
 // =====================================================================================================================
@@ -1748,7 +1749,7 @@ public:
 public:
   MapObject* pUnitInBay_[6];
 
-  // Object size = 0x78
+  static constexpr size_t ObjectSize = 0x78;  // == MapObjectSize exactly
 };
 
 // =====================================================================================================================
@@ -1765,7 +1766,7 @@ public:
 
   TETHYS_DEFINE_VTBL_GETTER(0x4D36D0);
 
-  // Object size = 0x60
+  static constexpr size_t ObjectSize = 0x60;
 };
 
 // =====================================================================================================================
@@ -1792,7 +1793,7 @@ public:
 #define OP2_MO_GUARDPOST_VTBL($)  $(Func_63)  $(IsInRange)
   TETHYS_DEFINE_VTBL_TYPE(OP2_MO_GUARDPOST_VTBL, 0x4CFFB0);
 
-  // Object size = 0x60
+  static constexpr size_t ObjectSize = 0x60;
 };
 
 // =====================================================================================================================
@@ -1808,7 +1809,7 @@ public:
 
   TETHYS_DEFINE_VTBL_GETTER(0x4D1180);
 
-  // Object size = 0x60
+  static constexpr size_t ObjectSize = 0x60;
 };
 
 // =====================================================================================================================
@@ -1824,7 +1825,7 @@ public:
 
   TETHYS_DEFINE_VTBL_GETTER(0x4D1510);
 
-  // Object size = 0x60
+  static constexpr size_t ObjectSize = 0x60;
 };
 
 // =====================================================================================================================
@@ -1841,7 +1842,7 @@ public:
 
   TETHYS_DEFINE_VTBL_GETTER(0x4D1E50);
 
-  // Object size = 0x60
+  static constexpr size_t ObjectSize = 0x60;
 };
 
 // =====================================================================================================================
@@ -1858,7 +1859,7 @@ public:
 
   TETHYS_DEFINE_VTBL_GETTER(0x4D2680);
 
-  // Object size = 0x60
+  static constexpr size_t ObjectSize = 0x60;
 };
 
 // =====================================================================================================================
@@ -1874,7 +1875,7 @@ public:
 
   TETHYS_DEFINE_VTBL_GETTER(0x4D12A0);
 
-  // Object size = 0x60
+  static constexpr size_t ObjectSize = 0x60;
 };
 
 // =====================================================================================================================
@@ -1891,7 +1892,7 @@ public:
 
   TETHYS_DEFINE_VTBL_GETTER(0x4D1F70);
 
-  // Object size = 0x60
+  static constexpr size_t ObjectSize = 0x60;
 };
 
 // =====================================================================================================================
@@ -1908,7 +1909,7 @@ public:
 
   TETHYS_DEFINE_VTBL_GETTER(0x4D2FF8);
 
-  // Object size = 0x60
+  static constexpr size_t ObjectSize = 0x60;
 };
 
 // =====================================================================================================================
@@ -1925,7 +1926,7 @@ public:
 
   TETHYS_DEFINE_VTBL_GETTER(0x4D35B0);
 
-  // Object size = 0x60
+  static constexpr size_t ObjectSize = 0x60;
 };
 
 // =====================================================================================================================
@@ -1945,7 +1946,7 @@ public:
 
   TETHYS_DEFINE_VTBL_GETTER(0x4CF6F8);
 
-  // Object size = 0x60
+  static constexpr size_t ObjectSize = 0x60;
 };
 
 // =====================================================================================================================
@@ -1962,7 +1963,7 @@ public:
 
   TETHYS_DEFINE_VTBL_GETTER(0x4D21B0);
 
-  // Object size = 0x60
+  static constexpr size_t ObjectSize = 0x60;
 };
 
 // =====================================================================================================================
@@ -1980,7 +1981,7 @@ public:
 
   TETHYS_DEFINE_VTBL_GETTER(0x4D3118);
 
-  // Object size = 0x60
+  static constexpr size_t ObjectSize = 0x60;
 };
 
 // =====================================================================================================================
@@ -1997,7 +1998,7 @@ public:
 
   TETHYS_DEFINE_VTBL_GETTER(0x4D19D0);
 
-  // Object size = 0x60
+  static constexpr size_t ObjectSize = 0x60;
 };
 
 // =====================================================================================================================
@@ -2014,7 +2015,7 @@ public:
 
   TETHYS_DEFINE_VTBL_GETTER(0x4D1AF0);
 
-  // Object size = 0x60
+  static constexpr size_t ObjectSize = 0x60;
 };
 
 // =====================================================================================================================
@@ -2031,7 +2032,7 @@ public:
 
   TETHYS_DEFINE_VTBL_GETTER(0x4D1C10);
 
-  // Object size = 0x60
+  static constexpr size_t ObjectSize = 0x60;
 };
 
 // =====================================================================================================================
@@ -2047,7 +2048,7 @@ public:
 
   TETHYS_DEFINE_VTBL_GETTER(0x4D0F20);
 
-  // Object size = 0x60
+  static constexpr size_t ObjectSize = 0x60;
 };
 
 // =====================================================================================================================
@@ -2069,7 +2070,7 @@ public:
 
   TETHYS_DEFINE_VTBL_GETTER(0x4D22D0);
 
-  // Object size = 0x68
+  static constexpr size_t ObjectSize = 0x68;
 };
 
 // =====================================================================================================================
@@ -2085,7 +2086,7 @@ public:
 
   TETHYS_DEFINE_VTBL_GETTER(0x4D1040);
 
-  // Object size = 0x60
+  static constexpr size_t ObjectSize = 0x60;
 };
 
 // =====================================================================================================================
@@ -2102,7 +2103,7 @@ public:
 
   TETHYS_DEFINE_VTBL_GETTER(0x4D28C0);
 
-  // Object size = 0x6E
+  static constexpr size_t ObjectSize = 0x6E;
 };
 
 // =====================================================================================================================
@@ -2119,7 +2120,7 @@ public:
 
   TETHYS_DEFINE_VTBL_GETTER(0x4D2B10);
 
-  // Object size = 0x6E
+  static constexpr size_t ObjectSize = 0x6E;
 };
 
 // =====================================================================================================================
@@ -2146,7 +2147,7 @@ public:
   MapID objectOnPad_;  ///< Rocket type on launch pad.
   MapID launchCargo_;  ///< Cargo type carried in rocket.
 
-  // Object size = 0x76
+  static constexpr size_t ObjectSize = 0x76;  // = MapObjectSize - 2
 };
 
 // =====================================================================================================================
@@ -2163,7 +2164,7 @@ public:
 
   TETHYS_DEFINE_VTBL_GETTER(0x4D2C48);
 
-  // Object size = 0x6E
+  static constexpr size_t ObjectSize = 0x6E;
 };
 
 // =====================================================================================================================
@@ -2180,7 +2181,7 @@ public:
 
   TETHYS_DEFINE_VTBL_GETTER(0x4D2D80);
 
-  // Object size = 0x6E
+  static constexpr size_t ObjectSize = 0x6E;
 };
 
 // =====================================================================================================================
@@ -2196,7 +2197,7 @@ public:
 
   TETHYS_DEFINE_VTBL_GETTER(0x4D0260);
 
-  // Object size = 0x65
+  static constexpr size_t ObjectSize = 0x65;
 };
 
 // =====================================================================================================================
@@ -2212,7 +2213,7 @@ public:
 
   TETHYS_DEFINE_VTBL_GETTER(0x4D1D30);
 
-  // Object size = 0x65
+  static constexpr size_t ObjectSize = 0x65;
 };
 
 // =====================================================================================================================
@@ -2228,7 +2229,7 @@ public:
 
   TETHYS_DEFINE_VTBL_GETTER(0x4D2EB8);
 
-  // Object size = 0x65
+  static constexpr size_t ObjectSize = 0x65;
 };
 
 // =====================================================================================================================
@@ -2245,7 +2246,7 @@ public:
 
   TETHYS_DEFINE_VTBL_GETTER(0x4D48A8);
 
-  // Object size = 0x74
+  static constexpr size_t ObjectSize = 0x74;
 };
 
 // =====================================================================================================================
@@ -2264,7 +2265,7 @@ public:
 
   TETHYS_DEFINE_VTBL_GETTER(0x4D2550);
 
-  // Object size = 0x74
+  static constexpr size_t ObjectSize = 0x74;
 };
 
 // =====================================================================================================================
@@ -2281,7 +2282,7 @@ public:
 
   TETHYS_DEFINE_VTBL_GETTER(0x4D13C0);
 
-  // Object size = 0x74
+  static constexpr size_t ObjectSize = 0x74;
 };
 
 // =====================================================================================================================
@@ -2297,7 +2298,7 @@ public:
 
   TETHYS_DEFINE_VTBL_GETTER(0x4D27A0);
 
-  // Object size = 0x60
+  static constexpr size_t ObjectSize = 0x60;
 };
 
 // =====================================================================================================================
@@ -2313,7 +2314,7 @@ public:
 
   TETHYS_DEFINE_VTBL_GETTER(0x4D18B0);
 
-  // Object size = 0x60
+  static constexpr size_t ObjectSize = 0x60;
 };
 
 // =====================================================================================================================
@@ -2331,7 +2332,7 @@ public:
 
   TETHYS_DEFINE_VTBL_GETTER(0x4D2090);
 
-  // Object size = 0x60
+  static constexpr size_t ObjectSize = 0x60;
 };
 
 // =====================================================================================================================
@@ -2348,7 +2349,7 @@ public:
 
   TETHYS_DEFINE_VTBL_GETTER(0x4D37F0);
 
-  // Object size = 0x60
+  static constexpr size_t ObjectSize = 0x60;
 };
 
 // =====================================================================================================================
@@ -2375,6 +2376,7 @@ public:
   TETHYS_DEFINE_VTBL_TYPE(OP2_MO_CARGOTRUCK_VTBL, 0x4CF4A8);
 
   // Object size = 0x6E
+  static constexpr size_t ObjectSize = 0x6E;
 };
 
 // =====================================================================================================================
@@ -2395,7 +2397,7 @@ public:
 
   TETHYS_DEFINE_VTBL_GETTER(0x4CF990);
 
-  // Object size = 0x6C
+  static constexpr size_t ObjectSize = 0x6C;
 };
 
 // =====================================================================================================================
@@ -2421,7 +2423,7 @@ public:
 
   void FinishBuildingWall() { return Thunk<0x423700, &$::FinishBuildingWall>(); }
 
-  // Object size = 0x71
+  static constexpr size_t ObjectSize = 0x71;
 };
 
 // =====================================================================================================================
@@ -2437,7 +2439,7 @@ public:
 
   TETHYS_DEFINE_VTBL_GETTER(0x4D0C58);
 
-  // Object size = 0x62
+  static constexpr size_t ObjectSize = 0x62;
 };
 
 // =====================================================================================================================
@@ -2455,7 +2457,7 @@ public:
 
   TETHYS_DEFINE_VTBL_GETTER(0x4D0AC8);
 
-  // Object size = 0x6C
+  static constexpr size_t ObjectSize = 0x6C;
 };
 
 // =====================================================================================================================
@@ -2471,7 +2473,7 @@ public:
 
   TETHYS_DEFINE_VTBL_GETTER(0x4D0D10);
 
-  // Object size = 0x62
+  static constexpr size_t ObjectSize = 0x62;
 };
 
 // =====================================================================================================================
@@ -2488,7 +2490,7 @@ public:
 
   TETHYS_DEFINE_VTBL_GETTER(0x4CF7F8);
 
-  // Object size = 0x6B
+  static constexpr size_t ObjectSize = 0x6B;
 };
 
 // =====================================================================================================================
@@ -2506,7 +2508,7 @@ public:
 
   TETHYS_DEFINE_VTBL_GETTER(0x4D0A10);
 
-  // Object size = 0x62
+  static constexpr size_t ObjectSize = 0x62;
 };
 
 // =====================================================================================================================
@@ -2522,7 +2524,7 @@ public:
 
   TETHYS_DEFINE_VTBL_GETTER(0x4D61A0);
 
-  // Object size = 0x62
+  static constexpr size_t ObjectSize = 0x62;
 };
 
 // =====================================================================================================================
@@ -2540,7 +2542,7 @@ public:
 
   TETHYS_DEFINE_VTBL_GETTER(0x4D0B80);
 
-  // Object size = 0x64
+  static constexpr size_t ObjectSize = 0x64;
 };
 
 // =====================================================================================================================
@@ -2558,7 +2560,7 @@ public:
 
   TETHYS_DEFINE_VTBL_GETTER(0x4D0710);
 
-  // Object size = 0x62
+  static constexpr size_t ObjectSize = 0x62;
 };
 
 // =====================================================================================================================
@@ -2578,7 +2580,7 @@ public:
 
   TETHYS_DEFINE_VTBL_GETTER(0x4D07C8);
 
-  // Object size = 0x62
+  static constexpr size_t ObjectSize = 0x62;
 };
 
 // =====================================================================================================================
@@ -2596,7 +2598,7 @@ public:
 
   TETHYS_DEFINE_VTBL_GETTER(0x4D0880);
 
-  // Object size = 0x62
+  static constexpr size_t ObjectSize = 0x62;
 };
 
 // =====================================================================================================================
@@ -2614,7 +2616,7 @@ public:
 
   TETHYS_DEFINE_VTBL_GETTER(0x4D0938);
 
-  // Object size = 0x62
+  static constexpr size_t ObjectSize = 0x62;
 };
 
 // =====================================================================================================================
@@ -2632,7 +2634,7 @@ public:
 
   TETHYS_DEFINE_VTBL_GETTER(0x4D05C0);
 
-  // Object size = 0x62
+  static constexpr size_t ObjectSize = 0x62;
 };
 
 END_PACKED
