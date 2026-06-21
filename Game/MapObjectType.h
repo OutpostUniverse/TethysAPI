@@ -239,7 +239,7 @@ struct PerPlayerUnitStats {
       int turnRate;            ///< 'Turn_Rate'
       int productionRate;      ///< 'Production_Rate'
       int reloadTime;          ///< 'Rate_Of_Fire'
-      int field_38;            
+      int field_38;
       int cargoCapacity;       ///< 'Storage_Bays' (aliased)
     } vehicle;
 
@@ -334,7 +334,7 @@ public:
 public:
   MapID              type_;
   PerPlayerUnitStats playerStats_[7];
-  int                requiredTechID_;
+  int                requiredTechNum_;
   TrackType          trackType_;
   int                field_1EC;
   SoundID            selectSoundID_;
@@ -2178,6 +2178,7 @@ END_PACKED
   $(EnergyCannon)  $(EMPBlast)  $(BFG)  $(Lightning)  $(Vortex)  $(Earthquake)  $(Eruption)  $(Meteor)  $(MiningBeacon)\
   $(MagmaVent)  $(Fumarole)  $(Wreckage)  $(SmallBuildingExplosion)  $(MediumBuildingExplosion)                        \
   $(LargeBuildingExplosion)  $(SULV)  $(RLV)  $(EMPMissile)  $(InterColonyShuttle)  $(AmbientAnimation)
+// MO_TYPE_MAPPINGS also includes MapIDs that don't have unique MapObject subclasses.
 #define OP2_EMIT_MO_TYPE_MAPPINGS($)                                                                                   \
   OP2_EMIT_MO_MAPPINGS($)  $(EDWARDSatellite)  $(SolarSatellite)  $(IonDriveModule)  $(FusionDriveModule)              \
   $(CommandModule)  $(FuelingSystems)  $(HabitatRing)  $(SensorPackage)  $(Skydock)  $(StasisSystems)                  \
