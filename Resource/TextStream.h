@@ -2,6 +2,7 @@
 #pragma once
 
 #include "Tethys/Common/Memory.h"
+#include <string_view>
 
 namespace Tethys {
 
@@ -13,8 +14,8 @@ public:
    TextStream() { InternalCtor<0x48EFF0>(); }
   ~TextStream() { Thunk<0x48F000>();        }
 
-  ibool Open(const char* pFilename) { return Thunk<0x48F020, &$::Open>(pFilename); }
-  void  Close()                     { return Thunk<0x48F050, &$::Close>();         }
+  ibool Open(std::string_view filename) { return Thunk<0x48F020, ibool(const char*)>(filename.data()); }
+  void  Close()                         { return Thunk<0x48F050, &$::Close>();                         }
 
   void  ResetToLastToken()                        { return Thunk<0x48F070, &$::ResetToLastToken>();              }
   ibool SkipRestOfLine()                          { return Thunk<0x48F090, &$::SkipRestOfLine>();                }
@@ -35,8 +36,8 @@ public:
    SheetParser() { InternalCtor<0x411470>(); }
   ~SheetParser() { Thunk<0x411260>();        }
 
-  StreamIO* Open(const char* pFilename) { return Thunk<0x411290, &$::Open>(pFilename); }
-  void      Close()                     { return Thunk<0x4112E0, &$::Close>();         }
+  StreamIO* Open(std::string_view filename) { return Thunk<0x411290, StreamIO*(const char*)>(filename.data()); }
+  void      Close()                         { return Thunk<0x4112E0, &$::Close>();                             }
 
   ibool F1()           { return Thunk<0x411310, &$::F1>();           }
   ibool GetNextField() { return Thunk<0x4113E0, &$::GetNextField>(); }

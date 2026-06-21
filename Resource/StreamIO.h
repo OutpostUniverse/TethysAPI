@@ -2,6 +2,7 @@
 #pragma once
 
 #include "Tethys/Common/Memory.h"
+#include <string_view>
 
 namespace Tethys {
 
@@ -28,8 +29,10 @@ public:
 #define OP2_STREAMIO_VTBL($)  $(GetStatus)  $(Destroy)  $(Tell)  $(Seek)  $(F1)  $(Flush)  $(Write)  $(Read)  $(Close)
   TETHYS_DEFINE_VTBL_TYPE(OP2_STREAMIO_VTBL, 0x4D74FC);
 
-  ibool WriteString(const char* pString) { return OP2Thunk<0x49DB40, ibool FASTCALL($*, const char*)>(this, pString); }
-  const char* ReadString()               { return    Thunk<0x49DBC0, &$::ReadString>();                               }
+  ibool WriteString(std::string_view s) { return OP2Thunk<0x49DB40, ibool FASTCALL($*, const char*)>(this, s.data()); }
+  /// Returns a string as if via OP2Strdup.  Use OP2Free to delete.
+  // ** TODO Make this a shared_ptr?
+  std::string_view ReadString() { return Thunk<0x49DBC0, const char*()>(); }
 
   template <typename T>  ibool WriteValue(const T&  data) { return Write(sizeof(T), &data); }
   template <typename T>  ibool ReadValue(T*        pData) { return  Read(sizeof(T), pData); }
@@ -44,9 +47,9 @@ public:
 class FileRStream : public StreamIO {
   using $ = FileRStream;
 public:
-  FileRStream()                      { InternalCtor<0x4AB400>();                       }
-  FileRStream(HANDLE      hFile)     { InternalCtor<0x4AB460, HANDLE>(hFile);          }
-  FileRStream(const char* pFilename) { InternalCtor<0x4AB4B0, const char*>(pFilename); }
+  FileRStream()                          { InternalCtor<0x4AB400>();                             }
+  FileRStream(HANDLE           hFile)    { InternalCtor<0x4AB460, HANDLE>(hFile);                }
+  FileRStream(std::string_view filename) { InternalCtor<0x4AB4B0, const char*>(filename.data()); }
 
   void*  Destroy(ibool freeMem = 0)              override { return Thunk<0x4AB440, &$::Destroy>(freeMem);     }
   size_t Tell()                                  override { return Thunk<0x4AB640, &$::Tell>();               }
@@ -59,8 +62,8 @@ public:
 
   TETHYS_DEFINE_VTBL_GETTER(0x4D7524);
 
-  void SetOpenFileHandle(HANDLE hFile) { return Thunk<0x4AB550, &$::SetOpenFileHandle>(hFile); }
-  int  OpenFile(const char* pFilename) { return Thunk<0x4AB5E0, &$::OpenFile>(pFilename);      }
+  void SetOpenFileHandle(HANDLE hFile)     { return Thunk<0x4AB550, &$::SetOpenFileHandle>(hFile);      }
+  int  OpenFile(std::string_view filename) { return Thunk<0x4AB5E0, int(const char*)>(filename.data()); }
 
   int GetFileSize() { return Thunk<0x4AB700, &$::GetFileSize>(); }
 
@@ -82,9 +85,9 @@ static_assert(sizeof(FileRStream) == 0x820, "Incorrect FileRStream size.");
 class FileWStream : public StreamIO {
   using $ = FileWStream;
 public:
-  FileWStream()                      { InternalCtor<0x4AB990>();                       }
-  FileWStream(HANDLE      hFile)     { InternalCtor<0x4AB9E0, HANDLE>(hFile);          }
-  FileWStream(const char* pFilename) { InternalCtor<0x4ABA20, const char*>(pFilename); }
+  FileWStream()                          { InternalCtor<0x4AB990>();                             }
+  FileWStream(HANDLE           hFile)    { InternalCtor<0x4AB9E0, HANDLE>(hFile);                }
+  FileWStream(std::string_view filename) { InternalCtor<0x4ABA20, const char*>(filename.data()); }
 
   void*  Destroy(ibool freeMem = 0)              override { return Thunk<0x4AB9C0, &$::Destroy>(freeMem);     }
   size_t Tell()                                  override { return Thunk<0x4ABB90, &$::Tell>();               }
@@ -97,8 +100,8 @@ public:
 
   TETHYS_DEFINE_VTBL_GETTER(0x4D754C);
 
-  void SetOpenFileHandle(HANDLE hFile) { return Thunk<0x4ABAB0, &$::SetOpenFileHandle>(hFile); }
-  int  OpenFile(const char* pFilename) { return Thunk<0x4ABB30, &$::OpenFile>(pFilename);      }
+  void SetOpenFileHandle(HANDLE  hFile)    { return Thunk<0x4ABAB0, &$::SetOpenFileHandle>(hFile);      }
+  int  OpenFile(std::string_view filename) { return Thunk<0x4ABB30, int(const char*)>(filename.data()); }
 
   int GetFileSize() { return Thunk<0x4ABC00, &$::GetFileSize>(); }
 
@@ -115,9 +118,9 @@ static_assert(sizeof(FileWStream) == 0x15, "Incorrect FileWStream size.");
 class FileRWStream : public StreamIO {
   using $ = FileRWStream;
 public:
-  FileRWStream()                      { InternalCtor<0x4B0CE0>();                       }
-  FileRWStream(HANDLE      hFile)     { InternalCtor<0x4B0D30, HANDLE>(hFile);          }
-  FileRWStream(const char* pFilename) { InternalCtor<0x4B0D70, const char*>(pFilename); }
+  FileRWStream()                          { InternalCtor<0x4B0CE0>();                             }
+  FileRWStream(HANDLE           hFile)    { InternalCtor<0x4B0D30, HANDLE>(hFile);                }
+  FileRWStream(std::string_view filename) { InternalCtor<0x4B0D70, const char*>(filename.data()); }
   //~FileRWStream();  // 0x4B0DA0
 
   void*  Destroy(ibool freeMem = 0)              override { return Thunk<0x4B0D10, &$::Destroy>(freeMem);     }
@@ -131,8 +134,8 @@ public:
 
   TETHYS_DEFINE_VTBL_GETTER(0x4D76BC);
 
-  void SetOpenFileHandle(HANDLE hFile) { return Thunk<0x4B0E00, &$::SetOpenFileHandle>(hFile); }
-  int  OpenFile(const char* pFilename) { return Thunk<0x4B0E80, &$::OpenFile>(pFilename);      }
+  void SetOpenFileHandle(HANDLE  hFile)    { return Thunk<0x4B0E00, &$::SetOpenFileHandle>(hFile);      }
+  int  OpenFile(std::string_view filename) { return Thunk<0x4B0E80, int(const char*)>(filename.data()); }
 
   int GetFileSize() { return Thunk<0x4B0F50, &$::GetFileSize>(); }
 
