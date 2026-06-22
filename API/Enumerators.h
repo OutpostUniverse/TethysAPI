@@ -10,6 +10,7 @@
 #include "Tethys/API/Unit.h"
 #include "Tethys/API/Location.h"
 #include "Tethys/Game/GameImpl.h"
+#include "Tethys/Game/MapImpl.h"
 #include <iterator>
 
 namespace Tethys {
@@ -28,6 +29,7 @@ public:
 };
 
 /// @internal  Template CRTP base class providing necessary STL std::iterator functionality for map area iterators.
+// ** TODO This is pretty hacky.  We should just reimplement the OP2 functions instead of thunking to them.
 template <typename Iterator, typename Result = TethysAPI::Unit>
 class AreaIteratorBase : public OP2Class<Iterator> {
 public:
@@ -44,8 +46,8 @@ public:
   operator bool()      const { return (result_ != Result{}); }
   Result   operator*() const { return  result_;              }
 
-private:
-  MapObject* pCurrentUnit_;
+protected:
+  MapObject* pMo_;
 
   int field_04;
   int field_08;
@@ -69,9 +71,10 @@ namespace TethysAPI {
 
 /// Iterates over a player's unit list.
 class PlayerUnitIterator : public TethysImpl::UnitIteratorBase {
+using Base = UnitIteratorBase;
 public:
-  explicit PlayerUnitIterator(MapObject* pMo = nullptr) : pMo_(pMo) { }
-  explicit PlayerUnitIterator(Unit u) : pMo_(u.GetMapObject()) { }
+  PlayerUnitIterator(Unit u = {})  : pMo_(u.GetMapObject()) { }
+  PlayerUnitIterator(MapObject* p) : pMo_(p) { }
 
   PlayerUnitIterator& operator++()    { pMo_ = (pMo_ != nullptr) ? pMo_->pPlayerNext_ : nullptr;  return *this; }
   PlayerUnitIterator  operator++(int) { auto old = *this;  operator++();  return old; }
@@ -115,7 +118,8 @@ class PlayerUnitEnumBase {
 public:
   using Iterator = TethysAPI::FilterPlayerUnitIterator;
 
-  explicit PlayerUnitEnumBase(int playerNum, MapID type = MapID::Any) : playerNum_(playerNum), type_(type) { }
+  // ** TODO try to support AllPlayers?
+  PlayerUnitEnumBase(int playerNum, MapID type = MapID::Any) : playerNum_(playerNum), type_(type) { }
 
   Iterator begin() { return Iterator(nullptr, type_); }
   Iterator end()   { return Iterator(nullptr, type_); }
@@ -170,7 +174,7 @@ public:
   Iterator begin() { return Iterator(centerPoint_, maxTileDistance_); }
   Iterator end()   { return Iterator();                               }
 
-private:
+protected:
   Location centerPoint_;
   int      maxTileDistance_;
 };
@@ -182,16 +186,16 @@ public:
   class Iterator : public TethysImpl::AreaIteratorBase<Iterator> {
   public:
     using AreaIteratorBase::AreaIteratorBase;
-    explicit Iterator(const MapRect& rect) { InternalCtor<0x47A610, const MapRect&>(rect);  ++(*this); }
+    Iterator(const MapRect& rect) { InternalCtor<0x47A610, const MapRect&>(rect);  ++(*this); }
     ibool GetNext(Unit& currentUnit) { return Thunk<0x47A6A0, &$::GetNext>(currentUnit); }
   };
 
-  explicit InRectEnumerator(const MapRect& rect) : rect_(rect) { }
+  InRectEnumerator(const MapRect& rect) : rect_(rect) { }
 
   Iterator begin() { return Iterator(rect_); }
   Iterator end()   { return Iterator();      }
 
-private:
+protected:
   MapRect rect_;
 };
 
@@ -202,16 +206,16 @@ public:
   class Iterator : public TethysImpl::AreaIteratorBase<Iterator> {
   public:
     using AreaIteratorBase::AreaIteratorBase;
-    explicit Iterator(const Location& location) { InternalCtor<0x47A6D0, const Location&>(location);  ++(*this); }
+    Iterator(const Location& location) { InternalCtor<0x47A6D0, const Location&>(location);  ++(*this); }
     ibool GetNext(Unit& currentUnit) { return Thunk<0x47A710, &$::GetNext>(currentUnit); }
   };
 
-  explicit LocationEnumerator(const Location& location) : location_(location) { }
+  LocationEnumerator(const Location& location) : location_(location) { }
 
   Iterator begin() { return Iterator(location_); }
   Iterator end()   { return Iterator();          }
 
-private:
+protected:
   Location location_;
 };
 
@@ -224,16 +228,16 @@ public:
   class Iterator : public TethysImpl::AreaIteratorBase<Iterator, Result> {
   public:
     using AreaIteratorBase::AreaIteratorBase;
-    explicit Iterator(const Location& location) { InternalCtor<0x47A7B0, const Location&>(location);  ++(*this); }
+    Iterator(const Location& location) { InternalCtor<0x47A7B0, const Location&>(location);  ++(*this); }
     ibool GetNext(Result& result) { return Thunk<0x47A7F0, ibool(Unit&, uint32&)>(result.first, result.second); }
   };
 
-  explicit ClosestEnumerator(const Location& location) : location_(location) { }
+  ClosestEnumerator(const Location& location) : location_(location) { }
 
   Iterator begin() { return Iterator(location_); }
   Iterator end()   { return Iterator();          }
 
-private:
+protected:
   Location location_;
 };
 
