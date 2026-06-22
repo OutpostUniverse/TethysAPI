@@ -192,9 +192,10 @@ public:
 
   virtual MapObjectType* GetType() const { return Thunk<0x439A00, &$::GetType>(); }
 
-  virtual void  ProcessCommands()           { return Thunk<0x43ADA0, &$::ProcessCommands>();           }
-  virtual int   ProcessActions()            { return Thunk<0x43DF60, &$::ProcessActions>();            }
-  virtual ibool CheckSpontaneouslyExplode() { return Thunk<0x4017E0, &$::CheckSpontaneouslyExplode>(); }
+  virtual void  ProcessCommands() { return Thunk<0x43ADA0, &$::ProcessCommands>(); }
+  virtual int   ProcessActions()  { return Thunk<0x43DF60, &$::ProcessActions>();  }
+
+  virtual ibool CanSpontaneouslyExplode() { return Thunk<0x4017E0, &$::CanSpontaneouslyExplode>(); }
 
   virtual int  FireWeapon() { return Thunk<0x4017F0, &$::FireWeapon>(); }
   virtual void SelectTurretGraphic(MapObject* pWeapon, int rotation)
@@ -240,7 +241,7 @@ public:
   virtual ibool IsSelectable() { return Thunk<0x4018E0, &$::IsSelectable>(); }
 
 #define OP2_MO_MAPOBJECT_VTBL($)                                                                             \
-  $(GetType)  $(ProcessCommands)  $(ProcessActions)  $(CheckSpontaneouslyExplode)  $(FireWeapon)             \
+  $(GetType)  $(ProcessCommands)  $(ProcessActions)  $(CanSpontaneouslyExplode)  $(FireWeapon)               \
   $(SelectTurretGraphic)  $(Draw)  $(LightUpVisibleRange)  $(MarkForRedraw) $(IsVisible)  $(IsVisibleY)      \
   $(GetAnimationIndex)  $(GetSelectionBoxSize)  $(GetSelectionBoxPos)  $(MouseOver)  $(GetMouseOverStr)      \
   $(GetSelectionStr)  $(IsMouseOver)  $(Func_18)  $(Destroy)  $(DoEvent)  $(OnSave)  $(OnLoad)  $(SetEMPed)  \
@@ -617,7 +618,7 @@ public:
   Building(InternalCtorChain) : LandUnit(UseInternalCtorChain) {                           }
 
   int   ProcessActions()                       override { return Thunk<0x408A00, &$::ProcessActions>();             }
-  ibool CheckSpontaneouslyExplode()            override { return Thunk<0x409400, &$::CheckSpontaneouslyExplode>();  }
+  ibool CanSpontaneouslyExplode()              override { return Thunk<0x409400, &$::CanSpontaneouslyExplode>();    }
   void  Draw(Viewport*              pViewport) override { return Thunk<0x408EA0, &$::Draw>(pViewport);              }
   void  MarkForRedraw(Viewport*     pViewport) override { return Thunk<0x408E20, &$::MarkForRedraw>(pViewport);     }
   ibool IsVisible(Viewport*         pViewport) override { return Thunk<0x408C10, &$::IsVisible>(pViewport);         }
