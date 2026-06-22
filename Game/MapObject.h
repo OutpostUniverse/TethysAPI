@@ -114,6 +114,47 @@ enum class CargoType : int {
   Count
 };
 
+/// Contains information about a ConVec's or factory's cargo bay contents.
+struct CargoKit {
+  constexpr operator MapID() const { return unitType; }  ///< Allows comparison operators, etc.  Assignment disallowed.
+
+  MapID unitType          = MapID::None;
+  MapID cargoOrWeaponType = MapID::None;
+};
+
+/// Contains information about a Cargo Truck's contents.
+struct TruckCargo {
+  constexpr operator CargoType&()       { return cargoType; }  ///< Allows assignment and comparison operators, etc.
+  constexpr operator CargoType()  const { return cargoType; }  ///< Allows assignment and comparison operators, etc.
+
+  CargoType cargoType = CargoType::Empty;
+  int       amount    = 0;
+};
+
+/// Type erasure wrapper for any MapObject's cargo.
+struct Cargo {
+  constexpr Cargo(MapID      weaponCargo = {}) : type(IsCargo), weaponCargo(weaponCargo), reserved() { }
+  constexpr Cargo(TruckCargo truckCargo)       : type(IsTruck), truckCargo(truckCargo) { }
+  constexpr Cargo(CargoKit   cargoKit)         : type(IsKit),   cargoKit(cargoKit)     { }
+
+  ///@{ Implicit conversion, for function inputs, comparisons, etc.
+  constexpr operator MapID()      const { return weaponCargo; }
+  constexpr operator TruckCargo() const { return truckCargo;  }
+  constexpr operator CargoKit()   const { return cargoKit;    }
+  ///@}
+
+  union {
+    struct {
+      MapID  weaponCargo;    ///< Cargo/weapon for most unit types
+      uint32 reserved;       // ** TODO can this be removed?
+    };
+    TruckCargo  truckCargo;  ///< [Cargo Truck] Cargo
+    CargoKit    cargoKit;    ///< [ConVec] Cargo
+  };
+
+  enum { IsCargo = 0, IsTruck, IsKit } type;  ///< Tag type for which cargo union field is active.
+};
+
 
 namespace TethysImpl { template <MapID>  struct MapObjForImpl { using Type = MapObject; }; }
 

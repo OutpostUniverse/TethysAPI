@@ -59,24 +59,6 @@ namespace TethysAPI {
 using UnitDirection      = Tethys::UnitDirection;
 using UnitClassification = Tethys::UnitClassification;
 
-/// Contains information about a ConVec's or factory's cargo bay contents.
-struct CargoKit {
-  constexpr operator MapID() const { return unitType; }  ///< Allows comparison operators, etc.  Assignment disallowed.
-
-  MapID unitType;
-  MapID cargoOrWeaponType;
-};
-
-/// Contains information about a Cargo Truck's contents.
-struct TruckCargo {
-  constexpr operator CargoType&()       { return cargoType; }  ///< Allows assignment and comparison operators, etc.
-  constexpr operator CargoType()  const { return cargoType; }  ///< Allows assignment and comparison operators, etc.
-
-  CargoType cargoType;
-  int       amount;
-};
-
-
 // =====================================================================================================================
 /// Exported interface wrapping a reference to a MapObject instance.
 class Unit : public OP2Class<Unit> {
