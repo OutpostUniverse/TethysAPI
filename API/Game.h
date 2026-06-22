@@ -112,7 +112,7 @@ public:
     Unit u;
     OP2Thunk<0x478780, ibool FASTCALL(Unit&, MapID, Location, int, MapID, UnitDirection)>(
       u, type, where, ownerNum, weaponCargo, rotation);
-    if (u.IsVehicle() && lightsOn) u.DoSetLights(true);
+    if (u.IsVehicle()) { u.DoSetLights(lightsOn); }
     return u;
   }
 
