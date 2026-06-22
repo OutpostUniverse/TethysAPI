@@ -28,7 +28,7 @@ enum class GameTermReasons : int {
 struct StartupFlags {
   uint32 disastersEnabled   : 1;
   uint32 dayNightEnabled    : 1;
-  uint32 moraleEnabled      : 1;
+  uint32 moraleSteady       : 1;
   uint32 isCampaign         : 1;
   uint32 isMultiplayer      : 1;
   uint32 cheatsEnabled      : 1;

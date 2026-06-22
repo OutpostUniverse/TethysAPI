@@ -81,11 +81,11 @@ public:
 
   static StartupFlags GetStartFlags() { return GetImpl()->gameStartInfo_.startupFlags; }
 
-  static bool UsesDayNight()     { return GetStartFlags().dayNightEnabled;    }  ///< Day/night enabled?
-  static bool UsesMorale()       { return GetStartFlags().moraleEnabled;      }  ///< Morale steady disabled?
-  static bool CanHaveDisasters() { return GetStartFlags().disastersEnabled;   }  ///< Disasters enabled?
-  static bool CanAllowCheats()   { return GetStartFlags().cheatsEnabled;      }  ///< Cheats enabled?
-  static int  InitialUnits()     { return GetStartFlags().numInitialVehicles; }  ///< # of units to start with (0-12).
+  static bool UsesDayNight()     { return GetStartFlags().dayNightEnabled;       }  ///< Day/night enabled?
+  static bool UsesMorale()       { return GetStartFlags().moraleSteady == false; }  ///< Morale steady disabled?
+  static bool CanHaveDisasters() { return GetStartFlags().disastersEnabled;      }  ///< Disasters enabled?
+  static bool CanAllowCheats()   { return GetStartFlags().cheatsEnabled;         }  ///< Cheats enabled?
+  static int  InitialUnits()     { return GetStartFlags().numInitialVehicles;    }  ///< # of units to start with (0-12)
 
   static void SetDaylightEverywhere(bool on) { SetGameOpt(GameOpt::DaylightEverywhere, on); } ///< Sets full daylight.
   static void SetDaylightMoves(bool      on) { SetGameOpt(GameOpt::DaylightMoves,      on); } ///< Sets day/night cycle.
