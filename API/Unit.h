@@ -117,6 +117,7 @@ public:
   int GetInstanceNum() const { return IsValid() ? GetMapObject()->unitTypeInstanceNum_ :  0; } ///< Type instance #.
 
   MapID GetType()     const { return IsValid() ? GetMapObject()->GetTypeID() : MapID::None; } ///< Unit type ID.
+  MapID GetTypeID()   const { return IsValid() ? GetMapObject()->GetTypeID() : MapID::None; } ///< Unit type ID.
   bool  IsLive()      const { return IsValid()    && GetMapObject()->IsLive();              } ///< Unit is alive?
   bool  IsBuilding()  const { return IsLive()     && HasFlag(MoFlagBuilding);               } ///< Unit is a structure?
   bool  IsFactory()   const { return IsBuilding() && HasFlag(MoFlagBldFactory);             } ///< Unit is a factory?
@@ -250,8 +251,8 @@ public:
   // ** TODO can these be overloads cleaned up using a type-erasure wrapper?
   ///@{ [ConVec]  Gets or sets ConVec cargo.
   CargoKit GetConVecCargo() const {
-    return IsVehicle() ?
-      CargoKit{ MapID(GetMapObject<Vehicle>()->cargo_), MapID(GetMapObject<Vehicle>()->weaponOfCargo_) } : CargoKit{};
+    auto*const p = GetMapObject<Vehicle>();
+    return IsVehicle() ? CargoKit{ MapID(p->cargo_), MapID(p->weaponOfCargo_) } : CargoKit{};
   }
   void SetCargo(MapID cargo, MapID weapon)
     { if (IsVehicle()) { auto*const p = GetMapObject<Vehicle>();  p->weapon_ = cargo;  p->weaponOfCargo_ = weapon; } }

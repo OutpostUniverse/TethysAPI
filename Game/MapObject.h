@@ -209,6 +209,7 @@ public:
   void SetAnimation(int animIdx, int delay, int startDelay, ibool isSpecialAnim, ibool skipDoDeath)
     { return Thunk<0x405110, &$::SetAnimation>(animIdx, delay, startDelay, isSpecialAnim, skipDoDeath); }
 
+  // ScGroup/AI-related unit commands
   void CmdMove(int pixelX, int pixelY)   { return Thunk<0x42A120, &$::CmdMove>(pixelX, pixelY); }
   void CmdAttack(int unitIndex)          { return Thunk<0x42A1E0, &$::CmdAttack>(unitIndex);    }
   void CmdReprogram(int unitIndex)       { return Thunk<0x42A270, &$::CmdReprogram>(unitIndex); }
@@ -2376,7 +2377,6 @@ public:
 #define OP2_MO_CARGOTRUCK_VTBL($)  $(SetCargoToLoad)  $(TransferCargo)
   TETHYS_DEFINE_VTBL_TYPE(OP2_MO_CARGOTRUCK_VTBL, 0x4CF4A8);
 
-  // Object size = 0x6E
   static constexpr size_t ObjectSize = 0x6E;
 };
 

@@ -42,7 +42,7 @@ public:
   static constexpr size_t NilIndex      = MaxNumScStubs;
 
   uint32  lastCreatedIndex_;
-  ScBase* pScStubArray_[MaxNumScStubs];
+  ScBase* pScStubArray_[MaxNumScStubs];  ///< This may be extended beyond this size in the future.
 };
 
 
