@@ -2692,11 +2692,11 @@ OP2_EMIT_MO_MAPPINGS(OP2_MO_FOR_DEF);
 //  ====================================================================================================================
 /// Union of all the MapObject subclasses together.
 union AnyMapObj {
-  ///@{ Overload conversion and reference operators to make this class act as if it's MapObject.
-  template <typename T, typename = std::enable_if_t<std::is_base_of_v<MapObject, T>>>
-  explicit operator T&() { return static_cast<T&>(object_); }
-  operator  MapObject&() { return  object_; }
-  MapObject* operator&() { return &object_; }
+  ///@{ Overload conversion and reference operators to make this class act as if it's MapObject (iff it's non-const).
+  template <typename MapObjType, typename = std::enable_if_t<std::is_base_of_v<MapObject, MapObjType>>>
+  operator  MapObjType&() { return static_cast<MapObjType&>(object_); }
+  operator  MapObject&()  { return  object_; }
+  MapObject* operator&()  { return &object_; }
   ///@}
 
   static AnyMapObj* GetInstance(int index) { return reinterpret_cast<AnyMapObj*>(MapObject::GetInstance(index)); }

@@ -30,8 +30,8 @@ public:
 
   static ScStubList* GetInstance() { return OP2Mem<ScStubList*&>(0x47B122); }  // 0x56C358
 
-  ScBase*& operator[](size_t index) { return pScStubArray_[index]; }
   ScBase*& At(size_t         index) { return pScStubArray_[index]; }
+  ScBase*& operator[](size_t index) { return At(index); }
 
   // ** TODO 0x47AF20 Something to do with saving
   // ** TODO 0x47AFB0 Something to do with loading
