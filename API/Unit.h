@@ -88,9 +88,9 @@ public:
   bool operator==(const Unit& unit) const { return id_ == unit.id_; }
 
   ///@{ Allow conversion from MapObject pointers/references.
-  explicit Unit(MapObject* pMapObject) : id_((pMapObject != nullptr) ? pMapObject->index_         : 0) { }
-  explicit Unit(AnyMapObj* pMapObject) : id_((pMapObject != nullptr) ? pMapObject->object_.index_ : 0) { }
-  explicit Unit(MapObject&  mapObject) : id_(mapObject.index_) { }
+  Unit(const MapObject* pMapObject) : id_((pMapObject != nullptr) ? pMapObject->index_         : 0) { }
+  Unit(const AnyMapObj* pMapObject) : id_((pMapObject != nullptr) ? pMapObject->object_.index_ : 0) { }
+  Unit(const MapObject&  mapObject) : id_(mapObject.index_) { }
   ///@}
 
   int  GetID() const        { return id_;      }  ///< Get internal unit ID of this Unit wrapper instance.
