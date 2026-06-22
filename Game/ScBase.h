@@ -155,6 +155,9 @@ public:
 #define OP2_TRIGGERIMPL_VTBL($)  $(HasFired) $(GetCallbackFunction)
   TETHYS_DEFINE_VTBL_TYPE(OP2_TRIGGERIMPL_VTBL, 0x4D6530);
 
+  void InitTriggerParams(ibool enabled, ibool oneShot, FuncReference* pTriggerFunc)
+    { return Thunk<0x491FD0, &$::InitTriggerParams>(enabled, oneShot, pTriggerFunc); }
+
   auto* GetLegacyCallbackFunction() { return TethysAPI::PfnLegacyOnTrigger(GetCallbackFunction()); }
 
   static TriggerImpl* GetInstance(int index) { return static_cast<TriggerImpl*>(ScBase::GetInstance(index)); }
