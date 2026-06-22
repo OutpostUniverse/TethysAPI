@@ -159,6 +159,8 @@ public:
 
   static TriggerImpl* GetTriggerList() { return OP2Mem<0x4E9E9C, TriggerImpl*&>(); }
 
+  // ** TODO More member functions
+
 public:
   int            field_14;
   TriggerImpl*   pNext_;
@@ -169,6 +171,8 @@ public:
 
 // =====================================================================================================================
 /// Internal implementation class for set triggers.
+
+// ** TODO More TriggerImpl subclasses
 
 // =====================================================================================================================
 /// Internal implementation class for victory conditions.

@@ -64,12 +64,13 @@ struct TruckCargo {
 };
 
 
+// =====================================================================================================================
 /// Exported interface wrapping a reference to a MapObject instance.
 class Unit : public OP2Class<Unit> {
 public:
   constexpr Unit()           : id_(0)      { }
   explicit  Unit(int unitID) : id_(unitID) { }
-  Unit& operator=(const Unit& unit) = default;
+  Unit& operator=(const Unit& unit) = default;  // ** TODO is this even needed?  Might actually be counter-productive!
 
   bool operator==(const Unit& unit) const { return id_ == unit.id_; }
 
