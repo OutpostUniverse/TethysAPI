@@ -94,11 +94,12 @@ public:
 class ScriptDataBlock : public ScBase {
   using $ = ScriptDataBlock;
 public:
-  void*          Destroy(ibool freeMem)     override { return Thunk<0x475630, &$::Destroy>(freeMem);   }
-  ScStubFactory* GetScStubFactory()         override { return Thunk<0x475620, &$::GetScStubFactory>(); }
-  void           Init()                     override { return Thunk<0x4756D0, &$::Init>();             }
-  void           Save(StreamIO* pSavedGame) override { return Thunk<0x4756E0, &$::Save>(pSavedGame);   }
-  ibool          Load(StreamIO* pSavedGame) override { return Thunk<0x475750, &$::Load>(pSavedGame);   }
+  using Factory = Factory::Derived<ScriptDataBlock, 0x4E3BE0>;
+  void*    Destroy(ibool freeMem)     override { return Thunk<0x475630, &$::Destroy>(freeMem);   }
+  Factory* GetScStubFactory()         override { return Thunk<0x475620, &$::GetScStubFactory>(); }
+  void     Init()                     override { return Thunk<0x4756D0, &$::Init>();             }
+  void     Save(StreamIO* pSavedGame) override { return Thunk<0x4756E0, &$::Save>(pSavedGame);   }
+  ibool    Load(StreamIO* pSavedGame) override { return Thunk<0x475750, &$::Load>(pSavedGame);   }
 
   TETHYS_DEFINE_VTBL_GETTER(0x4D5DE0);
 
@@ -117,8 +118,9 @@ public:
 class FuncReference : public ScriptDataBlock {
   using $ = FuncReference;
 public:
-  void*          Destroy(ibool freeMem) override { return Thunk<0x475870, &$::Destroy>(freeMem);   }
-  ScStubFactory* GetScStubFactory()     override { return Thunk<0x475860, &$::GetScStubFactory>(); }
+  using Factory = Factory::Derived<FuncReference, 0x4E3C00>;
+  void*    Destroy(ibool freeMem) override { return Thunk<0x475870, &$::Destroy>(freeMem);   }
+  Factory* GetScStubFactory()     override { return Thunk<0x475860, &$::GetScStubFactory>(); }
 
   TETHYS_DEFINE_VTBL_GETTER(0x4D5E08);
 
@@ -132,19 +134,19 @@ public:
   int field_2C;
 };
 
-/// Internal implementation class for triggers.
 // =====================================================================================================================
 /// Internal base implementation class for triggers.
 class TriggerImpl : public ScBase {
   using $ = TriggerImpl;
 public:
-  void*          Destroy(ibool freeMem)     override { return Thunk<0x4920B0, &$::Destroy>(freeMem);   }
-  ScStubFactory* GetScStubFactory()         override { return Thunk<0x492090, &$::GetScStubFactory>(); }
-  void           Init()                     override { return Thunk<0x4920A0, &$::Init>();             }
-  void           Save(StreamIO* pSavedGame) override { return Thunk<0x491E90, &$::Save>(pSavedGame);   }
-  ibool          Load(StreamIO* pSavedGame) override { return Thunk<0x491F10, &$::Load>(pSavedGame);   }
-  void           RaiseEvent()               override { return Thunk<0x491FF0, &$::RaiseEvent>();       }
-  ibool          IsEnabled()                override { return Thunk<0x491F90, &$::IsEnabled>();        }
+  using Factory = Factory::Derived<TriggerImpl, 0x4E9E88>;
+  void*    Destroy(ibool freeMem)     override { return Thunk<0x4920B0, &$::Destroy>(freeMem);   }
+  Factory* GetScStubFactory()         override { return Thunk<0x492090, &$::GetScStubFactory>(); }
+  void     Init()                     override { return Thunk<0x4920A0, &$::Init>();             }
+  void     Save(StreamIO* pSavedGame) override { return Thunk<0x491E90, &$::Save>(pSavedGame);   }
+  ibool    Load(StreamIO* pSavedGame) override { return Thunk<0x491F10, &$::Load>(pSavedGame);   }
+  void     RaiseEvent()               override { return Thunk<0x491FF0, &$::RaiseEvent>();       }
+  ibool    IsEnabled()                override { return Thunk<0x491F90, &$::IsEnabled>();        }
 
   virtual ibool HasFired() = 0;
 
@@ -165,7 +167,7 @@ public:
   int            field_14;
   TriggerImpl*   pNext_;
   ibool          isOneShot_;
-  PlayerBitmask  playerVectorHasFired_;
+  PlayerBitmask  hasFired_;
   FuncReference* pFuncRef_;
 };
 
@@ -179,11 +181,12 @@ public:
 class VictoryConditionImpl : public TriggerImpl {
   using $ = VictoryConditionImpl;
 public:
-  void*          Destroy(ibool freeMem)     override { return Thunk<0x495800, &$::Destroy>(freeMem);   }
-  ScStubFactory* GetScStubFactory()         override { return Thunk<0x4957F0, &$::GetScStubFactory>(); }
-  void           Save(StreamIO* pSavedGame) override { return Thunk<0x4958E0, &$::Save>(pSavedGame);   }
-  ibool          Load(StreamIO* pSavedGame) override { return Thunk<0x495960, &$::Load>(pSavedGame);   }
-  ibool          HasFired()                 override { return Thunk<0x495890, &$::HasFired>();         }
+  using Factory = Factory::Derived<VictoryConditionImpl, 0x4EA0E8>;
+  void*    Destroy(ibool freeMem)     override { return Thunk<0x495800, &$::Destroy>(freeMem);   }
+  Factory* GetScStubFactory()         override { return Thunk<0x4957F0, &$::GetScStubFactory>(); }
+  void     Save(StreamIO* pSavedGame) override { return Thunk<0x4958E0, &$::Save>(pSavedGame);   }
+  ibool    Load(StreamIO* pSavedGame) override { return Thunk<0x495960, &$::Load>(pSavedGame);   }
+  ibool    HasFired()                 override { return Thunk<0x495890, &$::HasFired>();         }
 
   TETHYS_DEFINE_VTBL_GETTER(0x4D68C0);
 

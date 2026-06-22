@@ -2419,6 +2419,8 @@ public:
 #define OP2_MO_CARGOTRUCK_VTBL($)  $(SetCargoToLoad)  $(TransferCargo)
   TETHYS_DEFINE_VTBL_TYPE(OP2_MO_CARGOTRUCK_VTBL, 0x4CF4A8);
 
+  int SetTruckCargo(TruckCargo type, int amount) { return Thunk<0x406CD0, &$::SetTruckCargo>(type, amount); }
+
   static constexpr size_t ObjectSize = 0x6E;
 };
 
