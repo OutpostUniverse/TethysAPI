@@ -46,10 +46,31 @@ public:
 };
 
 
-/// Internal class for creating ScStubs.
-class ScStubFactory {
+// =====================================================================================================================
+/// @internal  Helper template class for accessing ScStubCreator subclass singletons.
+template <typename StubType, uintptr InstanceAddress, typename Base = ScStubFactory>
+class DerivedScStubFactory : public Base {
+  using $ = DerivedScStubFactory;
 public:
+  StubType* Create() { return static_cast<StubType*>(Base::Create()); }
+  static DerivedScStubFactory* GetInstance() { return OP2Mem<InstanceAddress, DerivedScStubFactory*>(); }
+
+  template <typename SubStubType, uintptr SubInstanceAddress>
+  using Derived = DerivedScStubFactory<SubStubType, SubInstanceAddress, DerivedScStubFactory>;
+};
+
+// =====================================================================================================================
+/// Internal class for creating ScStubs.
+class ScStubFactory : public OP2Class<ScStubFactory> {
+public:
+  ScBase* Create() { return Thunk<0x47B410, &$::Create>(); }
+
   // ** TODO member functions
+
+  static ScStubFactory* GetInstance() { return OP2Mem<0x4E3C30, ScStubFactory*>(); }
+
+  template <typename SubStubType, uintptr SubInstanceAddress>
+  using Derived = DerivedScStubFactory<SubStubType, SubInstanceAddress, ScStubFactory>;
 
 public:
   ScStubFactory* pParent_;
@@ -176,6 +197,32 @@ public:
 
 // =====================================================================================================================
 /// Internal implementation class for set triggers.
+class SetTriggerImpl : public TriggerImpl {
+  using $ = SetTriggerImpl;
+public:
+  using Factory = Factory::Derived<SetTriggerImpl, 0x4E9F68>;
+  void*    Destroy(ibool freeMem)     override { return Thunk<0x493080, &$::Destroy>(freeMem);   }
+  Factory* GetScStubFactory()         override { return Thunk<0x492090, &$::GetScStubFactory>(); }
+  void     Save(StreamIO* pSavedGame) override { return Thunk<0x4931C0, &$::Save>(pSavedGame);   }
+  ibool    Load(StreamIO* pSavedGame) override { return Thunk<0x493240, &$::Load>(pSavedGame);   }
+  ibool    HasFired()                 override { return Thunk<0x493130, &$::HasFired>();         }
+
+  void InitTriggerParams(ibool enabled, ibool oneShot, FuncReference* pTriggerFunc, int numTriggers, int numNeeded)
+    { TriggerImpl::InitTriggerParams(enabled, oneShot, pTriggerFunc);  InitSetParams(numTriggers, numNeeded); }
+
+  void InitSubTrigger(int setIndex, int triggerID) { Thunk<0x493120, &$::InitSubTrigger>(setIndex, triggerID); }
+
+  // ** TODO More member functions
+
+  TETHYS_DEFINE_VTBL_GETTER(0x4D6680);
+
+protected:
+  void InitSetParams(int numTriggers, int numNeeded)
+    { return Thunk<0x4930F0, &$::InitSetParams>(numTriggers, numNeeded); }
+
+public:
+  // ** TODO Member fields
+};
 
 // ** TODO More TriggerImpl subclasses
 
