@@ -23,21 +23,7 @@ namespace Tethys {
 class TFileDialog;
 class GameNetLayer;
 
-/// Defines initial unit rotations and path-finding directions.
-enum class UnitDirection : int {
-  East = 0,
-  SouthEast,
-  South,
-  SouthWest,
-  West,
-  NorthWest,
-  North,
-  NorthEast,
-};
-
 namespace TethysAPI {
-
-using UnitDirection = Tethys::UnitDirection;
 
 /// Defines mine resource types for Game::CreateMine().
 enum class MineType : int {

@@ -18,6 +18,18 @@
 
 namespace Tethys {
 
+/// Defines initial unit rotations and path-finding directions.
+enum class UnitDirection : int {
+  East = 0,
+  SouthEast,
+  South,
+  SouthWest,
+  West,
+  NorthWest,
+  North,
+  NorthEast,
+};
+
 /// Enum specifying unit type classifications.  Used by AI and UnitBlock-related interfaces.
 enum class UnitClassification : int {
   Attack           = 0x00,  ///< Lynx, Panther, Tiger, Scorpion (excludes ESG, EMP, Stickyfoam)
@@ -44,6 +56,7 @@ enum class UnitClassification : int {
 
 namespace TethysAPI {
 
+using UnitDirection      = Tethys::UnitDirection;
 using UnitClassification = Tethys::UnitClassification;
 
 /// Contains information about a ConVec's or factory's cargo bay contents.
