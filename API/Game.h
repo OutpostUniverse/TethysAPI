@@ -72,6 +72,7 @@ enum class ToggleState : int {
 
 
 /// Public interface for accessing global game state, creating units, adding game messages, RNG, etc. (wraps GameImpl)
+// ** TODO should this be changed to a namespace of inline functions?
 class Game : public OP2Class<Game> {
 public:
   static int LocalPlayer() { return GetImpl()->localPlayer_;     }  ///< Returns the local player index.
@@ -93,6 +94,7 @@ public:
   static int Time() { return Tick() / 4;       }  ///< Current tick / 4 (most game processing is at this interval).
   static int Mark() { return Tick() / 100;     }  ///< Current mark (tick / 100, as displayed in in-game message log).
 
+  // ** TODO should all the Addxx/Createxx functions taking a location be moved to GameMap?
   /// Outputs a global game sound.
   static void AddGameSound(SoundID soundID, int toPlayerNum = AllPlayers)
     { SoundManager::GetInstance()->AddGameSound(soundID, (toPlayerNum == -1) ? -1 : (1u << toPlayerNum)); }
@@ -285,7 +287,7 @@ private:
   }
 
 public:
-  uint8 field_00;
+  uint8 field_00;  // ** TODO
 };
 
 // =====================================================================================================================

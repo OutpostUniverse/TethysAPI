@@ -74,11 +74,11 @@ union TileData {
 
 /// Defines information about each cell type.  @see CellType.
 struct CellTypeInfo {
-  char* pName;
-  int   trackSpeed[size_t(TrackType::Count)];
-  int   field_18;                              // ** TODO lava related?
-  int   blightSpeed;
-  int   field_20;
+  char*   pName;
+  int     trackSpeed[size_t(TrackType::Count)];
+  ibool   blocksLineOfSight;
+  int     blightSpeed;
+  Rgb555  minimapTopographicColor;
 };
 
 /// Defines information about each tile type index.
@@ -347,7 +347,7 @@ public:
   MapObject*  pMapObjListBegin_;    ///< Top-most map object linked list (sorted ascending by pixelY).  Head == [0].
   MapObject*  pMapObjListEnd_;      ///< One past the end of pMapObjArray_.
 
-  uint8              lightLevelAdjustTable_[1024];
+  uint8              lightLevelAdjustTable_[1024];  ///< 512*2 by default, extended to 1024*2 by LargeMapPatch
   uint32             field_45C;
   char**             pTilesetNames_;
   TileData*          pTileArray_;
