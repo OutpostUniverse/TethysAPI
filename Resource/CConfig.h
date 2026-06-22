@@ -55,9 +55,9 @@ public:
 
   // ------------------------------------------------ Internal methods -------------------------------------------------
 public:
-  int   CopyIniFile(std::string_view existingFile) { return Thunk<0x410C40, &$::CopyIniFile>(existingFile.data()); }
-  ibool FileExists()                               { return Thunk<0x410C10, &$::FileExists>();                     }
-  void  Flush()                                    { return Thunk<0x410C00>();                                     }
+  int   CopyIniFile(std::string_view existingFile) { return Thunk<0x410C40, int(const char*)>(existingFile.data()); }
+  ibool FileExists()                               { return Thunk<0x410C10, &$::FileExists>();                      }
+  void  Flush()                                    { return Thunk<0x410C00>();                                      }
 
   int GetInt(std::string_view key, int defaultVal)
     { return Thunk<0x4109B0, int(const char*, int)>(key.data(), defaultVal); }

@@ -62,7 +62,7 @@ public:
   uint16* GetPacketUnitIDs(const void*   pCPData) const   { return Thunk<0x490960, &$::GetPacketUnitIDs>(pCPData);    }
 
   const char* GetPlayerName() const                { return Thunk<0x490C80, &$::GetPlayerName>();            }
-  void        SetPlayerName(std::string_view name) { return Thunk<0x490CB0, &$::SetPlayerName>(name.data()); }
+  void        SetPlayerName(std::string_view name) { return Thunk<0x490CB0, void(const char*)>(name.data()); }
 
   int GetSatelliteCount(MapID objectType) const { return Thunk<0x4908E0, &$::GetSatelliteCount>(objectType); }
 
