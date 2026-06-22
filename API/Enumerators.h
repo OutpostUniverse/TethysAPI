@@ -16,6 +16,7 @@ namespace Tethys {
 
 namespace TethysImpl {
 
+// =====================================================================================================================
 /// @internal  Base class providing necessary STL std::iterator traits for most unit iterator types.
 class UnitIteratorBase {
 public:

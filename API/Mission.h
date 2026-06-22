@@ -122,13 +122,8 @@ struct ModDescEx {
   /// Not setting this correctly can cause weird bugs with things like alliances, player color/colony, etc.
   int numMultiplayerAIs;
 
-  int field_04;
-  int field_08;
-  int field_0C;
-  int field_10;
-  int field_14;
-  int field_18;
-  int field_1C;
+  /// Fields reserved for future use.
+  int reserved[7];
 };
 
 /// Used by GetSaveRegions() to determine the regions that need to be read/written.

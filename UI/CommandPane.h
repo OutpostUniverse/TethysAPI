@@ -24,7 +24,7 @@ public:
   virtual void F1() { return Thunk<0x45C7F0, &$::F1>(); }
 
 #define OP2_COMMANDVIEWBUTTON_VTBL($)  $(F1)
-  DEFINE_VTBL_TYPE(OP2_COMMANDVIEWBUTTON_VTBL);  // ** TODO vtbl address?
+  TETHYS_DEFINE_VTBL_TYPE(OP2_COMMANDVIEWBUTTON_VTBL);  // ** TODO vtbl address?
 
 public:
   CommandPaneView* pView_;
@@ -86,7 +86,7 @@ public:
 #define OP2_COMMANDPANEVIEW_VTBL($)                                                                                    \
   $(UpdateView)  $(OnAddView)  $(OnRemoveView)  $(IsNewView)  $(Draw)  $(SetReportPageIndex)  $(RefreshOnUnitSelection)\
   $(OnAction)  $(GetSelectedReportButtonIndex)
-  DEFINE_VTBL_TYPE(OP2_COMMANDPANEVIEW_VTBL, 0x4D5200)
+  TETHYS_DEFINE_VTBL_TYPE(OP2_COMMANDPANEVIEW_VTBL, 0x4D5200)
 };
 
 
@@ -248,7 +248,7 @@ public:
   void  Draw(RECT* pRect, GFXSurface* pSurface) override { return Thunk<0x4595C0, &$::Draw>(pRect, pSurface);    }
   ibool RefreshOnUnitSelection()                override { return Thunk<0x459F80, &$::RefreshOnUnitSelection>(); }
 
-  DEFINE_VTBL_GETTER(0x4D5278);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D5278);
 
 public:
   // ** TODO member variables?
@@ -267,7 +267,7 @@ public:
   virtual void SetScrollButtonsEnabledState()     { return Thunk<0x459DB0, &$::SetScrollButtonsEnabledState>(); }
 
 #define OP2_REPORTVIEW_VTBL($)  $(F1)  $(F2)  $(UpdateListSelection)  $(SetScrollButtonsEnabledState)
-  DEFINE_VTBL_TYPE(OP2_REPORTVIEW_VTBL, 0x4D5590);
+  TETHYS_DEFINE_VTBL_TYPE(OP2_REPORTVIEW_VTBL, 0x4D5590);
 
 public:
   // ** TODO these might belong in child classes?
@@ -288,7 +288,7 @@ public:
   ibool RefreshOnUnitSelection()                override { return Thunk<0x462C00, &$::RefreshOnUnitSelection>();       }
   int   GetSelectedReportButtonIndex()          override { return Thunk<0x462BF0, &$::GetSelectedReportButtonIndex>(); }
 
-  DEFINE_VTBL_GETTER(0x4D54C0);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D54C0);
 
   static BuildingStorageBayView* GetInstance() { return OP2Mem<0x565D30, BuildingStorageBayView*>(); }
 
@@ -307,7 +307,7 @@ public:
   void F2(int a)                               override { return Thunk<0x466B30, &$::F2>(a);                          }
   void UpdateListSelection(int itemIndex)      override { return Thunk<0x466AA0, &$::UpdateListSelection>(itemIndex); }
 
-  DEFINE_VTBL_GETTER(0x4D56E0);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D56E0);
 
   static CommunicationsReportView* GetInstance() { return OP2Mem<0x567150, CommunicationsReportView*>(); }
 
@@ -335,7 +335,7 @@ public:
   virtual void F4() { }  // 0x464DA0
 
 #define OP2_FACTORYREPORTVIEW_VTBL($)  $(F3)  $(F4)
-  DEFINE_VTBL_TYPE(OP2_FACTORYREPORTVIEW_VTBL, 0x4D55C8);
+  TETHYS_DEFINE_VTBL_TYPE(OP2_FACTORYREPORTVIEW_VTBL, 0x4D55C8);
 
   static FactoryReportView* GetInstance() { return OP2Mem<0x566408, FactoryReportView*>(); }
 
@@ -370,7 +370,7 @@ public:
   // ...
 
 #define OP2_LABREPORTVIEW_VTBL($)  $(F3)  $(F4)  // $(SetScrollButtonsEnabledState), ...
-  DEFINE_VTBL_TYPE(OP2_LABREPORTVIEW_VTBL, 0x4D59B8);
+  TETHYS_DEFINE_VTBL_TYPE(OP2_LABREPORTVIEW_VTBL, 0x4D59B8);
 
   static LabReportView* GetInstance() { return OP2Mem<0x568E88, LabReportView*>(); }
 

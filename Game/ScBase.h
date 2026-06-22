@@ -76,7 +76,7 @@ public:
 
 #define OP2_SCBASE_VTBL($)  \
   $(Destroy)  $(GetScStubFactory)  $(Init)  $(Enable)  $(Disable)  $(Save)  $(Load)  $(RaiseEvent)  $(IsEnabled)
-  DEFINE_VTBL_TYPE(OP2_SCBASE_VTBL, 0x4CFE98);
+  TETHYS_DEFINE_VTBL_TYPE(OP2_SCBASE_VTBL, 0x4CFE98);
 
   static ScBase* GetInstance(int index)
     { return ((index >= 0) && (index != ScStubList::NilIndex)) ? (*ScStubList::GetInstance())[index] : nullptr; }
@@ -100,7 +100,7 @@ public:
   void           Save(StreamIO* pSavedGame) override { return Thunk<0x4756E0, &$::Save>(pSavedGame);   }
   ibool          Load(StreamIO* pSavedGame) override { return Thunk<0x475750, &$::Load>(pSavedGame);   }
 
-  DEFINE_VTBL_GETTER(0x4D5DE0);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D5DE0);
 
   static ScriptDataBlock* GetInstance(int index) { return static_cast<ScriptDataBlock*>(ScBase::GetInstance(index)); }
 
@@ -120,7 +120,7 @@ public:
   void*          Destroy(ibool freeMem) override { return Thunk<0x475870, &$::Destroy>(freeMem);   }
   ScStubFactory* GetScStubFactory()     override { return Thunk<0x475860, &$::GetScStubFactory>(); }
 
-  DEFINE_VTBL_GETTER(0x4D5E08);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D5E08);
 
   ibool SetData(const char* pCallbackName, ibool useLevelModule)
     { return Thunk<0x4757D0, &$::SetData>(pCallbackName, useLevelModule); }
@@ -151,13 +151,15 @@ public:
   virtual TethysAPI::PfnOnTrigger GetCallbackFunction() { return Thunk<0x491E70, &$::GetCallbackFunction>(); }
 
 #define OP2_TRIGGERIMPL_VTBL($)  $(HasFired) $(GetCallbackFunction)
-  DEFINE_VTBL_TYPE(OP2_TRIGGERIMPL_VTBL, 0x4D6530);
+  TETHYS_DEFINE_VTBL_TYPE(OP2_TRIGGERIMPL_VTBL, 0x4D6530);
 
   auto* GetLegacyCallbackFunction() { return TethysAPI::PfnLegacyOnTrigger(GetCallbackFunction()); }
 
   static TriggerImpl* GetInstance(int index) { return static_cast<TriggerImpl*>(ScBase::GetInstance(index)); }
 
   static TriggerImpl* GetTriggerList() { return OP2Mem<0x4E9E9C, TriggerImpl*&>(); }
+
+  // ** TODO More member functions
 
 public:
   int            field_14;
@@ -170,6 +172,8 @@ public:
 // =====================================================================================================================
 /// Internal implementation class for set triggers.
 
+// ** TODO More TriggerImpl subclasses
+
 // =====================================================================================================================
 /// Internal implementation class for victory conditions.
 class VictoryConditionImpl : public TriggerImpl {
@@ -181,7 +185,7 @@ public:
   ibool          Load(StreamIO* pSavedGame) override { return Thunk<0x495960, &$::Load>(pSavedGame);   }
   ibool          HasFired()                 override { return Thunk<0x495890, &$::HasFired>();         }
 
-  DEFINE_VTBL_GETTER(0x4D68C0);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D68C0);
 
 public:
   int          field_24;

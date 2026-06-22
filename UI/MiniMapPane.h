@@ -4,7 +4,7 @@
 #include "Tethys/API/Location.h"
 #include "Tethys/UI/IWnd.h"
 #include "Tethys/UI/UIElement.h"
-#include "Tethys/Resource/GFXPalette.h"
+#include "Tethys/GFX/Palette.h"
 
 namespace Tethys {
 

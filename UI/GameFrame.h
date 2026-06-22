@@ -58,7 +58,7 @@ public:
 #define OP2_TFRAME_VTBL($)                                                                                \
   $(ShutDown)  $(TFrame_F1)  $(OnCommand)  $(TranslateAccelerators)  $(Init)  $(WindowInit)  $(Activate)  \
   $(Deactivate)  $(OnIdle)  $(PreCreateDlg)  $(PostCreateDlg)
-  DEFINE_VTBL_TYPE(OP2_TFRAME_VTBL, 0x4D6158);
+  TETHYS_DEFINE_VTBL_TYPE(OP2_TFRAME_VTBL, 0x4D6158);
 
   void HandleMenuInit(HMENU a, uint32 b, int c) { return Thunk<0x488FD0, &$::HandleMenuInit>(a, b, c); }
 
@@ -76,7 +76,7 @@ public:
   virtual void F1(int a, int b, int c, int d, int e) { return Thunk<0x4116E0, &$::F1>(a, b, c, d, e); }
 
 #define OP2_STATUSBAR_VTBL($)  $(F1)
-  DEFINE_VTBL_TYPE(OP2_STATUSBAR_VTBL, 0x4CFA24);
+  TETHYS_DEFINE_VTBL_TYPE(OP2_STATUSBAR_VTBL, 0x4CFA24);
 
   ibool Initialize() { return Thunk<0x411620, &$::Initialize>(); }
 
@@ -166,7 +166,7 @@ public:
   void    Deactivate()                            override { return Thunk<0x49C710, &$::Deactivate>();                }
   void    OnIdle()                                override { return Thunk<0x49C310, &$::OnIdle>();                    }
 
-  DEFINE_VTBL_GETTER(0x4D6A08);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D6A08);
 
   void SetChatBarText(const char* pText, COLORREF color) { return Thunk<0x49BFE0, &$::SetChatBarText>(pText, color); }
 

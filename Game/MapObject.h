@@ -49,6 +49,7 @@ enum MapObjectFlags : uint32 {
   MoFlagBldActive             = (1u <<  0),  ///< Building is unidled.
   MoFlagBldFactory            = (1u <<  3),  ///< Building is a FactoryBuilding.
   MoFlagBldCmdCenterConnected = (1u <<  7),  ///< Building has an active Command Center connection.
+                                             ///  Guard Posts gain +1 range and +50% extra damage.
   MoFlagBldEnabledPower       = (1u << 13),  ///< Building has sufficient power.
   MoFlagBldEnabledWorkers     = (1u << 14),  ///< Building has sufficient workers.
   MoFlagBldEnabledScientists  = (1u << 15),  ///< Building has sufficient scientists.
@@ -203,7 +204,7 @@ public:
   $(GetAnimationIndex)  $(GetSelectionBoxSize)  $(GetSelectionBoxPos)  $(MouseOver)  $(GetMouseOverStr)      \
   $(GetSelectionStr)  $(IsMouseOver)  $(Func_18)  $(Destroy)  $(DoEvent)  $(OnSave)  $(OnLoad)  $(SetEMPed)  \
   $(SetStickyfoamed)  $(Move)  $(TransferUnit)  $(GetLocation)  $(InitPathContext)  $(IsSelectable)
-  DEFINE_VTBL_TYPE(OP2_MO_MAPOBJECT_VTBL, 0x4D0498);
+  TETHYS_DEFINE_VTBL_TYPE(OP2_MO_MAPOBJECT_VTBL, 0x4D0498);
 
   void SetAnimation(int animIdx, int delay, int startDelay, ibool isSpecialAnim, ibool skipDoDeath)
     { return Thunk<0x405110, &$::SetAnimation>(animIdx, delay, startDelay, isSpecialAnim, skipDoDeath); }
@@ -360,9 +361,9 @@ public:
   virtual void DrawSecondary(Viewport* pViewport) { return Thunk<0x4A28D0, &$::DrawSecondary>(pViewport); }
 
 #define OP2_MO_MAPENTITY_VTBL($)  $(DrawSecondary)
-  DEFINE_VTBL_TYPE(OP2_MO_MAPENTITY_VTBL);
+  TETHYS_DEFINE_VTBL_TYPE(OP2_MO_MAPENTITY_VTBL);
 
-  // Object size = 0x48?
+  static constexpr size_t ObjectSize = 0x48;  // ** TODO Minimum size?
 };
 
 //  ====================================================================================================================
@@ -384,12 +385,12 @@ public:
   virtual void PositionAtStart() { return Thunk<0x4A8020, &$::PositionAtStart>(); }
 
 #define OP2_MO_DISASTER_VTBL($)  $(Warn)  $(PositionAtStart)
-  DEFINE_VTBL_TYPE(OP2_MO_DISASTER_VTBL, 0x4D73A8);
+  TETHYS_DEFINE_VTBL_TYPE(OP2_MO_DISASTER_VTBL, 0x4D73A8);
 
   void StartDisaster()
     { flags_ |= (MoFlagEntDisasterDidFirstWarn | MoFlagEntDisasterDidSecondWarn);  actionTimer_ = 6; }
 
-  // Object size = between 0x48 and 0x54?
+  static constexpr size_t ObjectSize = 0x48; // ** TODO Minimum size, between 0x48 and 0x54?
 };
 
 //  ====================================================================================================================
@@ -421,7 +422,7 @@ public:
 #define OP2_MO_MAPCHILDENTITY_VTBL($)                                                                                  \
   $(DoFire)  $(DoAttackUnit)  $(DoAttackGround)  $(DoDamage)  $(GetSecondaryAnimationIndex)  $(GetNumAnimationFrames)  \
   $(SetWeaponSource)
-  DEFINE_VTBL_TYPE(OP2_MO_MAPCHILDENTITY_VTBL, 0x4D6B58);
+  TETHYS_DEFINE_VTBL_TYPE(OP2_MO_MAPCHILDENTITY_VTBL, 0x4D6B58);
 
 public:
   int           parentIndex_;  ///< Owner MapObject index, e.g. the chassis unit.
@@ -430,7 +431,7 @@ public:
   int field_50;
   int field_54;
 
-  // Object size = 0x58
+  static constexpr size_t ObjectSize = 0x58;
 };
 
 //  ====================================================================================================================
@@ -452,11 +453,11 @@ public:
   virtual void Land()    { return Thunk<0x4499E0, &$::Land>();    }
 
 #define OP2_MO_ROCKET_VTBL($)  $(Launch)  $(ReEnter)  $(Land)
-  DEFINE_VTBL_TYPE(OP2_MO_ROCKET_VTBL, 0x4D5ED8);
+  TETHYS_DEFINE_VTBL_TYPE(OP2_MO_ROCKET_VTBL, 0x4D5ED8);
 
   // NOTE: Uses MapObject::targetPixelX_ and ::targetPixelY_.
 
-  // Object size = 0x54
+  static constexpr size_t ObjectSize = 0x54;
 };
 
 //  ====================================================================================================================
@@ -471,7 +472,7 @@ public:
   void DoAttackUnit(MapObject* pSrc) override { return Thunk<0x4A4100, &$::DoAttackUnit>(pSrc); }
   void DoDamage()                    override { return Thunk<0x4A4160, &$::DoDamage>();         }
 
-  // Object size = 0x58
+  static constexpr size_t ObjectSize = 0x58;
 };
 
 //  ====================================================================================================================
@@ -487,7 +488,7 @@ public:
   void DoFire(int pixelX, int pixelY) override { return Thunk<0x4A3B70, &$::DoFire>(pixelX, pixelY);       }
   int  GetSecondaryAnimationIndex()   override { return Thunk<0x4A2940, &$::GetSecondaryAnimationIndex>(); }
 
-  // Object size = 0x6C
+  static constexpr size_t ObjectSize = 0x6C;
 };
 
 //  ====================================================================================================================
@@ -502,7 +503,7 @@ public:
 
   void* Destroy(ibool freeMem = 0) override { return Thunk<0x44E110, &$::Destroy>(freeMem); }
 
-  DEFINE_VTBL_GETTER(0x4D4A58);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D4A58);
 
   ibool IsEnemyUnitSighted()         { return Thunk<0x474AC0, &$::IsEnemyUnitSighted>();         }
   ibool IsNextToSpecialTarget()      { return Thunk<0x44D6C0, &$::IsNextToSpecialTarget>();      }
@@ -514,7 +515,7 @@ public:
   void DrawUIOverlay(uint32 drawFlags, Viewport* pViewport, uint32 counter = UINT32_MAX)
     { return Thunk<0x43EA60, &$::DrawUIOverlay>(drawFlags, pViewport, counter); }
 
-  // Object size = 0x48?
+  static constexpr size_t ObjectSize = 0x48;  // ** TODO Minimum size?
 };
 
 //  ====================================================================================================================
@@ -541,9 +542,9 @@ public:
   virtual int GetSecondaryAnimationIndex() { return Thunk<0x474340, &$::GetSecondaryAnimationIndex>(); }
 
 #define OP2_MO_AIRUNIT_VTBL($)  $(GetSecondaryAnimationIndex)
-  DEFINE_VTBL_TYPE(OP2_MO_AIRUNIT_VTBL, 0x4D5D50);
+  TETHYS_DEFINE_VTBL_TYPE(OP2_MO_AIRUNIT_VTBL, 0x4D5D50);
 
-  // Object size = between 0x5A and 0x5C?
+  static constexpr size_t ObjectSize = 0x5A;  // Minimum size, between 0x5A and 0x5C?
 };
 
 //  ====================================================================================================================
@@ -558,9 +559,9 @@ public:
   virtual void DrawSecondary(Viewport* pViewport) { return Thunk<0x406DE0, &$::DrawSecondary>(pViewport); }
 
 #define OP2_MO_LANDUNIT_VTBL($)  $(DrawSecondary)
-  DEFINE_VTBL_TYPE(OP2_MO_LANDUNIT_VTBL);
+  TETHYS_DEFINE_VTBL_TYPE(OP2_MO_LANDUNIT_VTBL);
 
-  // Object size = 0x48?
+  static constexpr size_t ObjectSize = 0x48;  // ** TODO Minimum size?
 };
 
 //  ====================================================================================================================
@@ -642,11 +643,11 @@ public:
   $(Func_53)  $(GetFoodProduction)  $(Func_55)  $(GetNumScientistsRequired)  $(GetNumScientistsResearching)            \
   $(GetNumWorkersRequired)  $(Func_59)  $(GetPowerRequiredAndEnable)  $(GetNumWorkersRequiredAndEnable)                \
   $(GetNumScientistsRequiredAndEnable)
-  DEFINE_VTBL_TYPE(OP2_MO_BUILDING_VTBL, 0x4D6030);
-
-  void KillOccupants() { return Thunk<0x482BF0, &$::KillOccupants>(); }
+  TETHYS_DEFINE_VTBL_TYPE(OP2_MO_BUILDING_VTBL, 0x4D6030);
 
   int GetDockLocation(Location* pOut) const { return Thunk<0x482F40, &$::GetDockLocation>(pOut); }
+
+  void KillOccupants() { return Thunk<0x482BF0, &$::KillOccupants>(); }
 
 public:
   uint8 cargoBayCargoOrWeapon_[6];  ///< [Factory, Garage] MapID cargo/weapon associated with cargo bay contents.
@@ -660,7 +661,7 @@ public:
   int field_58;
   int field_5C;
 
-  // Object size = 0x60
+  static constexpr size_t ObjectSize = 0x60;
 };
 
 //  ====================================================================================================================
@@ -686,16 +687,16 @@ public:
 #define OP2_MO_FACTORYBUILDING_VTBL($)                                                                                 \
   $(GetProductionRate)  $(FinishProduction)  $(GetCargoBay)  $(ActivateDock)  $(DiscardCargoBay)  $(GetTotalBuildTime) \
   $(Func_69)
-  DEFINE_VTBL_TYPE(OP2_MO_FACTORYBUILDING_VTBL, 0x4D29D8);
+  TETHYS_DEFINE_VTBL_TYPE(OP2_MO_FACTORYBUILDING_VTBL, 0x4D29D8);
 
 public:
   uint8  itemToProduce_;        ///< MapID item to produce.
-  uint8  cargoBayContents_[6];  ///< MapID cargo bay contents' unit type.
+  uint8  cargoBayContents_[6];  ///< MapID cargo bay contents' unit type.  @ref cargoBayCargoOrWeapon_ stores the weapon
   uint8  field_67;
   int    field_68;
   uint16 field_6C;
 
-  // Object size = 0x6E
+  static constexpr size_t ObjectSize = 0x6E;
 };
 
 //  ====================================================================================================================
@@ -714,9 +715,9 @@ public:
   int  GetNumScientistsResearching() const override { return Thunk<0x4322C0, &$::GetNumScientistsResearching>();       }
   int  GetNumScientistsRequiredAndEnable() override { return Thunk<0x432140, &$::GetNumScientistsRequiredAndEnable>(); }
 
-  DEFINE_VTBL_GETTER(0x4D0160);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D0160);
 
-  // Object size = 0x60?
+  static constexpr size_t ObjectSize = 0x60;  // ** TODO Minimum size?
 };
 
 //  ====================================================================================================================
@@ -744,7 +745,7 @@ public:
   virtual OreYield GetBarYield()       { return Thunk<0x44AFF0, &$::GetBarYield>();        }
 
 #define OP2_MO_MINEBUILDING_VTBL($)  $(BuildMine)  $(NextTruckLoad)  $(CalculateOreYield)  $(GetBarYield)
-  DEFINE_VTBL_TYPE(OP2_MO_MINEBUILDING_VTBL, 0x4D4798);
+  TETHYS_DEFINE_VTBL_TYPE(OP2_MO_MINEBUILDING_VTBL, 0x4D4798);
 
 public:
   // ** TODO this doesn't look correct
@@ -752,7 +753,7 @@ public:
   //int      variant_;
   //OreYield barYield_;
 
-  // Object size = 0x74
+  static constexpr size_t ObjectSize = 0x74;
 };
 
 //  ====================================================================================================================
@@ -769,7 +770,7 @@ public:
   ibool IsActivePowerGenerator()      const override { return Thunk<0x46E830, &$::IsActivePowerGenerator>();    }
   int   GetPowerProduction()          const override { return Thunk<0x483A90, &$::GetPowerProduction>();        }
 
-  // Object size = 0x60
+  static constexpr size_t ObjectSize = 0x60;
 };
 
 //  ====================================================================================================================
@@ -811,7 +812,7 @@ public:
 
 #define OP2_MO_VEHICLE_VTBL($)  \
   $(PathFind)  $(GetChassisAnimationIndex)  $(DoBuild)  $(DoDock)  $(UnblockBuildArea)  $(CanProduceAt)
-  DEFINE_VTBL_TYPE(OP2_MO_VEHICLE_VTBL, 0x4D49C0);
+  TETHYS_DEFINE_VTBL_TYPE(OP2_MO_VEHICLE_VTBL, 0x4D49C0);
 
   void  SetDestinationWaypoints(int numWaypoints, const Waypoint* pWaypoints, int a, int b)
     { return Thunk<0x423210, &$::SetDestinationWaypoints>(numWaypoints, pWaypoints, a, b); }
@@ -853,7 +854,7 @@ public:
   int    field_6E;
   int    field_72;
 
-  // Object size = 0x62
+  static constexpr size_t ObjectSize = 0x62;
 };
 
 //  ====================================================================================================================
@@ -872,9 +873,9 @@ public:
   void  DoEvent()                          override { return Thunk<0x485300, &$::DoEvent>();                }
   void  SetEMPed(uint16 duration)          override { return Thunk<0x484C10, &$::SetEMPed>(duration);       }
 
-  DEFINE_VTBL_GETTER(0x4D0658);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D0658);
 
-  // Object size = 0x62
+  static constexpr size_t ObjectSize = 0x62;
 };
 
 
@@ -893,9 +894,9 @@ public:
   void* Destroy(ibool freeMem = 0)         override { return Thunk<0x444FB0, &$::Destroy>(freeMem);         }
   void  DrawSecondary(Viewport* pViewport) override { return Thunk<0x405190, &$::DrawSecondary>(pViewport); }
 
-  DEFINE_VTBL_GETTER(0x4D4670);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D4670);
 
-  // Object size = 0x68
+  static constexpr size_t ObjectSize = 0x68;
 };
 
 // =====================================================================================================================
@@ -912,9 +913,9 @@ public:
   void* Destroy(ibool freeMem = 0)     override { return Thunk<0x413630, &$::Destroy>(freeMem);     }
   void  DoEvent()                      override { return Thunk<0x413890, &$::DoEvent>();            }
 
-  DEFINE_VTBL_GETTER(0x4CFB10);
+  TETHYS_DEFINE_VTBL_GETTER(0x4CFB10);
 
-  // Object size = 0x5C
+  static constexpr size_t ObjectSize = 0x5C;
 };
 
 // =====================================================================================================================
@@ -930,9 +931,9 @@ public:
   void* Destroy(ibool freeMem = 0)     override { return Thunk<0x4A8230, &$::Destroy>(freeMem);     }
   void  DoEvent()                      override { return Thunk<0x4A8270, &$::DoEvent>();            }
 
-  DEFINE_VTBL_GETTER(0x4D7430);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D7430);
 
-  // Object size = 0x54
+  static constexpr size_t ObjectSize = 0x54;
 };
 
 // =====================================================================================================================
@@ -949,7 +950,7 @@ public:
   void  DoEvent()                  override { return Thunk<0x433030, &$::DoEvent>();         }
   void  PositionAtStart()          override { return Thunk<0x432F60, &$::PositionAtStart>(); }
 
-  DEFINE_VTBL_GETTER(0x4D0388);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D0388);
 
 public:
   int field_48;
@@ -963,7 +964,7 @@ public:
   uint16 endTileX_;  ///< End map tile X (may not reach before timeout).  If -1, then gets initialized when triggered.
   uint16 endTileY_;  ///< End map tile Y (may not reach before timeout).  If -1, then gets initialized when triggered.
 
-  // Object size = 0x68
+  static constexpr size_t ObjectSize = 0x68;
 };
 
 // =====================================================================================================================
@@ -981,11 +982,11 @@ public:
   void  DoEvent()                      override { return Thunk<0x44A320, &$::DoEvent>();            }
   void  PositionAtStart()              override { return Thunk<0x44ADC0, &$::PositionAtStart>();    }
 
-  DEFINE_VTBL_GETTER(0x4D4710);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D4710);
 
   // Note: Uses MapObject::targetTileX_ and targetTileY_.
 
-  // Object size = 0x5C
+  static constexpr size_t ObjectSize = 0x5C;
 };
 
 // =====================================================================================================================
@@ -1004,7 +1005,7 @@ public:
   void  DrawSecondary(Viewport* pViewport) override { return Thunk<0x48FC80, &$::DrawSecondary>(pViewport); }
   void  PositionAtStart()                  override { return Thunk<0x490170, &$::PositionAtStart>();        }
 
-  DEFINE_VTBL_GETTER(0x4D6460);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D6460);
 
 public:
   int field_48;
@@ -1029,7 +1030,7 @@ public:
   uint16 endTileX_;  ///< End map tile X (may not reach before timeout).  If -1, then gets initialized when triggered.
   uint16 endTileY_;  ///< End map tile Y (may not reach before timeout).  If -1, then gets initialized when triggered.
 
-  // Object size = 0x69
+  static constexpr size_t ObjectSize = 0x69;
 };
 
 // =====================================================================================================================
@@ -1047,9 +1048,9 @@ public:
   void  DoEvent()                      override { return Thunk<0x413F00, &$::DoEvent>();            }
   void  DoDamage()                     override { return Thunk<0x413E50, &$::DoDamage>();           }
 
-  DEFINE_VTBL_GETTER(0x4D3BF0);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D3BF0);
 
-  // Object size = 0x58
+  static constexpr size_t ObjectSize = 0x58;
 };
 
 // =====================================================================================================================
@@ -1064,9 +1065,9 @@ public:
   void  Draw(Viewport* pViewport)  override { return Thunk<0x4A32A0, &$::Draw>(pViewport);  }
   void* Destroy(ibool freeMem = 0) override { return Thunk<0x4A54D0, &$::Destroy>(freeMem); }
 
-  DEFINE_VTBL_GETTER(0x4D7310);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D7310);
 
-  // Object size = 0x58
+  static constexpr size_t ObjectSize = 0x58;
 };
 
 // =====================================================================================================================
@@ -1081,9 +1082,9 @@ public:
   void  Draw(Viewport* pViewport)  override { return Thunk<0x405950, &$::Draw>(pViewport);  }
   void* Destroy(ibool freeMem = 0) override { return Thunk<0x405920, &$::Destroy>(freeMem); }
 
-  DEFINE_VTBL_GETTER(0x4CF368);
+  TETHYS_DEFINE_VTBL_GETTER(0x4CF368);
 
-  // Object size = 0x58
+  static constexpr size_t ObjectSize = 0x58;
 };
 
 // =====================================================================================================================
@@ -1098,9 +1099,9 @@ public:
   void  Draw(Viewport* pViewport)  override { return Thunk<0x4A34F0, &$::Draw>(pViewport);  }
   void* Destroy(ibool freeMem = 0) override { return Thunk<0x4A49E0, &$::Destroy>(freeMem); }
 
-  DEFINE_VTBL_GETTER(0x4D6C88);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D6C88);
 
-  // Object size = 0x58
+  static constexpr size_t ObjectSize = 0x58;
 };
 
 // =====================================================================================================================
@@ -1116,9 +1117,9 @@ public:
   void* Destroy(ibool freeMem = 0)         override { return Thunk<0x4057B0, &$::Destroy>(freeMem);         }
   void  DrawSecondary(Viewport* pViewport) override { return Thunk<0x4057F0, &$::DrawSecondary>(pViewport); }
 
-  DEFINE_VTBL_GETTER(0x4CF2D0);
+  TETHYS_DEFINE_VTBL_GETTER(0x4CF2D0);
 
-  // Object size = 0x58
+  static constexpr size_t ObjectSize = 0x58;
 };
 
 // =====================================================================================================================
@@ -1133,9 +1134,9 @@ public:
   void  Draw(Viewport* pViewport)  override { return Thunk<0x4A30D0, &$::Draw>(pViewport);  }
   void* Destroy(ibool freeMem = 0) override { return Thunk<0x4A4A90, &$::Destroy>(freeMem); }
 
-  DEFINE_VTBL_GETTER(0x4D6D20);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D6D20);
 
-  // Object size = 0x58
+  static constexpr size_t ObjectSize = 0x58;
 };
 
 // =====================================================================================================================
@@ -1162,7 +1163,7 @@ public:
 
 #define OP2_MO_MININGBEACON_VTBL($)  \
   $(GetOreType)  $(Survey)  $(IsSurveyed)  $(CreateBeacon)  $(GetBarYield)  $(BuildMine)  $(SetNumTruckLoads)
-  DEFINE_VTBL_TYPE(OP2_MO_MININGBEACON_VTBL, 0x4CF218);
+  TETHYS_DEFINE_VTBL_TYPE(OP2_MO_MININGBEACON_VTBL, 0x4CF218);
 
 public:
   int numTruckLoads_;  ///< Number of truck loads so far for ore yield peaking calculation.
@@ -1175,7 +1176,7 @@ public:
 
   PackedPlayerBitmask playerSurveyedMask_;  ///< Which players have surveyed this beacon
 
-  // Object size = 0x6B
+  static constexpr size_t ObjectSize = 0x6B;
 };
 
 // =====================================================================================================================
@@ -1192,12 +1193,12 @@ public:
   void  DrawSecondary(Viewport* pViewport) override { return Thunk<0x48AD40, &$::DrawSecondary>(pViewport); }
   void  DoFire(int pixelX, int pixelY)     override { return Thunk<0x48B030, &$::DoFire>(pixelX, pixelY);   }
 
-  DEFINE_VTBL_GETTER(0x4D63A8);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D63A8);
 
 public:
   int field_58;
 
-  // Object size = 0x64
+  static constexpr size_t ObjectSize = 0x64;
 };
 
 // =====================================================================================================================
@@ -1218,13 +1219,13 @@ public:
   virtual void  SetWreckageTech(int  techId)          { return Thunk<0x405CE0, &$::SetWreckageTech>(techId);     }
 
 #define OP2_MO_WRECKAGE_VTBL($)  $(DiscoverWreckage)  $(IsDiscovered)  $(SetWreckageTech)
-  DEFINE_VTBL_TYPE(OP2_MO_WRECKAGE_VTBL, 0x4CF400);
+  TETHYS_DEFINE_VTBL_TYPE(OP2_MO_WRECKAGE_VTBL, 0x4CF400);
 
 public:
   PlayerBitmask playerDiscoveredMask_;
   int           techID_;                ///< Tech ID of technology granted when wreckage is turned in at a Spaceport.
 
-  // Object size = 0x60
+  static constexpr size_t ObjectSize = 0x60;
 };
 
 // =====================================================================================================================
@@ -1240,9 +1241,9 @@ public:
   void* Destroy(ibool freeMem = 0)   override { return Thunk<0x4447B0, &$::Destroy>(freeMem);             }
   int   GetSecondaryAnimationIndex() override { return Thunk<0x447480, &$::GetSecondaryAnimationIndex>(); }
 
-  DEFINE_VTBL_GETTER(0x4D4028);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D4028);
 
-  // Object size = 0x58
+  static constexpr size_t ObjectSize = 0x58;
 };
 
 // =====================================================================================================================
@@ -1258,9 +1259,9 @@ public:
   void* Destroy(ibool freeMem = 0)   override { return Thunk<0x444730, &$::Destroy>(freeMem);             }
   int   GetSecondaryAnimationIndex() override { return Thunk<0x447450, &$::GetSecondaryAnimationIndex>(); }
 
-  DEFINE_VTBL_GETTER(0x4D3F60);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D3F60);
 
-  // Object size = 0x58
+  static constexpr size_t ObjectSize = 0x58;
 };
 
 // =====================================================================================================================
@@ -1276,9 +1277,9 @@ public:
   void* Destroy(ibool freeMem = 0)   override { return Thunk<0x4446B0, &$::Destroy>(freeMem);             }
   int   GetSecondaryAnimationIndex() override { return Thunk<0x447420, &$::GetSecondaryAnimationIndex>(); }
 
-  DEFINE_VTBL_GETTER(0x4D3E98);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D3E98);
 
-  // Object size = 0x58
+  static constexpr size_t ObjectSize = 0x58;
 };
 
 // =====================================================================================================================
@@ -1294,9 +1295,9 @@ public:
   void* Destroy(ibool freeMem = 0)   override { return Thunk<0x4A4E00, &$::Destroy>(freeMem);             }
   int   GetSecondaryAnimationIndex() override { return Thunk<0x4A69C0, &$::GetSecondaryAnimationIndex>(); }
 
-  DEFINE_VTBL_GETTER(0x4D7018);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D7018);
 
-  // Object size = 0x58
+  static constexpr size_t ObjectSize = 0x58;
 };
 
 // =====================================================================================================================
@@ -1311,9 +1312,9 @@ public:
   void* Destroy(ibool freeMem = 0)   override { return Thunk<0x4A4CA0, &$::Destroy>(freeMem);             }
   int   GetSecondaryAnimationIndex() override { return Thunk<0x4A6960, &$::GetSecondaryAnimationIndex>(); }
 
-  DEFINE_VTBL_GETTER(0x4D6EE8);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D6EE8);
 
-  // Object size = 0x58
+  static constexpr size_t ObjectSize = 0x58;
 };
 
 // =====================================================================================================================
@@ -1328,9 +1329,9 @@ public:
   void* Destroy(ibool freeMem = 0)   override { return Thunk<0x4A4EB0, &$::Destroy>(freeMem);             }
   int   GetSecondaryAnimationIndex() override { return Thunk<0x4A6940, &$::GetSecondaryAnimationIndex>(); }
 
-  DEFINE_VTBL_GETTER(0x4D70B0);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D70B0);
 
-  // Object size = 0x58
+  static constexpr size_t ObjectSize = 0x58;
 };
 
 //  ====================================================================================================================
@@ -1345,9 +1346,9 @@ public:
   Type* GetType()              const override { return Thunk<0x4A6970, &$::GetType>();                    }
   int   GetSecondaryAnimationIndex() override { return Thunk<0x4A6980, &$::GetSecondaryAnimationIndex>(); }
 
-  DEFINE_VTBL_GETTER(0x4D6F80);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D6F80);
 
-  // Object size = 0x58
+  static constexpr size_t ObjectSize = 0x58;
 };
 
 // =====================================================================================================================
@@ -1362,9 +1363,9 @@ public:
   void* Destroy(ibool freeMem = 0)   override { return Thunk<0x4A4F60, &$::Destroy>(freeMem);             }
   int   GetSecondaryAnimationIndex() override { return Thunk<0x4A69A0, &$::GetSecondaryAnimationIndex>(); }
 
-  DEFINE_VTBL_GETTER(0x4D7148);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D7148);
 
-  // Object size = 0x58
+  static constexpr size_t ObjectSize = 0x58;
 };
 
 // =====================================================================================================================
@@ -1384,9 +1385,9 @@ public:
   int   GetSecondaryAnimationIndex()   override { return Thunk<0x401910, &$::GetSecondaryAnimationIndex>(); }
   int   GetNumAnimationFrames()        override { return Thunk<0x4013D0, &$::GetNumAnimationFrames>();      }
 
-  DEFINE_VTBL_GETTER(0x4CF058);
+  TETHYS_DEFINE_VTBL_GETTER(0x4CF058);
 
-  // Object size = 0x6C
+  static constexpr size_t ObjectSize = 0x6C;
 };
 
 // =====================================================================================================================
@@ -1400,9 +1401,9 @@ public:
   Type* GetType()            const override { return Thunk<0x4A69F0, &$::GetType>();        }
   void* Destroy(ibool freeMem = 0) override { return Thunk<0x4A5420, &$::Destroy>(freeMem); }
 
-  DEFINE_VTBL_GETTER(0x4D7278);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D7278);
 
-  // Object size = 0x6C
+  static constexpr size_t ObjectSize = 0x6C;
 };
 
 // =====================================================================================================================
@@ -1419,9 +1420,9 @@ public:
   int   GetSecondaryAnimationIndex()   override { return Thunk<0x4A68E0, &$::GetSecondaryAnimationIndex>(); }
   void  SetWeaponSource(int unitIndex) override { return Thunk<0x4A48C0, &$::SetWeaponSource>(unitIndex);   }
 
-  DEFINE_VTBL_GETTER(0x4D6BF0);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D6BF0);
 
-  // Object size = 0x6C
+  static constexpr size_t ObjectSize = 0x6C;
 };
 
 // =====================================================================================================================
@@ -1441,12 +1442,13 @@ public:
   int   GetNumAnimationFrames()            override { return Thunk<0x480BC0, &$::GetNumAnimationFrames>();    }
   void  SetWeaponSource(int unitIndex)     override { return Thunk<0x480A30, &$::SetWeaponSource>(unitIndex); }
 
-  DEFINE_VTBL_GETTER(0x4D5F60);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D5F60);
 
-  // Object size = 0x70
+  static constexpr size_t ObjectSize = 0x70;
 };
 
 // =====================================================================================================================
+/// Unimplemented, based on Projectile.  May be related to SmallCapacityAirTransport?
 class InterColonyShuttle : public Projectile {
   using $ = InterColonyShuttle;
 public:
@@ -1460,9 +1462,9 @@ public:
   void  DoDamage()                 override { return Thunk<0x47CC70, &$::DoDamage>();              }
   int   GetNumAnimationFrames()    override { return Thunk<0x47CE30, &$::GetNumAnimationFrames>(); }
 
-  DEFINE_VTBL_GETTER(0x4D45A8);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D45A8);
 
-  // Object size = 0x6C
+  static constexpr size_t ObjectSize = 0x6C;
 };
 
 // =====================================================================================================================
@@ -1478,9 +1480,9 @@ public:
   void* Destroy(ibool freeMem = 0) override { return Thunk<0x4A4B40, &$::Destroy>(freeMem);        }
   int   GetNumAnimationFrames()    override { return Thunk<0x4A2A90, &$::GetNumAnimationFrames>(); }
 
-  DEFINE_VTBL_GETTER(0x4D6DB8);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D6DB8);
 
-  // Object size = 0x6C
+  static constexpr size_t ObjectSize = 0x6C;
 };
 
 // =====================================================================================================================
@@ -1494,9 +1496,9 @@ public:
   Type* GetType()            const override { return Thunk<0x4A6920, &$::GetType>();        }
   void* Destroy(ibool freeMem = 0) override { return Thunk<0x4A4BF0, &$::Destroy>(freeMem); }
 
-  DEFINE_VTBL_GETTER(0x4D6E50);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D6E50);
 
-  // Object size = 0x6C
+  static constexpr size_t ObjectSize = 0x6C;
 };
 
 // =====================================================================================================================
@@ -1512,9 +1514,9 @@ public:
   void  DoDamage()                   override { return Thunk<0x4A4FE0, &$::DoDamage>();                   }
   int   GetSecondaryAnimationIndex() override { return Thunk<0x4A69E0, &$::GetSecondaryAnimationIndex>(); }
 
-  DEFINE_VTBL_GETTER(0x4D71E0);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D71E0);
 
-  // Object size = 0x6C
+  static constexpr size_t ObjectSize = 0x6C;
 };
 
 // =====================================================================================================================
@@ -1532,9 +1534,9 @@ public:
   void  ReEnter()                  override { return Thunk<0x480230, &$::ReEnter>();        }
   void  Land()                     override { return Thunk<0x480540, &$::Land>();           }
 
-  DEFINE_VTBL_GETTER(0x4D4450);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D4450);
 
-  // Object size = 0x58
+  static constexpr size_t ObjectSize = 0x58;
 };
 
 // =====================================================================================================================
@@ -1550,9 +1552,9 @@ public:
   void  ReEnter()                  override { return Thunk<0x480100, &$::ReEnter>();        }
   void  Land()                     override { return Thunk<0x480190, &$::Land>();           }
 
-  DEFINE_VTBL_GETTER(0x4D43A8);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D43A8);
 
-  // Object size = 0x54
+  static constexpr size_t ObjectSize = 0x54;
 };
 
 // =====================================================================================================================
@@ -1566,9 +1568,9 @@ public:
   Type* GetType()            const override { return Thunk<0x449A00, &$::GetType>();        }
   void* Destroy(ibool freeMem = 0) override { return Thunk<0x444C70, &$::Destroy>(freeMem); }
 
-  DEFINE_VTBL_GETTER(0x4D4300);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D4300);
 
-  // Object size = 0x54
+  static constexpr size_t ObjectSize = 0x54;
 };
 
 // =====================================================================================================================
@@ -1584,9 +1586,9 @@ public:
   void  Draw(Viewport* pViewport)  override { return Thunk<0x474620, &$::Draw>(pViewport); }
   void* Destroy(ibool freeMem = 0) override { return Thunk<0x447E20, &$::Destroy>(freeMem);}
 
-  DEFINE_VTBL_GETTER(0x4D0E80);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D0E80);
 
-  // Object size = 0x5C
+  static constexpr size_t ObjectSize = 0x5C;
 };
 
 // =====================================================================================================================
@@ -1602,9 +1604,9 @@ public:
   void  DoEvent()                           override { return Thunk<0x483C80, &$::DoEvent>();                   }
   void  UpdateTotalCapacities(int a, int b) override { return Thunk<0x449300, &$::UpdateTotalCapacities>(a, b); }
 
-  DEFINE_VTBL_GETTER(0x4D3238);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D3238);
 
-  // Object size = 0x60
+  static constexpr size_t ObjectSize = 0x60;
 };
 
 // =====================================================================================================================
@@ -1623,9 +1625,9 @@ public:
   void  UpdateTotalCapacities(int a, int b) override { return Thunk<0x401CD0, &$::UpdateTotalCapacities>(a, b); }
   int   GetFoodProduction()           const override { return Thunk<0x483AF0, &$::GetFoodProduction>();         }
 
-  DEFINE_VTBL_GETTER(0x4CF0F0);
+  TETHYS_DEFINE_VTBL_GETTER(0x4CF0F0);
 
-  // Object size = 0x60
+  static constexpr size_t ObjectSize = 0x60;
 };
 
 // =====================================================================================================================
@@ -1643,9 +1645,9 @@ public:
   ibool IsEnabled()                   const override { return Thunk<0x40C2A0, &$::IsEnabled>();                 }
   int   GetPowerProduction()          const override { return Thunk<0x40C2F0, &$::GetPowerProduction>();        }
 
-  DEFINE_VTBL_GETTER(0x4D1790);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D1790);
 
-  // Object size = 0x60
+  static constexpr size_t ObjectSize = 0x60;
 };
 
 // =====================================================================================================================
@@ -1660,9 +1662,9 @@ public:
   void* Destroy(ibool freeMem = 0)          override { return Thunk<0x4439C0, &$::Destroy>(freeMem);            }
   void  UpdateTotalCapacities(int a, int b) override { return Thunk<0x449640, &$::UpdateTotalCapacities>(a, b); }
 
-  DEFINE_VTBL_GETTER(0x4D3358);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D3358);
 
-  // Object size = 0x60
+  static constexpr size_t ObjectSize = 0x60;
 };
 
 // =====================================================================================================================
@@ -1680,9 +1682,9 @@ public:
   void  DrawSecondary(Viewport* pViewport)  override { return Thunk<0x409590, &$::DrawSecondary>(pViewport);    }
   void  UpdateTotalCapacities(int a, int b) override { return Thunk<0x409B10, &$::UpdateTotalCapacities>(a, b); }
 
-  DEFINE_VTBL_GETTER(0x4CF5F8);
+  TETHYS_DEFINE_VTBL_GETTER(0x4CF5F8);
 
-  // Object size = 0x60
+  static constexpr size_t ObjectSize = 0x60;
 };
 
 // =====================================================================================================================
@@ -1697,9 +1699,9 @@ public:
   void* Destroy(ibool freeMem = 0)          override { return Thunk<0x443100, &$::Destroy>(freeMem);            }
   void  UpdateTotalCapacities(int a, int b) override { return Thunk<0x412040, &$::UpdateTotalCapacities>(a, b); }
 
-  DEFINE_VTBL_GETTER(0x4D2410);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D2410);
 
-  // Object size = 0x60
+  static constexpr size_t ObjectSize = 0x60;
 };
 
 // =====================================================================================================================
@@ -1714,9 +1716,9 @@ public:
   void* Destroy(ibool freeMem = 0)          override { return Thunk<0x442900, &$::Destroy>(freeMem);            }
   void  UpdateTotalCapacities(int a, int b) override { return Thunk<0x449000, &$::UpdateTotalCapacities>(a, b); }
 
-  DEFINE_VTBL_GETTER(0x4D1670);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D1670);
 
-  // Object size = 0x60
+  static constexpr size_t ObjectSize = 0x60;
 };
 
 // =====================================================================================================================
@@ -1743,12 +1745,12 @@ public:
   virtual void LoadUnloadBay(int bayIndex) { return Thunk<0x41C6F0, &$::LoadUnloadBay>(bayIndex); }
 
 #define OP2_MO_GARAGE_VTBL($)  $(GetNumOccupiedBays)  $(DoRepairs)  $(LoadUnloadBay)
-  DEFINE_VTBL_TYPE(OP2_MO_GARAGE_VTBL, 0x4CFCA0);
+  TETHYS_DEFINE_VTBL_TYPE(OP2_MO_GARAGE_VTBL, 0x4CFCA0);
 
 public:
   MapObject* pUnitInBay_[6];
 
-  // Object size = 0x78
+  static constexpr size_t ObjectSize = 0x78;  // == MapObjectSize exactly
 };
 
 // =====================================================================================================================
@@ -1763,9 +1765,9 @@ public:
   void* Destroy(ibool freeMem = 0)          override { return Thunk<0x443BB0, &$::Destroy>(freeMem);            }
   void  UpdateTotalCapacities(int a, int b) override { return Thunk<0x449F50, &$::UpdateTotalCapacities>(a, b); }
 
-  DEFINE_VTBL_GETTER(0x4D36D0);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D36D0);
 
-  // Object size = 0x60
+  static constexpr size_t ObjectSize = 0x60;
 };
 
 // =====================================================================================================================
@@ -1790,9 +1792,9 @@ public:
   virtual ibool IsInRange(int pixelX, int pixelY) { return Thunk<0x42D260, &$::IsInRange>(pixelX, pixelY); }
 
 #define OP2_MO_GUARDPOST_VTBL($)  $(Func_63)  $(IsInRange)
-  DEFINE_VTBL_TYPE(OP2_MO_GUARDPOST_VTBL, 0x4CFFB0);
+  TETHYS_DEFINE_VTBL_TYPE(OP2_MO_GUARDPOST_VTBL, 0x4CFFB0);
 
-  // Object size = 0x60
+  static constexpr size_t ObjectSize = 0x60;
 };
 
 // =====================================================================================================================
@@ -1806,9 +1808,9 @@ public:
   Type* GetType()            const override { return Thunk<0x448030, &$::GetType>();        }
   void* Destroy(ibool freeMem = 0) override { return Thunk<0x442500, &$::Destroy>(freeMem); }
 
-  DEFINE_VTBL_GETTER(0x4D1180);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D1180);
 
-  // Object size = 0x60
+  static constexpr size_t ObjectSize = 0x60;
 };
 
 // =====================================================================================================================
@@ -1822,9 +1824,9 @@ public:
   Type* GetType()            const override { return Thunk<0x448100, &$::GetType>();        }
   void* Destroy(ibool freeMem = 0) override { return Thunk<0x442760, &$::Destroy>(freeMem); }
 
-  DEFINE_VTBL_GETTER(0x4D1510);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D1510);
 
-  // Object size = 0x60
+  static constexpr size_t ObjectSize = 0x60;
 };
 
 // =====================================================================================================================
@@ -1839,9 +1841,9 @@ public:
   void* Destroy(ibool freeMem = 0)          override { return Thunk<0x442D60, &$::Destroy>(freeMem);            }
   void  UpdateTotalCapacities(int a, int b) override { return Thunk<0x449BC0, &$::UpdateTotalCapacities>(a, b); }
 
-  DEFINE_VTBL_GETTER(0x4D1E50);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D1E50);
 
-  // Object size = 0x60
+  static constexpr size_t ObjectSize = 0x60;
 };
 
 // =====================================================================================================================
@@ -1856,9 +1858,9 @@ public:
   void* Destroy(ibool freeMem = 0)          override { return Thunk<0x4432C0, &$::Destroy>(freeMem);            }
   void  UpdateTotalCapacities(int a, int b) override { return Thunk<0x44A240, &$::UpdateTotalCapacities>(a, b); }
 
-  DEFINE_VTBL_GETTER(0x4D2680);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D2680);
 
-  // Object size = 0x60
+  static constexpr size_t ObjectSize = 0x60;
 };
 
 // =====================================================================================================================
@@ -1872,9 +1874,9 @@ public:
   Type* GetType()            const override { return Thunk<0x448050, &$::GetType>();        }
   void* Destroy(ibool freeMem = 0) override { return Thunk<0x4425A0, &$::Destroy>(freeMem); }
 
-  DEFINE_VTBL_GETTER(0x4D12A0);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D12A0);
 
-  // Object size = 0x60
+  static constexpr size_t ObjectSize = 0x60;
 };
 
 // =====================================================================================================================
@@ -1889,9 +1891,9 @@ public:
   void* Destroy(ibool freeMem = 0)          override { return Thunk<0x442E00, &$::Destroy>(freeMem);            }
   void  UpdateTotalCapacities(int a, int b) override { return Thunk<0x449CE0, &$::UpdateTotalCapacities>(a, b); }
 
-  DEFINE_VTBL_GETTER(0x4D1F70);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D1F70);
 
-  // Object size = 0x60
+  static constexpr size_t ObjectSize = 0x60;
 };
 
 // =====================================================================================================================
@@ -1906,9 +1908,9 @@ public:
   void* Destroy(ibool freeMem = 0)          override { return Thunk<0x4437E0, &$::Destroy>(freeMem);            }
   void  UpdateTotalCapacities(int a, int b) override { return Thunk<0x449AD0, &$::UpdateTotalCapacities>(a, b); }
 
-  DEFINE_VTBL_GETTER(0x4D2FF8);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D2FF8);
 
-  // Object size = 0x60
+  static constexpr size_t ObjectSize = 0x60;
 };
 
 // =====================================================================================================================
@@ -1923,9 +1925,9 @@ public:
   void* Destroy(ibool freeMem = 0)          override { return Thunk<0x443B10, &$::Destroy>(freeMem);            }
   void  UpdateTotalCapacities(int a, int b) override { return Thunk<0x449740, &$::UpdateTotalCapacities>(a, b); }
 
-  DEFINE_VTBL_GETTER(0x4D35B0);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D35B0);
 
-  // Object size = 0x60
+  static constexpr size_t ObjectSize = 0x60;
 };
 
 // =====================================================================================================================
@@ -1943,9 +1945,9 @@ public:
   void  DrawSecondary(Viewport* pViewport)  override { return Thunk<0x409840, &$::DrawSecondary>(pViewport);    }
   void  UpdateTotalCapacities(int a, int b) override { return Thunk<0x409B60, &$::UpdateTotalCapacities>(a, b); }
 
-  DEFINE_VTBL_GETTER(0x4CF6F8);
+  TETHYS_DEFINE_VTBL_GETTER(0x4CF6F8);
 
-  // Object size = 0x60
+  static constexpr size_t ObjectSize = 0x60;
 };
 
 // =====================================================================================================================
@@ -1960,9 +1962,9 @@ public:
   void* Destroy(ibool freeMem = 0)          override { return Thunk<0x442F40, &$::Destroy>(freeMem);            }
   void  UpdateTotalCapacities(int a, int b) override { return Thunk<0x449440, &$::UpdateTotalCapacities>(a, b); }
 
-  DEFINE_VTBL_GETTER(0x4D21B0);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D21B0);
 
-  // Object size = 0x60
+  static constexpr size_t ObjectSize = 0x60;
 };
 
 // =====================================================================================================================
@@ -1978,9 +1980,9 @@ public:
   void  DoEvent()                           override { return Thunk<0x483C90, &$::DoEvent>();                   }
   void  UpdateTotalCapacities(int a, int b) override { return Thunk<0x449210, &$::UpdateTotalCapacities>(a, b); }
 
-  DEFINE_VTBL_GETTER(0x4D3118);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D3118);
 
-  // Object size = 0x60
+  static constexpr size_t ObjectSize = 0x60;
 };
 
 // =====================================================================================================================
@@ -1995,9 +1997,9 @@ public:
   void* Destroy(ibool freeMem = 0)          override { return Thunk<0x442AE0, &$::Destroy>(freeMem);            }
   void  UpdateTotalCapacities(int a, int b) override { return Thunk<0x449120, &$::UpdateTotalCapacities>(a, b); }
 
-  DEFINE_VTBL_GETTER(0x4D19D0);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D19D0);
 
-  // Object size = 0x60
+  static constexpr size_t ObjectSize = 0x60;
 };
 
 // =====================================================================================================================
@@ -2012,9 +2014,9 @@ public:
   void* Destroy(ibool freeMem = 0)          override { return Thunk<0x442B80, &$::Destroy>(freeMem);            }
   void  UpdateTotalCapacities(int a, int b) override { return Thunk<0x40C360, &$::UpdateTotalCapacities>(a, b); }
 
-  DEFINE_VTBL_GETTER(0x4D1AF0);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D1AF0);
 
-  // Object size = 0x60
+  static constexpr size_t ObjectSize = 0x60;
 };
 
 // =====================================================================================================================
@@ -2029,9 +2031,9 @@ public:
   void* Destroy(ibool freeMem = 0)          override { return Thunk<0x442C20, &$::Destroy>(freeMem);            }
   void  UpdateTotalCapacities(int a, int b) override { return Thunk<0x449550, &$::UpdateTotalCapacities>(a, b); }
 
-  DEFINE_VTBL_GETTER(0x4D1C10);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D1C10);
 
-  // Object size = 0x60
+  static constexpr size_t ObjectSize = 0x60;
 };
 
 // =====================================================================================================================
@@ -2045,9 +2047,9 @@ public:
   Type* GetType()            const override { return Thunk<0x447FF0, &$::GetType>();        }
   void* Destroy(ibool freeMem = 0) override { return Thunk<0x442340, &$::Destroy>(freeMem); }
 
-  DEFINE_VTBL_GETTER(0x4D0F20);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D0F20);
 
-  // Object size = 0x60
+  static constexpr size_t ObjectSize = 0x60;
 };
 
 // =====================================================================================================================
@@ -2067,9 +2069,9 @@ public:
   int   GetNumWorkersRequiredAndEnable()    override
     { return Thunk<0x49D6A0, &$::GetNumWorkersRequiredAndEnable>(); }
 
-  DEFINE_VTBL_GETTER(0x4D22D0);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D22D0);
 
-  // Object size = 0x68
+  static constexpr size_t ObjectSize = 0x68;
 };
 
 // =====================================================================================================================
@@ -2083,9 +2085,9 @@ public:
   Type* GetType()            const override { return Thunk<0x448010, &$::GetType>();        }
   void* Destroy(ibool freeMem = 0) override { return Thunk<0x4423E0, &$::Destroy>(freeMem); }
 
-  DEFINE_VTBL_GETTER(0x4D1040);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D1040);
 
-  // Object size = 0x60
+  static constexpr size_t ObjectSize = 0x60;
 };
 
 // =====================================================================================================================
@@ -2100,9 +2102,9 @@ public:
   void* Destroy(ibool freeMem = 0) override { return Thunk<0x443410, &$::Destroy>(freeMem); }
   int   Func_69()                  override { return Thunk<0x415C40, &$::Func_69>();        }
 
-  DEFINE_VTBL_GETTER(0x4D28C0);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D28C0);
 
-  // Object size = 0x6E
+  static constexpr size_t ObjectSize = 0x6E;
 };
 
 // =====================================================================================================================
@@ -2117,9 +2119,9 @@ public:
   void* Destroy(ibool freeMem = 0) override { return Thunk<0x4434C0, &$::Destroy>(freeMem); }
   int   Func_69()                  override { return Thunk<0x415C20, &$::Func_69>();        }
 
-  DEFINE_VTBL_GETTER(0x4D2B10);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D2B10);
 
-  // Object size = 0x6E
+  static constexpr size_t ObjectSize = 0x6E;
 };
 
 // =====================================================================================================================
@@ -2140,13 +2142,13 @@ public:
   int     GetRocketAnimationIndex(int objectOnPad) { return Thunk<0x47F670, &$::GetRocketAnimationIndex>(objectOnPad); }
   Rocket* Launch(int dstPixelX, int dstPixelY)     { return Thunk<0x424260, &$::Launch>(dstPixelX, dstPixelY);         }
 
-  DEFINE_VTBL_GETTER(0x4D3478);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D3478);
 
 public:
   MapID objectOnPad_;  ///< Rocket type on launch pad.
   MapID launchCargo_;  ///< Cargo type carried in rocket.
 
-  // Object size = 0x76
+  static constexpr size_t ObjectSize = 0x76;  // = MapObjectSize - 2
 };
 
 // =====================================================================================================================
@@ -2161,9 +2163,9 @@ public:
   void* Destroy(ibool freeMem = 0) override { return Thunk<0x443570, &$::Destroy>(freeMem); }
   int   Func_69()                  override { return Thunk<0x415BC0, &$::Func_69>();        }
 
-  DEFINE_VTBL_GETTER(0x4D2C48);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D2C48);
 
-  // Object size = 0x6E
+  static constexpr size_t ObjectSize = 0x6E;
 };
 
 // =====================================================================================================================
@@ -2178,9 +2180,9 @@ public:
   void* Destroy(ibool freeMem = 0) override { return Thunk<0x443620, &$::Destroy>(freeMem); }
   int   Func_69()                  override { return Thunk<0x415C00, &$::Func_69>();        }
 
-  DEFINE_VTBL_GETTER(0x4D2D80);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D2D80);
 
-  // Object size = 0x6E
+  static constexpr size_t ObjectSize = 0x6E;
 };
 
 // =====================================================================================================================
@@ -2194,9 +2196,9 @@ public:
   Type* GetType()            const override { return Thunk<0x4322D0, &$::GetType>();        }
   void* Destroy(ibool freeMem = 0) override { return Thunk<0x4320D0, &$::Destroy>(freeMem); }
 
-  DEFINE_VTBL_GETTER(0x4D0260);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D0260);
 
-  // Object size = 0x65
+  static constexpr size_t ObjectSize = 0x65;
 };
 
 // =====================================================================================================================
@@ -2210,9 +2212,9 @@ public:
   Type* GetType()            const override { return Thunk<0x448470, &$::GetType>();        }
   void* Destroy(ibool freeMem = 0) override { return Thunk<0x442CC0, &$::Destroy>(freeMem); }
 
-  DEFINE_VTBL_GETTER(0x4D1D30);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D1D30);
 
-  // Object size = 0x65
+  static constexpr size_t ObjectSize = 0x65;
 };
 
 // =====================================================================================================================
@@ -2226,9 +2228,9 @@ public:
   Type* GetType()            const override { return Thunk<0x448560, &$::GetType>();        }
   void* Destroy(ibool freeMem = 0) override { return Thunk<0x4436C0, &$::Destroy>(freeMem); }
 
-  DEFINE_VTBL_GETTER(0x4D2EB8);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D2EB8);
 
-  // Object size = 0x65
+  static constexpr size_t ObjectSize = 0x65;
 };
 
 // =====================================================================================================================
@@ -2243,9 +2245,9 @@ public:
   void* Destroy(ibool freeMem = 0)          override { return Thunk<0x44AE20, &$::Destroy>(freeMem);            }
   void  UpdateTotalCapacities(int a, int b) override { return Thunk<0x44B4C0, &$::UpdateTotalCapacities>(a, b); }
 
-  DEFINE_VTBL_GETTER(0x4D48A8);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D48A8);
 
-  // Object size = 0x74
+  static constexpr size_t ObjectSize = 0x74;
 };
 
 // =====================================================================================================================
@@ -2262,9 +2264,9 @@ public:
   int   NextTruckLoad()            override { return Thunk<0x44B230, &$::NextTruckLoad>();     }
   int   CalculateOreYield()        override { return Thunk<0x44B250, &$::CalculateOreYield>(); }
 
-  DEFINE_VTBL_GETTER(0x4D2550);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D2550);
 
-  // Object size = 0x74
+  static constexpr size_t ObjectSize = 0x74;
 };
 
 // =====================================================================================================================
@@ -2279,9 +2281,9 @@ public:
   void* Destroy(ibool freeMem = 0)          override { return Thunk<0x442640, &$::Destroy>(freeMem);            }
   void  UpdateTotalCapacities(int a, int b) override { return Thunk<0x447FA0, &$::UpdateTotalCapacities>(a, b); }
 
-  DEFINE_VTBL_GETTER(0x4D13C0);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D13C0);
 
-  // Object size = 0x74
+  static constexpr size_t ObjectSize = 0x74;
 };
 
 // =====================================================================================================================
@@ -2295,9 +2297,9 @@ public:
   Type* GetType()            const override { return Thunk<0x449D90, &$::GetType>();        }
   void* Destroy(ibool freeMem = 0) override { return Thunk<0x443360, &$::Destroy>(freeMem); }
 
-  DEFINE_VTBL_GETTER(0x4D27A0);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D27A0);
 
-  // Object size = 0x60
+  static constexpr size_t ObjectSize = 0x60;
 };
 
 // =====================================================================================================================
@@ -2311,9 +2313,9 @@ public:
   Type* GetType()            const override { return Thunk<0x44A100, &$::GetType>();        }
   void* Destroy(ibool freeMem = 0) override { return Thunk<0x442A40, &$::Destroy>(freeMem); }
 
-  DEFINE_VTBL_GETTER(0x4D18B0);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D18B0);
 
-  // Object size = 0x60
+  static constexpr size_t ObjectSize = 0x60;
 };
 
 // =====================================================================================================================
@@ -2329,9 +2331,9 @@ public:
   ibool IsEnabled()              const override { return Thunk<0x46E990, &$::IsEnabled>();              }
   ibool IsActivePowerGenerator() const override { return Thunk<0x46E900, &$::IsActivePowerGenerator>(); }
 
-  DEFINE_VTBL_GETTER(0x4D2090);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D2090);
 
-  // Object size = 0x60
+  static constexpr size_t ObjectSize = 0x60;
 };
 
 // =====================================================================================================================
@@ -2346,9 +2348,9 @@ public:
   void* Destroy(ibool freeMem = 0) override { return Thunk<0x443C50, &$::Destroy>(freeMem); }
   void  DoEvent()                  override { return Thunk<0x46E880, &$::DoEvent>();        }
 
-  DEFINE_VTBL_GETTER(0x4D37F0);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D37F0);
 
-  // Object size = 0x60
+  static constexpr size_t ObjectSize = 0x60;
 };
 
 // =====================================================================================================================
@@ -2372,9 +2374,10 @@ public:
   virtual void TransferCargo() { return Thunk<0x406710, &$::TransferCargo>(); }
 
 #define OP2_MO_CARGOTRUCK_VTBL($)  $(SetCargoToLoad)  $(TransferCargo)
-  DEFINE_VTBL_TYPE(OP2_MO_CARGOTRUCK_VTBL, 0x4CF4A8);
+  TETHYS_DEFINE_VTBL_TYPE(OP2_MO_CARGOTRUCK_VTBL, 0x4CF4A8);
 
   // Object size = 0x6E
+  static constexpr size_t ObjectSize = 0x6E;
 };
 
 // =====================================================================================================================
@@ -2393,9 +2396,9 @@ public:
   void  DoBuild(int numWaypoints, const Waypoint* pWaypoints, int a) override
     { return Thunk<0x423430, &$::DoBuild>(numWaypoints, pWaypoints, a); }
 
-  DEFINE_VTBL_GETTER(0x4CF990);
+  TETHYS_DEFINE_VTBL_GETTER(0x4CF990);
 
-  // Object size = 0x6C
+  static constexpr size_t ObjectSize = 0x6C;
 };
 
 // =====================================================================================================================
@@ -2417,11 +2420,11 @@ public:
     { return Thunk<0x423620, &$::DoBuildWall>(numWaypoints, pWaypoints, a, command); }
 
 #define OP2_MO_EARTHWORKER_VTBL($)  $(DoBuildWall)
-  DEFINE_VTBL_TYPE(OP2_MO_EARTHWORKER_VTBL, 0x4D0DC8);
+  TETHYS_DEFINE_VTBL_TYPE(OP2_MO_EARTHWORKER_VTBL, 0x4D0DC8);
 
   void FinishBuildingWall() { return Thunk<0x423700, &$::FinishBuildingWall>(); }
 
-  // Object size = 0x71
+  static constexpr size_t ObjectSize = 0x71;
 };
 
 // =====================================================================================================================
@@ -2435,9 +2438,9 @@ public:
   Type* GetType()            const override { return Thunk<0x448BF0, &$::GetType>();        }
   void* Destroy(ibool freeMem = 0) override { return Thunk<0x442130, &$::Destroy>(freeMem); }
 
-  DEFINE_VTBL_GETTER(0x4D0C58);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D0C58);
 
-  // Object size = 0x62
+  static constexpr size_t ObjectSize = 0x62;
 };
 
 // =====================================================================================================================
@@ -2453,9 +2456,9 @@ public:
   void  DoBuild(int numWaypoints, const Waypoint* pWaypoints, int a) override
     { return Thunk<0x423550, &$::DoBuild>(numWaypoints, pWaypoints, a); }
 
-  DEFINE_VTBL_GETTER(0x4D0AC8);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D0AC8);
 
-  // Object size = 0x6C
+  static constexpr size_t ObjectSize = 0x6C;
 };
 
 // =====================================================================================================================
@@ -2469,9 +2472,9 @@ public:
   Type* GetType()            const override { return Thunk<0x448A60, &$::GetType>();        }
   void* Destroy(ibool freeMem = 0) override { return Thunk<0x4421B0, &$::Destroy>(freeMem); }
 
-  DEFINE_VTBL_GETTER(0x4D0D10);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D0D10);
 
-  // Object size = 0x62
+  static constexpr size_t ObjectSize = 0x62;
 };
 
 // =====================================================================================================================
@@ -2486,9 +2489,9 @@ public:
   void* Destroy(ibool freeMem = 0)         override { return Thunk<0x409E10, &$::Destroy>(freeMem);           }
   ibool CanProduceAt(int tileX, int tileY) override { return Thunk<0x40A3F0, &$::CanProduceAt>(tileX, tileY); }
 
-  DEFINE_VTBL_GETTER(0x4CF7F8);
+  TETHYS_DEFINE_VTBL_GETTER(0x4CF7F8);
 
-  // Object size = 0x6B
+  static constexpr size_t ObjectSize = 0x6B;
 };
 
 // =====================================================================================================================
@@ -2504,9 +2507,9 @@ public:
   void  DoBuild(int numWaypoints, const Waypoint* pWaypoints, int a) override
     { return Thunk<0x4234C0, &$::DoBuild>(numWaypoints, pWaypoints, a); }
 
-  DEFINE_VTBL_GETTER(0x4D0A10);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D0A10);
 
-  // Object size = 0x62
+  static constexpr size_t ObjectSize = 0x62;
 };
 
 // =====================================================================================================================
@@ -2520,9 +2523,9 @@ public:
   Type* GetType()            const override { return Thunk<0x484490, &$::GetType>();        }
   void* Destroy(ibool freeMem = 0) override { return Thunk<0x4843F0, &$::Destroy>(freeMem); }
 
-  DEFINE_VTBL_GETTER(0x4D61A0);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D61A0);
 
-  // Object size = 0x62
+  static constexpr size_t ObjectSize = 0x62;
 };
 
 // =====================================================================================================================
@@ -2538,9 +2541,9 @@ public:
   void* Destroy(ibool freeMem = 0)         override { return Thunk<0x447DF0, &$::Destroy>(freeMem);         }
   void  DoEvent()                          override { return Thunk<0x474DB0, &$::DoEvent>();                }
 
-  DEFINE_VTBL_GETTER(0x4D0B80);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D0B80);
 
-  // Object size = 0x64
+  static constexpr size_t ObjectSize = 0x64;
 };
 
 // =====================================================================================================================
@@ -2556,9 +2559,9 @@ public:
   void* Destroy(ibool freeMem = 0)         override { return Thunk<0x447900, &$::Destroy>(freeMem);         }
   void  DoEvent()                          override { return Thunk<0x4816D0, &$::DoEvent>();                }
 
-  DEFINE_VTBL_GETTER(0x4D0710);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D0710);
 
-  // Object size = 0x62
+  static constexpr size_t ObjectSize = 0x62;
 };
 
 // =====================================================================================================================
@@ -2576,9 +2579,9 @@ public:
   void  MarkForRedraw(Viewport* pViewport) override { return Thunk<0x481830, &$::MarkForRedraw>(pViewport); }
   void* Destroy(ibool freeMem = 0)         override { return Thunk<0x447A90, &$::Destroy>(freeMem);         }
 
-  DEFINE_VTBL_GETTER(0x4D07C8);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D07C8);
 
-  // Object size = 0x62
+  static constexpr size_t ObjectSize = 0x62;
 };
 
 // =====================================================================================================================
@@ -2594,9 +2597,9 @@ public:
     { return Thunk<0x4855C0, &$::SelectTurretGraphic>(pWeapon, rotation); }
   void* Destroy(ibool freeMem = 0) override { return Thunk<0x441DF0, &$::Destroy>(freeMem); }
 
-  DEFINE_VTBL_GETTER(0x4D0880);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D0880);
 
-  // Object size = 0x62
+  static constexpr size_t ObjectSize = 0x62;
 };
 
 // =====================================================================================================================
@@ -2612,9 +2615,9 @@ public:
     { return Thunk<0x4857A0, &$::SelectTurretGraphic>(pWeapon, rotation); }
   void* Destroy(ibool freeMem = 0) override { return Thunk<0x441E80, &$::Destroy>(freeMem); }
 
-  DEFINE_VTBL_GETTER(0x4D0938);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D0938);
 
-  // Object size = 0x62
+  static constexpr size_t ObjectSize = 0x62;
 };
 
 // =====================================================================================================================
@@ -2630,9 +2633,9 @@ public:
     { return Thunk<0x485950, &$::SelectTurretGraphic>(pWeapon, rotation); }
   void* Destroy(ibool freeMem = 0) override { return Thunk<0x4476A0, &$::Destroy>(freeMem); }
 
-  DEFINE_VTBL_GETTER(0x4D05C0);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D05C0);
 
-  // Object size = 0x62
+  static constexpr size_t ObjectSize = 0x62;
 };
 
 END_PACKED

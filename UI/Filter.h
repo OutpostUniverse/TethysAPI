@@ -57,7 +57,7 @@ public:
     { return Thunk<0x483CA0, &$::OnUIEvent>(pWnd, uMsg, wParam, lParam, data); }
 
 #define OP2_FILTER_VTBL($)  $(OnUIEvent)
-  DEFINE_VTBL_TYPE(OP2_FILTER_VTBL, 0x4D612C);
+  TETHYS_DEFINE_VTBL_TYPE(OP2_FILTER_VTBL, 0x4D612C);
 
   void ReleaseCapture(IWnd* pWnd)           { return Thunk<0x431200, &$::ReleaseCapture>(pWnd);   }
   void SetCapture(IWnd*     pWnd, int data) { return Thunk<0x431190, &$::SetCapture>(pWnd, data); }
@@ -73,7 +73,7 @@ public:
   int OnUIEvent(IWnd* pWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, int data) override
     { return Thunk<0x483D40, &$::OnUIEvent>(pWnd, uMsg, wParam, lParam, data); }
 
-  DEFINE_VTBL_GETTER(0x4D6134);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D6134);
 
   SubFilter()                     : Filter(UseInternalCtorChain) { InternalCtor<0x483D50>();                      }
   SubFilter(const SubFilter& src) : Filter(UseInternalCtorChain) { InternalCtor<0x483D60, const SubFilter&>(src); }
@@ -95,7 +95,7 @@ public:
   int OnUIEvent(IWnd* pWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, int data) override
     { return Thunk<0x431220, &$::OnUIEvent>(pWnd, uMsg, wParam, lParam, data); }
 
-  DEFINE_VTBL_GETTER(0x4D6130);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D6130);
 
   SubFilter* GetSubFilter() const                { return Thunk<0x483D00, &$::GetSubFilter>();           }
   void       SetSubFilter(SubFilter* pSubFilter) { return Thunk<0x483CF0, &$::SetSubFilter>(pSubFilter); }

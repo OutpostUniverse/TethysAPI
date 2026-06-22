@@ -40,7 +40,7 @@ public:
   virtual int CallFilters(uint32 a, uint32 b, long c) { return Thunk<0x431740, &$::CallFilters>(a, b, c); }
 
 #define OP2_IWND_VTBL($)  $(RegisterClassA)  $(Destroy)  $(DestroyWindow)  $(CreateEx)  $(WndProc)  $(CallFilters)
-  DEFINE_VTBL_TYPE(OP2_IWND_VTBL, 0x4D0120);
+  TETHYS_DEFINE_VTBL_TYPE(OP2_IWND_VTBL, 0x4D0120);
 
   void InstallFilter(Filter*   pFilter, int a, FilterPositions position, FilterOptions options)
     { return Thunk<0x431380, &$::InstallFilter>(pFilter, a, position, options); }
@@ -89,7 +89,7 @@ public:
     { return Thunk<0x431DB0, &$::DlgProc>(uMsg, wParam, lParam); }
 
 #define OP2_IDLGWND_VTBL($)  $(DoModal)  $(DoModeless)  $(DlgProc)
-  DEFINE_VTBL_TYPE(OP2_IDLGWND_VTBL, 0x4D0138);
+  TETHYS_DEFINE_VTBL_TYPE(OP2_IDLGWND_VTBL, 0x4D0138);
 
   int  IsModalParentSet() const { return Thunk<0x483E10, &$::IsModalParentSet>();  }
   void SetAsModalParent(int a)  { return Thunk<0x431D90, &$::SetAsModalParent>(a); }
@@ -122,7 +122,7 @@ public:
   virtual int  GetAbsolutePos(int pixelX, int pixelY, POINT* pPos);
 
 #define OP2_TPANE_VTBL($)  $(OnHide)  $(OnShow)  $(OnIdle)  $(F1)  $(GetAbsolutePos)
-  DEFINE_VTBL_TYPE(OP2_TPANE_VTBL, 0x4D6A50);
+  TETHYS_DEFINE_VTBL_TYPE(OP2_TPANE_VTBL, 0x4D6A50);
 
 public:
   GFXSurface* pGfxSurface_;

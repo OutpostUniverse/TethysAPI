@@ -61,7 +61,7 @@ public:
     { return Thunk<0x455C40, &$::GetButtonDisplayInfo>(pButtonDisplayInfo, a); }
 
 #define OP2_UICOMMAND_VTBL($)  $(IsEnabled)  $(Execute)  $(GetButtonDisplayInfo)
-  DEFINE_VTBL_TYPE(OP2_UICOMMAND_VTBL);
+  TETHYS_DEFINE_VTBL_TYPE(OP2_UICOMMAND_VTBL);
 
   static auto& MouseCursorTable()         { return OP2Mem<0x56EA08, HCURSOR(&)[size_t(CursorType::Count)]>(); }
   static auto& MouseCursorResourceTable() { return OP2Mem<0x4E9878, const char*(&)[size_t(CursorType::Count)]>(); }
@@ -90,7 +90,7 @@ public:
 
 #define OP2_MOUSECOMMAND_VTBL($)  \
   $(OnClick)  $(GetMouseCursor)  $(GetBuildCursor)  $(OnCancel)  $(OnChangeCommand) $(IsDefaultCommand)  $(GetCursor)
-  DEFINE_VTBL_TYPE(OP2_MOUSECOMMAND_VTBL);
+  TETHYS_DEFINE_VTBL_TYPE(OP2_MOUSECOMMAND_VTBL);
 };
 
 
@@ -108,7 +108,7 @@ public:
   void  GetButtonDisplayInfo(ButtonDisplayInfo* pButtonDisplayInfo, int a) override
     { return Thunk<0x455C40, &$::GetButtonDisplayInfo>(pButtonDisplayInfo, a); }
 
-  DEFINE_VTBL_GETTER(0x4D5000);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D5000);
 
   static CommandProduce* GetInstance() { return OP2Mem<0x565680, CommandProduce*>(); }
 
@@ -125,7 +125,7 @@ public:
   void  GetButtonDisplayInfo(ButtonDisplayInfo* pButtonDisplayInfo, int a) override
     { return Thunk<0x455AF0, &$::GetButtonDisplayInfo>(pButtonDisplayInfo, a); }
 
-  DEFINE_VTBL_GETTER(0x4D4EE0);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D4EE0);
 
   static CommandTransfer* GetInstance() { return OP2Mem<0x565618, CommandTransfer*>(); }
 
@@ -142,7 +142,7 @@ public:
   void  GetButtonDisplayInfo(ButtonDisplayInfo* pButtonDisplayInfo, int a) override
     { return Thunk<0x455C40, &$::GetButtonDisplayInfo>(pButtonDisplayInfo, a); }
 
-  DEFINE_VTBL_GETTER(0x4D5030);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D5030);
 
   static CommandLoadCargo* GetInstance() { return OP2Mem<0x5656A8, CommandLoadCargo*>(); }
 };
@@ -168,7 +168,7 @@ public:
   virtual int F2(int pixelX, int pixelY, int* pA) { return Thunk<0x4533D0, &$::F2>(pixelX, pixelY, pA); }
 
 #define OP2_COMMANDATTACK_VTBL($)  $(F2)
-  DEFINE_VTBL_TYPE(OP2_COMMANDATTACK_VTBL, 0x4D4C98);
+  TETHYS_DEFINE_VTBL_TYPE(OP2_COMMANDATTACK_VTBL, 0x4D4C98);
 
   static CommandAttack* GetInstance() { return OP2Mem<0x56560C, CommandAttack*>(); }
 
@@ -190,7 +190,7 @@ public:
     int pixelX1, int pixelY1, int pixelX2, int pixelY2, HCURSOR* phCursor, int* pHighlight, MapObject* pMapObj) override
       { return Thunk<0x451DC0, &$::GetBuildCursor>(pixelX1, pixelY1, pixelX2, pixelY2, phCursor, pHighlight, pMapObj); }
 
-  DEFINE_VTBL_GETTER(0x4D4B50);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D4B50);
 
   static CommandBuild* GetInstance() { return OP2Mem<0x5655B4, CommandBuild*>(); }
 
@@ -212,7 +212,7 @@ public:
     { return Thunk<0x454C90, &$::IsDefaultCommand>(pixelX, pixelY); }
   HCURSOR GetCursor(int pixelX, int pixelY) override { return Thunk<0x454CA0, &$::GetCursor>(pixelX, pixelY); }
 
-  DEFINE_VTBL_GETTER(0x4D4D90);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D4D90);
 
   static CommandRepair* GetInstance() { return OP2Mem<0x565610, CommandRepair*>(); }
 
@@ -231,7 +231,7 @@ public:
   int  GetMouseCursor(int pixelX, int pixelY, HCURSOR* mouseCursor) override
     { return Thunk<0x4543B0, &$::GetMouseCursor>(pixelX, pixelY, mouseCursor); }
 
-  DEFINE_VTBL_GETTER(0x4D4D40);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D4D40);
 
   static CommandSetOreRoute* GetInstance() { return OP2Mem<0x5655D0, CommandSetOreRoute*>(); }
 

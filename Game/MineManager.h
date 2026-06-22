@@ -58,6 +58,7 @@ public:
   /// Gets the OreVariant corresponding to the given OreYield and variant number, or OreVariant::Count if not found.
   /// @note Supplying OreYield::Random will always output OreVariant::Count for any variantNum.
   OreVariant GetOreVariant(OreYield yield, int variantNum) const {
+    // ** TODO Cache this (and invalidate upon calling LoadMinesFile()?)
     OreVariant out{0};
     for (; (out < OreVariant::Count) && (GetVariantNum(yield, out) != variantNum); ++(int&)(out));
     return out;
@@ -91,6 +92,7 @@ inline int MineManager::GetVariantNum(
     return -1;
   }
   else switch (int num = 0;  variant) {
+    // ** TODO memoize this
     case OreVariant::High:  case OreVariant::Mid: {
       const auto cmp = (variant == OreVariant::High) ? &YieldPercentData::minYield : &YieldPercentData::peakYield;
       for (int v = 1; v < NumVariants; ++v) {

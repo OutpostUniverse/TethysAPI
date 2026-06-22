@@ -6,6 +6,8 @@
 #include "Tethys/Game/GameStartInfo.h"
 #include "Tethys/Game/UnitGroup.h"
 
+#include <string_view>
+
 namespace Tethys {
 
 class MapObject;
@@ -59,8 +61,8 @@ public:
   size_t  GetPacketUnitCount(const void* pCPData) const   { return Thunk<0x490920, &$::GetPacketUnitCount>(pCPData);  }
   uint16* GetPacketUnitIDs(const void*   pCPData) const   { return Thunk<0x490960, &$::GetPacketUnitIDs>(pCPData);    }
 
-  const char* GetPlayerName() const            { return Thunk<0x490C80, &$::GetPlayerName>();      }
-  void        SetPlayerName(const char* pName) { return Thunk<0x490CB0, &$::SetPlayerName>(pName); }
+  const char* GetPlayerName() const                { return Thunk<0x490C80, &$::GetPlayerName>();            }
+  void        SetPlayerName(std::string_view name) { return Thunk<0x490CB0, &$::SetPlayerName>(name.data()); }
 
   int GetSatelliteCount(MapID objectType) const { return Thunk<0x4908E0, &$::GetSatelliteCount>(objectType); }
 
@@ -190,7 +192,7 @@ public:
   int        unitIndex_[16];
   MapObject* pBuildingList_;
   MapObject* pVehicleList_;   ///< @note Also includes mining beacons, magma vents, fumaroles, and wreckage
-  MapObject* pEntityList_;
+  MapObject* pEntityList_;    // ** TODO this might be wrong?
 };
 static_assert(sizeof(PlayerImpl) == 3108, "Incorrect PlayerImpl size.");
 

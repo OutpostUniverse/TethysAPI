@@ -28,7 +28,7 @@ public:
 
 #define OP2_TFILEDIALOG_VTBL($)  \
   $(F1)  $(F2)  $(F3)  $(F4)  $(F5)  $(F6)  $(F7)  $(F8)  $(F9)  $(F10)
-  DEFINE_VTBL_TYPE(OP2_TFILEDIALOG_VTBL, 0x4CFBD8);
+  TETHYS_DEFINE_VTBL_TYPE(OP2_TFILEDIALOG_VTBL, 0x4CFBD8);
 
 public:
   // ** TODO member fields
@@ -49,7 +49,7 @@ public:
   void F5() override; // ** TODO 0x418890
   void F6() override; // ** TODO 0x4872C0
 
-  DEFINE_VTBL_GETTER(0x4D6290);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D6290);
 
 public:
   // ** TODO member fields
@@ -68,7 +68,7 @@ public:
   void F6()  override; // ** TODO 0x487400
   void F10() override; // ** TODO 0x418520
 
-  DEFINE_VTBL_GETTER(0x4D62E0);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D62E0);
 
 public:
   // ** TODO member fields

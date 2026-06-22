@@ -7,6 +7,8 @@
  ***********************************************************************************************************************
  */
 
+// ** TODO many Triggers are busted if playerId != AllPlayers?
+
 #pragma once
 
 #include "Tethys/Game/MapObjectType.h"
@@ -249,6 +251,7 @@ inline Unit GetSpecialTargetData(const Trigger& specialTargetTrigger)
 
 // =====================================================================================================================
 /// Creates a trigger that fires when the given ScGroup is under attack.
+// ** TODO maybe broken? Check Lesson3.py
 inline Trigger CreateAttackedTrigger(
   const ScGroup& group, std::string_view triggerFunction = "", bool oneShot = true, bool enabled = true)
 {
@@ -280,6 +283,7 @@ inline Trigger CreatePointTrigger(
 
 // =====================================================================================================================
 /// Creates a trigger that fires when any unit enters the area rect.
+// ** TODO maybe broken?
 inline Trigger CreateRectTrigger(
   MapRect area,
   std::string_view triggerFunction = "", int playerNum = AllPlayers, bool oneShot = false, bool enabled = true)

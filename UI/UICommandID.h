@@ -112,22 +112,22 @@ enum class AcceleratorTableID : int {
 enum class WMCommandID : int {
   TogglePause = 40001,  ///< (Un)pause the game <Ctrl+P or Pause>
 
-  GotoBookmarkedLocation0 = 40091,  ///< Center the detail pane on bookmarked location 0 <F5>
-  GotoBookmarkedLocation1 = 40092,  ///< Center the detail pane on bookmarked location 1 <F6>
-  GotoBookmarkedLocation2 = 40093,  ///< Center the detail pane on bookmarked location 2 <F7>
-  GotoBookmarkedLocation3 = 40094,  ///< Center the detail pane on bookmarked location 3 <F8>
-  GotoBookmarkedLocation4 = 40095,  ///< Center the detail pane on bookmarked location 4 <F9>
-  GotoBookmarkedLocation5 = 40096,  ///< Center the detail pane on bookmarked location 5 <F10>
-  GotoBookmarkedLocation6 = 40097,  ///< Center the detail pane on bookmarked location 6 <F11>
-  GotoBookmarkedLocation7 = 40098,  ///< Center the detail pane on bookmarked location 7 <F12>
-  BookmarkLocation0       = 40102,  ///< Bookmark location 0 <Ctrl+F5>
-  BookmarkLocation1       = 40103,  ///< Bookmark location 1 <Ctrl+F6>
-  BookmarkLocation2       = 40104,  ///< Bookmark location 2 <Ctrl+F7>
-  BookmarkLocation3       = 40105,  ///< Bookmark location 3 <Ctrl+F8>
-  BookmarkLocation4       = 40106,  ///< Bookmark location 4 <Ctrl+F9>
-  BookmarkLocation5       = 40099,  ///< Bookmark location 5 <Ctrl+F10>
-  BookmarkLocation6       = 40100,  ///< Bookmark location 6 <Ctrl+F11>
-  BookmarkLocation7       = 40101,  ///< Bookmark location 7 <Ctrl+F12>
+  GotoBookmarkedLocation0     = 40091,  ///< Goto bookmark location 0 <F5>
+  GotoBookmarkedLocation1     = 40092,  ///< Goto bookmark location 1 <F6>
+  GotoBookmarkedLocation2     = 40093,  ///< Goto bookmark location 2 <F7>
+  GotoBookmarkedLocation3     = 40094,  ///< Goto bookmark location 3 <F8>
+  GotoBookmarkedLocation4     = 40095,  ///< Goto bookmark location 4 <F9>
+  GotoBookmarkedLocation5     = 40096,  ///< Goto bookmark location 5 <F10>
+  GotoBookmarkedLocation6     = 40097,  ///< Goto bookmark location 6 <F11>
+  GotoBookmarkedLocation7     = 40098,  ///< Goto bookmark location 7 <F12>
+  BookmarkLocation0           = 40102,  ///<  Set bookmark location 0 <Ctrl+F5>
+  BookmarkLocation1           = 40103,  ///<  Set bookmark location 1 <Ctrl+F6>
+  BookmarkLocation2           = 40104,  ///<  Set bookmark location 2 <Ctrl+F7>
+  BookmarkLocation3           = 40105,  ///<  Set bookmark location 3 <Ctrl+F8>
+  BookmarkLocation4           = 40106,  ///<  Set bookmark location 4 <Ctrl+F9>
+  BookmarkLocation5           = 40099,  ///<  Set bookmark location 5 <Ctrl+F10>
+  BookmarkLocation6           = 40100,  ///<  Set bookmark location 6 <Ctrl+F11>
+  BookmarkLocation7           = 40101,  ///<  Set bookmark location 7 <Ctrl+F12>
 
   // -------------------- Various "hidden" functionality that is not necessarily exposed in the UI ---------------------
   MoveMinimapButtons          = 40082,  ///< Reposition minimap buttons (i.e. right click on minimap)

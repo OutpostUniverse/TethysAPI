@@ -45,7 +45,7 @@ public:
   ibool  Read(size_t size, void* pBuffer)        override { return Thunk<0x407080, &$::Read>(size, pBuffer);  }
   void   Close()                                 override { return Thunk<0x4AB3A0, &$::Close>();              }
 
-  DEFINE_VTBL_GETTER(0x4CF548);
+  TETHYS_DEFINE_VTBL_GETTER(0x4CF548);
 
 public:
   StreamIO*  pContainerStream_;  ///< Vol file image
@@ -64,7 +64,7 @@ public:
   void* Destroy(ibool freeMem = 0) override { return Thunk<0x4074A0, &$::Destroy>(freeMem);     }
   void  Close()                    override { return Thunk<0x407720, &$::Close>();              }
 
-  DEFINE_VTBL_GETTER(0x4CF598);
+  TETHYS_DEFINE_VTBL_GETTER(0x4CF598);
 
   int OpenRead(StreamIO* pContainerStream, uint32 tag)
     { return Thunk<0x407620, int(StreamIO*, uint32)>(pContainerStream, tag); }
@@ -81,7 +81,7 @@ public:
   void* Destroy(ibool freeMem = 0) override { return Thunk<0x407180, &$::Destroy>(freeMem); }
   void  Close()                    override { return Thunk<0x407370, &$::Close>();          }
 
-  DEFINE_VTBL_GETTER(0x4CF570);
+  TETHYS_DEFINE_VTBL_GETTER(0x4CF570);
 
   int OpenWrite(StreamIO* pContainerStream, uint32 tag, int size, ibool align32)
     { return Thunk<0x4071E0, &$::OpenWrite>(pContainerStream, tag, size, align32); }
@@ -109,7 +109,7 @@ public:
   virtual void GetDataLength(const char* pFilename) { return Thunk<0x4A13B0, &$::GetDataLength>(pFilename);      }
 
 #define OP2_BASEVOLSTREAM_VTBL($)  $(OpenStreamByID)  $(OpenStream)  $(GetDataLengthByID)  $(GetDataLength)
-  DEFINE_VTBL_TYPE(OP2_BASEVOLSTREAM_VTBL, 0x4D6AB0);
+  TETHYS_DEFINE_VTBL_TYPE(OP2_BASEVOLSTREAM_VTBL, 0x4D6AB0);
 
   int  F2(const char* pFilename)  { return Thunk<0x49EEE0, &$::F2>(pFilename);   }
   void F3()                       { return Thunk<0x49F030, &$::F3>();            }
@@ -158,7 +158,7 @@ public:
   void   GetDataLengthByID(size_t identifier)    override { return Thunk<0x4A16D0, &$::GetDataLengthByID>(identifier); }
   void   GetDataLength(const char* pFilename)    override { return Thunk<0x4A1590, &$::GetDataLength>(pFilename);      }
 
-  DEFINE_VTBL_GETTER(0x4D6B20);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D6B20);
 
   int OpenVolFile(const char* pVolFile)   { return Thunk<0x4A0AE0, &$::OpenVolFile>(pVolFile);   }
   int F2()                                { return Thunk<0x4A0E90, &$::F2>();                    }
@@ -191,7 +191,7 @@ public:
   void   OpenStreamByID(size_t identifier)       override { return Thunk<0x4A1520, &$::OpenStreamByID>(identifier); }
   void   OpenStream(const char* pFilename)       override { return Thunk<0x4A14A0, &$::OpenStream>(pFilename);      }
 
-  DEFINE_VTBL_GETTER(0x4D6AE8);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D6AE8);
 
   int  F2(int a, int b, int c)         { return Thunk<0x49F600, &$::F2>(a, b, c);      }
   int  F3(int a, int b, int c)         { return Thunk<0x49F930, &$::F3>(a, b, c);      }

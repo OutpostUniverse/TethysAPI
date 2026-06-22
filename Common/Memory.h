@@ -123,7 +123,8 @@ protected:
     { return OP2Thunk<Address, TethysImpl::ToMemPfnType<Fn, decltype(this)>>(this, std::forward<Args>(args)...); }
 
   /// Thunks to an internal constructor.  This implicitly chains to all internal parent constructors.
-  /// Example:  BaseClass()                  { InternalCtor<0x470000>(); }
+  /// @warning This assumes Derived does not contain any non-POD fields!
+  /// @example  BaseClass()                  { InternalCtor<0x470000>(); }
   ///           BaseClass(InternalCtorChain) {                           }
   ///           SubClass()                  : BaseClass(UseInternalCtorChain) { InternalCtor<0x500000>(); }
   ///           SubClass(InternalCtorChain) : BaseClass(UseInternalCtorChain) {                           }
@@ -136,13 +137,25 @@ protected:
   struct InternalCtorChain { explicit constexpr InternalCtorChain() { } }  static constexpr UseInternalCtorChain{};
 
   /// Dummy placeholder used to represent a virtual destructor in DEFINE_VTBL_TYPE().
-  void* _DestroyVirtual(ibool freeMem = false);
+  //
+  // ** TODO i finally figured out this mystery
+  // MSVC indeed generates flag 0x4 on virtual destructors, under one specific circumstance: if the class has its operator delete overloaded
+  // the flag, if set, uses the global ::operator delete instead of the overload :)
+  // so it's basically ::delete versus delete
+  void* _DestroyVirtual(uint32 flags = false);
 
   /// @internal  A dummy overridden function declaration is used to get a base class's @ref VtblType rather than
   /// referring to VtblType directly, since C++ dominance rules are more robust for functions than types.
   static constexpr VtblType _GetBaseVtblType();
 };
 static_assert(std::is_empty_v<OP2Class<void>>, "OP2Class<> should be empty.");
+
+/*
+// ** TODO expr-SSFINAE isn't legal in MSVC; is there is a C++20 way to do this?
+// This might not be what I want for round-trip purposes either?  See the FuncTraits "return tag" round-trip problem?
+template<typename Derived>
+class OP2Class<OP2Class<Derived>> : public OP2Class<Derived>{};
+*/
 
 /// Template class wrapping any OP2 internal class, which automatically calls Destroy() upon destruction.
 /// @note Do not specify virtual destructor overrides for subclasses of this type.  Instead, override Destroy().
@@ -156,7 +169,8 @@ public:
 /// Macro that allows a class's virtual functions to be accessed via a struct of function pointers, allowing them to be
 /// hooked via Vtbl() (static) or Vfptr() (non-static).  Vfptr() also allows an object's vfptr to be reassigned.
 ///
-/// @note  Do not specify virtual function overrides.  It is assumed the visibility where the macro is used is public.
+/// @note  Do not specify virtual function overrides.  Assumes the visibility where the macro is used is public.
+///        Assumes oversize object return types are never used.
 ///
 /// Example:
 /// ========
@@ -168,11 +182,11 @@ public:
 ///   virtual bool  Func2() const        { ... }
 ///
 /// #define MYCLASS_VTBL($)  $(_DestroyVirtual)  $(Func1)  $(Func2)
-///   DEFINE_VTBL_TYPE(MYCLASS_VTBL);  // Or DEFINE_VTBL_TYPE(macro, address) to also define a static vtbl getter.
+///   TETHYS_DEFINE_VTBL_TYPE(MYCLASS_VTBL); // Or TETHYS_DEFINE_VTBL_TYPE(macro, addr) to also add a static vtbl getter
 /// };
 ///
 /// Expands to:
-/// ===========
+/// -----------
 /// class MyClass : public OP2Class<MyClass> {
 /// public:
 ///   virtual       ~MyClass()           { ... }
@@ -180,7 +194,7 @@ public:
 ///   virtual bool  Func2() const        { ... }
 ///
 ///   struct VtblType : public (BaseClass::)VtblType {
-///     void* (__thiscall*  pfnDestroyVirtual)(MyClass* pThis, ibool freeMem);
+///     void* (__thiscall*  pfnDestroyVirtual)(MyClass* pThis, uint32 flags);
 ///     void* (__thiscall*  pfnFunc1)(MyClass* pThis, void*, size_t);
 ///     bool  (__thiscall*  pfnFunc2)(const MyClass* pThis);
 ///   };
@@ -188,24 +202,24 @@ public:
 ///   VtblType*& Vfptr()       { return *reinterpret_cast<VtblType**>(this);      }
 ///   VtblType*  Vfptr() const { return *reinterpret_cast<VtblType*const*>(this); }
 ///
-///   // If you used DEFINE_VTBL_TYPE(macro, address):
+///   // If you used TETHYS_DEFINE_VTBL_TYPE(macro, address):
 ///   static VtblFuncs* Vtbl() { return OP2Mem<address, VtblType*>(); }
-/// }; */
-#define DEFINE_VTBL_TYPE(vtbl, ...)                                              \
+/// };
+#define TETHYS_DEFINE_VTBL_TYPE(vtbl, ...)                                       \
   struct VtblType : public decltype(_GetBaseVtblType()) {                        \
-    vtbl(VTBL_GENERATE_PFN_DEFS_IMPL)                                            \
+    vtbl(TETHYS_VTBL_GENERATE_PFN_DEFS_IMPL)                                     \
   };                                                                             \
 protected:                                                                       \
   static constexpr VtblType _GetBaseVtblType();                                  \
 public:                                                                          \
   VtblType*& Vfptr()       { return *reinterpret_cast<VtblType**>(this);      }  \
   VtblType*  Vfptr() const { return *reinterpret_cast<VtblType*const*>(this); }  \
-  DEFINE_VTBL_GETTER(__VA_ARGS__)
-#define VTBL_GENERATE_PFN_DEFS_IMPL(method)  TethysImpl::PmfToPfnType<&$::method>  pfn##method;
+  TETHYS_DEFINE_VTBL_GETTER(__VA_ARGS__)
+#define TETHYS_VTBL_GENERATE_PFN_DEFS_IMPL(method)  TethysImpl::PmfToPfnType<&$::method>  pfn##method;
 
 /// Defines a static member function getting the class's vtbl.
-/// This can be used by itself if a base class has used DEFINE_VTBL_TYPE().
-#define DEFINE_VTBL_GETTER(...)  template <size_t Address = size_t{__VA_ARGS__}>  static auto Vtbl()  \
+/// This can be used by itself if a base class has used TETHYS_DEFINE_VTBL_TYPE().
+#define TETHYS_DEFINE_VTBL_GETTER(...)  template <size_t Address = size_t{__VA_ARGS__}>  static auto Vtbl()  \
   -> std::enable_if_t<Address != 0, VtblType*> { return OP2Mem<Address, VtblType*>(); }
 
 } // Tethys
