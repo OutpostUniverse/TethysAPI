@@ -28,6 +28,38 @@ public:
   using reference         = TethysAPI::Unit;
 };
 
+// =====================================================================================================================
+/// Iterates over a player's units of the specified type.
+template <typename UnitIterator>
+class FilterUnitIteratorBase : public UnitIterator {
+public:
+  using UnitIterator::pMo_;
+
+  explicit FilterUnitIteratorBase(UnitIterator src = {}, MapID type = MapID::Any)
+    : UnitIterator(src), type_(type)
+      { if (pMo_ && (type_ != MapID::Any) && (pMo_->GetTypeID() != type_)) { ++(*this); } }
+
+  FilterUnitIteratorBase& operator++() {
+    if (type_ == MapID::Any) UnitIterator::operator++();
+    else do UnitIterator::operator++(); while (pMo_ && (pMo_->GetTypeID() != type_));
+    return *this;
+  }
+  FilterUnitIteratorBase operator++(int) { auto old = *this;  operator++();  return old; }
+
+  template <typename T = UnitIterator, typename Enabled = decltype(--std::declval<T>())>
+  FilterUnitIteratorBase& operator--() {  // ** TODO use a template to share code with operator++?
+    if (type_ == MapID::Any) T::operator--();
+    else do T::operator--(); while (pMo_ && (pMo_->GetTypeID() != type_));
+    return *this;
+  }
+  template <typename T = UnitIterator, typename Enabled = decltype(std::declval<T>()--)>
+  FilterUnitIteratorBase operator--(int) { auto old = *this;  operator--();  return old; }
+
+protected:
+  MapID type_;
+};
+
+// =====================================================================================================================
 /// @internal  Template CRTP base class providing necessary STL std::iterator functionality for map area iterators.
 // ** TODO This is pretty hacky.  We should just reimplement the OP2 functions instead of thunking to them.
 template <typename Iterator, typename Result = TethysAPI::Unit>
@@ -69,6 +101,36 @@ protected:
 
 namespace TethysAPI {
 
+// =====================================================================================================================
+/// Iterates over the map's global unit list.
+class GlobalUnitIterator : public TethysImpl::UnitIteratorBase {
+using Base = TethysImpl::UnitIteratorBase;
+public:
+  GlobalUnitIterator(Unit u = {})  : pMo_(u.GetMapObject()) { }
+  GlobalUnitIterator(MapObject* p) : pMo_(p) { }
+
+  // ** TODO this isn't really rewindable, once it hits the "end" it's frozen as nullptr can't be ++/--'ed anymore
+  auto& operator++() { pMo_ = (pMo_ && (pMo_->pNext_ != pMo_)) ? pMo_->pNext_ : nullptr;  return *this; }
+  auto& operator--() { pMo_ = (pMo_ && (pMo_->pPrev_ != pMo_)) ? pMo_->pPrev_ : nullptr;  return *this; }
+  auto  operator++(int) { auto old = *this;  operator++();  return old; }
+  auto  operator--(int) { auto old = *this;  operator--();  return old; }
+  bool  operator==(const GlobalUnitIterator& other) const { return (pMo_ == other.pMo_); }
+  bool  operator!=(const GlobalUnitIterator& other) const { return !(*this == other);    }
+  Unit  operator*() const { return Unit(pMo_);        }
+  operator bool()   const { return (pMo_ != nullptr); }
+
+  static MapObject* begin() { return MapImpl::GetInstance()->pMapObjListBegin_; }
+  static MapObject* end()   { return MapImpl::GetInstance()->pMapObjListEnd_;   }
+
+protected:
+  MapObject* pMo_;
+  //bool atEnd_;  ** TODO? So we can support rewind?
+};
+
+/// Iterates over the map's units of the specified type.
+using FilterGlobalUnitIterator = TethysImpl::FilterUnitIteratorBase<GlobalUnitIterator>;
+
+// =====================================================================================================================
 /// Iterates over a player's unit list.
 class PlayerUnitIterator : public TethysImpl::UnitIteratorBase {
 using Base = UnitIteratorBase;
@@ -88,26 +150,7 @@ protected:
 };
 
 /// Iterates over a player's units of the specified type.
-class FilterPlayerUnitIterator : public PlayerUnitIterator {
-public:
-  explicit FilterPlayerUnitIterator(MapObject* pMo = nullptr, MapID type = MapID::Any)
-    : FilterPlayerUnitIterator(PlayerUnitIterator(pMo), type) { }
-  explicit FilterPlayerUnitIterator(Unit u, MapID type = MapID::Any)
-    : FilterPlayerUnitIterator(PlayerUnitIterator(u), type) { }
-  explicit FilterPlayerUnitIterator(PlayerUnitIterator src, MapID type = MapID::Any)
-    : PlayerUnitIterator(src), type_(type)
-      { if (pMo_ && (type_ != MapID::Any) && (pMo_->GetTypeID() != type_)) { ++(*this); } }
-
-  FilterPlayerUnitIterator& operator++() {
-    if (type_ == MapID::Any) PlayerUnitIterator::operator++();
-    else do PlayerUnitIterator::operator++(); while (pMo_ && (pMo_->GetTypeID() != type_));
-    return *this;
-  }
-  FilterPlayerUnitIterator operator++(int) { auto old = *this;  operator++();  return old; }
-
-private:
-  MapID type_;
-};
+using FilterPlayerUnitIterator = TethysImpl::FilterUnitIteratorBase<PlayerUnitIterator>;
 
 } // TethysAPI
 
@@ -132,6 +175,24 @@ protected:
 
 namespace TethysAPI {
 
+// =====================================================================================================================
+/// Enumerates all map objects (of the specified type).
+class GlobalUnitEnum {
+public:
+  using Iterator = TethysAPI::FilterGlobalUnitIterator;
+
+  // ** TODO support playerNum?
+  GlobalUnitEnum(MapID type = MapID::Any) : type_(type) { }
+
+  Iterator begin() { return Iterator(MapImpl::GetInstance()->pMapObjListBegin_, type_); }
+  Iterator end()   { return Iterator(nullptr, type_); }  // ** TODO use pMapObjListEnd_?
+  // ** TODO add rbegin()/rend()?
+
+protected:
+  MapID type_;
+};
+
+// =====================================================================================================================
 /// Enumerates all vehicles (of the specified type) belonging to the specified player.
 class PlayerVehicleEnum : public TethysImpl::PlayerUnitEnumBase {
 public:
