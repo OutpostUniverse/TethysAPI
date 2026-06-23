@@ -85,6 +85,7 @@ public:
     { Unit u;  Thunk<0x479A60, int(Unit*, MapID, MapID)>(&u, unitType, cargoOrWeapon);  return u; }
   ///@}
 
+  operator GroupIterator() { return GroupIterator(GetImpl()->pUnitListHead_); }  ///< Conversion to GroupIterator.
   auto begin() { return GroupIterator(GetImpl()->pUnitListHead_); }  ///< Iterator to the first unit of this ScGroup.
   auto end()   { return GroupIterator(nullptr);                   }  ///< Iterator past the last unit of this ScGroup.
 

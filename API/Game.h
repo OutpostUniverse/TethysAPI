@@ -23,21 +23,7 @@ namespace Tethys {
 class TFileDialog;
 class GameNetLayer;
 
-/// Defines initial unit rotations and path-finding directions.
-enum class UnitDirection : int {
-  East = 0,
-  SouthEast,
-  South,
-  SouthWest,
-  West,
-  NorthWest,
-  North,
-  NorthEast,
-};
-
 namespace TethysAPI {
-
-using UnitDirection = Tethys::UnitDirection;
 
 /// Defines mine resource types for Game::CreateMine().
 enum class MineType : int {
@@ -126,7 +112,7 @@ public:
     Unit u;
     OP2Thunk<0x478780, ibool FASTCALL(Unit&, MapID, Location, int, MapID, UnitDirection)>(
       u, type, where, ownerNum, weaponCargo, rotation);
-    if (u.IsVehicle() && lightsOn) u.DoSetLights(true);
+    if (u.IsVehicle()) { u.DoSetLights(lightsOn); }
     return u;
   }
 
@@ -184,23 +170,6 @@ public:
     { return SetMusicPlayList(songIDList.size(), repeatStartIndex, songIDList.data()); }
   ///@}
 
-  /// Search aligned 8x8 blocks, for the block with the greatest weight.
-  /// @note The target location is at the block center (+3, +3)
-  /// @note Targets first found block of highest (non-negative) weight, or the first block if all blocks have negative
-  ///       weight
-  /// @note Target player military units weigh 64, non-target player military units weigh -32, and non-target player
-  ///       non-military units weigh 1.
-  static Location FindEMPMissileTarget(const MapRect& searchArea, int targetPlayerNum) {
-    return OP2Thunk<0x478480, Location FASTCALL(int, int, int, int, int)>(
-      searchArea.x1, searchArea.x2, searchArea.y1, searchArea.y2, targetPlayerNum);
-  }
-
-  /// Launches an EMP missile (owned by the specified player) and returns a Unit reference to it.
-  static Unit CreateEMPMissile(Location target, Location launchArea = { }, int ownerNum = 6) {
-    return DisasterThunk<0x478420, Disaster* FASTCALL(int, int, int, int, int)>(
-      false, launchArea.x, launchArea.y, ownerNum, target.x, target.y);
-  }
-
   /// Creates a meteor and returns a Unit reference to it.
   /// @note Size 0 = large, 1 = medium, 2 = small, -1 = random
   static Unit CreateMeteor(Location where, MeteorSize size, bool immediate = false)
@@ -236,6 +205,23 @@ public:
   static void SetLavaSpeed(int   spreadSpeed) { LavaManager::GetInstance()->SetLavaSpeed(spreadSpeed);     }
   /// Sets blight spread speed.
   static void SetBlightSpeed(int spreadSpeed) { BlightManager::GetInstance()->SetSpreadSpeed(spreadSpeed); }
+
+  /// Search aligned 8x8 blocks, for the block with the greatest weight.
+  /// @note The target location is at the block center (+3, +3)
+  /// @note Targets first found block of highest (non-negative) weight, or the first block if all blocks have negative
+  ///       weight
+  /// @note Target player military units weigh 64, non-target player military units weigh -32, and non-target player
+  ///       non-military units weigh 1.
+  static Location FindEMPMissileTarget(const MapRect& searchArea, int targetPlayerNum) {
+    return OP2Thunk<0x478480, Location FASTCALL(int, int, int, int, int)>(
+      searchArea.x1, searchArea.x2, searchArea.y1, searchArea.y2, targetPlayerNum);
+  }
+
+  /// Launches an EMP missile (owned by the specified player) and returns a Unit reference to it.
+  static Unit CreateEMPMissile(Location target, Location launchArea = { }, int ownerNum = 6) {
+    return DisasterThunk<0x478420, Disaster* FASTCALL(int, int, int, int, int)>(
+      false, launchArea.x, launchArea.y, ownerNum, target.x, target.y);
+  }
 
   /// Gets the global GameImpl object instance.
   static GameImpl* GetImpl() { return GameImpl::GetInstance(); }

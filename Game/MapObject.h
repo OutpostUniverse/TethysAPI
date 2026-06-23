@@ -114,6 +114,47 @@ enum class CargoType : int {
   Count
 };
 
+/// Contains information about a ConVec's or factory's cargo bay contents.
+struct CargoKit {
+  constexpr operator MapID() const { return unitType; }  ///< Allows comparison operators, etc.  Assignment disallowed.
+
+  MapID unitType          = MapID::None;
+  MapID cargoOrWeaponType = MapID::None;
+};
+
+/// Contains information about a Cargo Truck's contents.
+struct TruckCargo {
+  constexpr operator CargoType&()       { return cargoType; }  ///< Allows assignment and comparison operators, etc.
+  constexpr operator CargoType()  const { return cargoType; }  ///< Allows assignment and comparison operators, etc.
+
+  CargoType cargoType = CargoType::Empty;
+  int       amount    = 0;
+};
+
+/// Type erasure wrapper for any MapObject's cargo.
+struct Cargo {
+  constexpr Cargo(MapID      weaponCargo = {}) : type(IsCargo), weaponCargo(weaponCargo), reserved() { }
+  constexpr Cargo(TruckCargo truckCargo)       : type(IsTruck), truckCargo(truckCargo) { }
+  constexpr Cargo(CargoKit   cargoKit)         : type(IsKit),   cargoKit(cargoKit)     { }
+
+  ///@{ Implicit conversion, for function inputs, comparisons, etc.
+  constexpr operator MapID()      const { return weaponCargo; }
+  constexpr operator TruckCargo() const { return truckCargo;  }
+  constexpr operator CargoKit()   const { return cargoKit;    }
+  ///@}
+
+  union {
+    struct {
+      MapID  weaponCargo;    ///< Cargo/weapon for most unit types
+      uint32 reserved;       // ** TODO can this be removed?
+    };
+    TruckCargo  truckCargo;  ///< [Cargo Truck] Cargo
+    CargoKit    cargoKit;    ///< [ConVec] Cargo
+  };
+
+  enum { IsCargo = 0, IsTruck, IsKit } type;  ///< Tag type for which cargo union field is active.
+};
+
 
 namespace TethysImpl { template <MapID>  struct MapObjForImpl { using Type = MapObject; }; }
 
@@ -151,9 +192,10 @@ public:
 
   virtual MapObjectType* GetType() const { return Thunk<0x439A00, &$::GetType>(); }
 
-  virtual void  ProcessCommands()           { return Thunk<0x43ADA0, &$::ProcessCommands>();           }
-  virtual int   ProcessActions()            { return Thunk<0x43DF60, &$::ProcessActions>();            }
-  virtual ibool CheckSpontaneouslyExplode() { return Thunk<0x4017E0, &$::CheckSpontaneouslyExplode>(); }
+  virtual void  ProcessCommands() { return Thunk<0x43ADA0, &$::ProcessCommands>(); }
+  virtual int   ProcessActions()  { return Thunk<0x43DF60, &$::ProcessActions>();  }
+
+  virtual ibool CanSpontaneouslyExplode() { return Thunk<0x4017E0, &$::CanSpontaneouslyExplode>(); }
 
   virtual int  FireWeapon() { return Thunk<0x4017F0, &$::FireWeapon>(); }
   virtual void SelectTurretGraphic(MapObject* pWeapon, int rotation)
@@ -199,7 +241,7 @@ public:
   virtual ibool IsSelectable() { return Thunk<0x4018E0, &$::IsSelectable>(); }
 
 #define OP2_MO_MAPOBJECT_VTBL($)                                                                             \
-  $(GetType)  $(ProcessCommands)  $(ProcessActions)  $(CheckSpontaneouslyExplode)  $(FireWeapon)             \
+  $(GetType)  $(ProcessCommands)  $(ProcessActions)  $(CanSpontaneouslyExplode)  $(FireWeapon)               \
   $(SelectTurretGraphic)  $(Draw)  $(LightUpVisibleRange)  $(MarkForRedraw) $(IsVisible)  $(IsVisibleY)      \
   $(GetAnimationIndex)  $(GetSelectionBoxSize)  $(GetSelectionBoxPos)  $(MouseOver)  $(GetMouseOverStr)      \
   $(GetSelectionStr)  $(IsMouseOver)  $(Func_18)  $(Destroy)  $(DoEvent)  $(OnSave)  $(OnLoad)  $(SetEMPed)  \
@@ -209,6 +251,7 @@ public:
   void SetAnimation(int animIdx, int delay, int startDelay, ibool isSpecialAnim, ibool skipDoDeath)
     { return Thunk<0x405110, &$::SetAnimation>(animIdx, delay, startDelay, isSpecialAnim, skipDoDeath); }
 
+  // ScGroup/AI-related unit commands
   void CmdMove(int pixelX, int pixelY)   { return Thunk<0x42A120, &$::CmdMove>(pixelX, pixelY); }
   void CmdAttack(int unitIndex)          { return Thunk<0x42A1E0, &$::CmdAttack>(unitIndex);    }
   void CmdReprogram(int unitIndex)       { return Thunk<0x42A270, &$::CmdReprogram>(unitIndex); }
@@ -575,7 +618,7 @@ public:
   Building(InternalCtorChain) : LandUnit(UseInternalCtorChain) {                           }
 
   int   ProcessActions()                       override { return Thunk<0x408A00, &$::ProcessActions>();             }
-  ibool CheckSpontaneouslyExplode()            override { return Thunk<0x409400, &$::CheckSpontaneouslyExplode>();  }
+  ibool CanSpontaneouslyExplode()              override { return Thunk<0x409400, &$::CanSpontaneouslyExplode>();    }
   void  Draw(Viewport*              pViewport) override { return Thunk<0x408EA0, &$::Draw>(pViewport);              }
   void  MarkForRedraw(Viewport*     pViewport) override { return Thunk<0x408E20, &$::MarkForRedraw>(pViewport);     }
   ibool IsVisible(Viewport*         pViewport) override { return Thunk<0x408C10, &$::IsVisible>(pViewport);         }
@@ -2376,7 +2419,8 @@ public:
 #define OP2_MO_CARGOTRUCK_VTBL($)  $(SetCargoToLoad)  $(TransferCargo)
   TETHYS_DEFINE_VTBL_TYPE(OP2_MO_CARGOTRUCK_VTBL, 0x4CF4A8);
 
-  // Object size = 0x6E
+  int SetTruckCargo(TruckCargo type, int amount) { return Thunk<0x406CD0, &$::SetTruckCargo>(type, amount); }
+
   static constexpr size_t ObjectSize = 0x6E;
 };
 
@@ -2650,11 +2694,11 @@ OP2_EMIT_MO_MAPPINGS(OP2_MO_FOR_DEF);
 //  ====================================================================================================================
 /// Union of all the MapObject subclasses together.
 union AnyMapObj {
-  ///@{ Overload conversion and reference operators to make this class act as if it's MapObject.
-  template <typename T, typename = std::enable_if_t<std::is_base_of_v<MapObject, T>>>
-  explicit operator T&() { return static_cast<T&>(object_); }
-  operator  MapObject&() { return  object_; }
-  MapObject* operator&() { return &object_; }
+  ///@{ Overload conversion and reference operators to make this class act as if it's MapObject (iff it's non-const).
+  template <typename MapObjType, typename = std::enable_if_t<std::is_base_of_v<MapObject, MapObjType>>>
+  operator  MapObjType&() { return static_cast<MapObjType&>(object_); }
+  operator  MapObject&()  { return  object_; }
+  MapObject* operator&()  { return &object_; }
   ///@}
 
   static AnyMapObj* GetInstance(int index) { return reinterpret_cast<AnyMapObj*>(MapObject::GetInstance(index)); }

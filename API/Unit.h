@@ -18,6 +18,18 @@
 
 namespace Tethys {
 
+/// Defines initial unit rotations and path-finding directions.
+enum class UnitDirection : int {
+  East = 0,
+  SouthEast,
+  South,
+  SouthWest,
+  West,
+  NorthWest,
+  North,
+  NorthEast,
+};
+
 /// Enum specifying unit type classifications.  Used by AI and UnitBlock-related interfaces.
 enum class UnitClassification : int {
   Attack           = 0x00,  ///< Lynx, Panther, Tiger, Scorpion (excludes ESG, EMP, Stickyfoam)
@@ -44,25 +56,8 @@ enum class UnitClassification : int {
 
 namespace TethysAPI {
 
+using UnitDirection      = Tethys::UnitDirection;
 using UnitClassification = Tethys::UnitClassification;
-
-/// Contains information about a ConVec's or factory's cargo bay contents.
-struct CargoKit {
-  constexpr operator MapID() const { return unitType; }  ///< Allows comparison operators, etc.  Assignment disallowed.
-
-  MapID unitType;
-  MapID cargoOrWeaponType;
-};
-
-/// Contains information about a Cargo Truck's contents.
-struct TruckCargo {
-  constexpr operator CargoType&()       { return cargoType; }  ///< Allows assignment and comparison operators, etc.
-  constexpr operator CargoType()  const { return cargoType; }  ///< Allows assignment and comparison operators, etc.
-
-  CargoType cargoType;
-  int       amount;
-};
-
 
 // =====================================================================================================================
 /// Exported interface wrapping a reference to a MapObject instance.
@@ -75,9 +70,9 @@ public:
   bool operator==(const Unit& unit) const { return id_ == unit.id_; }
 
   ///@{ Allow conversion from MapObject pointers/references.
-  explicit Unit(MapObject* pMapObject) : id_((pMapObject != nullptr) ? pMapObject->index_         : 0) { }
-  explicit Unit(AnyMapObj* pMapObject) : id_((pMapObject != nullptr) ? pMapObject->object_.index_ : 0) { }
-  explicit Unit(MapObject&  mapObject) : id_(mapObject.index_) { }
+  Unit(const MapObject* pMapObject) : id_((pMapObject != nullptr) ? pMapObject->index_         : 0) { }
+  Unit(const AnyMapObj* pMapObject) : id_((pMapObject != nullptr) ? pMapObject->object_.index_ : 0) { }
+  Unit(const MapObject&  mapObject) : id_(mapObject.index_) { }
   ///@}
 
   int  GetID() const        { return id_;      }  ///< Get internal unit ID of this Unit wrapper instance.
@@ -104,6 +99,7 @@ public:
   int GetInstanceNum() const { return IsValid() ? GetMapObject()->unitTypeInstanceNum_ :  0; } ///< Type instance #.
 
   MapID GetType()     const { return IsValid() ? GetMapObject()->GetTypeID() : MapID::None; } ///< Unit type ID.
+  MapID GetTypeID()   const { return IsValid() ? GetMapObject()->GetTypeID() : MapID::None; } ///< Unit type ID.
   bool  IsLive()      const { return IsValid()    && GetMapObject()->IsLive();              } ///< Unit is alive?
   bool  IsBuilding()  const { return IsLive()     && HasFlag(MoFlagBuilding);               } ///< Unit is a structure?
   bool  IsFactory()   const { return IsBuilding() && HasFlag(MoFlagBldFactory);             } ///< Unit is a factory?
@@ -237,8 +233,8 @@ public:
   // ** TODO can these be overloads cleaned up using a type-erasure wrapper?
   ///@{ [ConVec]  Gets or sets ConVec cargo.
   CargoKit GetConVecCargo() const {
-    return IsVehicle() ?
-      CargoKit{ MapID(GetMapObject<Vehicle>()->cargo_), MapID(GetMapObject<Vehicle>()->weaponOfCargo_) } : CargoKit{};
+    auto*const p = GetMapObject<Vehicle>();
+    return IsVehicle() ? CargoKit{ MapID(p->cargo_), MapID(p->weaponOfCargo_) } : CargoKit{};
   }
   void SetCargo(MapID cargo, MapID weapon)
     { if (IsVehicle()) { auto*const p = GetMapObject<Vehicle>();  p->weapon_ = cargo;  p->weaponOfCargo_ = weapon; } }

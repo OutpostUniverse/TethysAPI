@@ -11,6 +11,7 @@
 
 #pragma once
 
+#include "Tethys/Common/Util.h"
 #include "Tethys/Game/MapObjectType.h"
 #include "Tethys/API/ScGroup.h"
 #include "Tethys/API/Unit.h"
@@ -57,7 +58,7 @@ public:
         TriggerImpl* GetImpl()       { return IsValid() ? TriggerImpl::GetInstance(id_) : nullptr; }
   const TriggerImpl* GetImpl() const { return IsValid() ? TriggerImpl::GetInstance(id_) : nullptr; }
 
-  ibool HasFired(int playerNum) { return Thunk<0x478CC0, &$::HasFired>(playerNum); }  ///< @note Do not use AllPlayers.
+  ibool HasFired(int playerNum) { return Thunk<0x478CC0, &$::HasFired>(playerNum); }  ///< @note  Do not use AllPlayers!
 };
 
 // =====================================================================================================================
