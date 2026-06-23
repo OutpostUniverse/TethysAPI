@@ -11,6 +11,7 @@
 
 #pragma once
 
+#include "Tethys/Common/Util.h"
 #include "Tethys/Game/MapObjectType.h"
 #include "Tethys/API/ScGroup.h"
 #include "Tethys/API/Unit.h"

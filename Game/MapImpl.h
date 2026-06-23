@@ -4,6 +4,7 @@
 #include "Tethys/Common/Memory.h"
 #include "Tethys/Game/MapObjectType.h"
 #include "Tethys/API/Location.h"
+#include "Tethys/GFX/Palette.h"
 
 namespace Tethys {
 
