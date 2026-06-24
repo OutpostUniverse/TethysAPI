@@ -29,6 +29,13 @@ The public mission APIs are within the `TethysAPI` namespace, while everything e
 
 # Change log
 
+## Version 0.8.3
+* Fix `Unit::DoMove()` to issue a `CommandType::Move` command packet instead of the raw `CmdMove()` thunk.
+* Fix `Unit::DoDock()` to issue a `CommandType::Dock` command packet instead of the raw `CmdDock()` thunk.
+* Fix `Unit::DoMiningRoute()` command packet header (`numUnits = 1`, unit id in `unitID[0]`).
+* Fix `Unit::DoDumpCargo()` to issue a `CommandType::DumpCargo` command packet instead of the raw `CmdDumpCargo()` thunk.
+* Fix `Unit::DoTransferCargo()` to issue a `CommandType::TransferCargo` command packet instead of the raw `CmdTransferCargo()` thunk.
+
 ## Version 0.8.2
 * Change `Create*Trigger()` functions to take `triggerFunction` as a `std::string_view` instead of a `const char*`. This is a backwards-compatible interface change.
 * Rename `OnProcessCommandArgs` to `OnGameCommandArgs`
