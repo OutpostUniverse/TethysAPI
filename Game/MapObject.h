@@ -15,7 +15,7 @@ union  AnyMapObj;
 struct PathContext;
 union  Waypoint;
 class  Viewport;
-class  TubeConnection;
+class  Hive;
 
 /// Flags that apply to MapObject instances.
 /// Some bits have different meanings based on unit type, specified by MoFlagVehicle, MoFlagBuilding, or MoFlagEntity.
@@ -378,9 +378,9 @@ public:
     int             targetPixelX_;     ///< [Rocket, ...?] Target map pixel X coordinate.
   };
   union {
-    int             targetPixelY_;     ///< [Rocket, ...?] Target map pixel X coordinate.
-    int             unkWaypointData_;  ///< Something associated with pPathContext_ maybe?
-    TubeConnection* pTubeConnection_;  ///< [Building] Colony tube connection context.
+    int    targetPixelY_;     ///< [Rocket, ...?] Target map pixel X coordinate.
+    int    unkWaypointData_;  ///< Something associated with pPathContext_ maybe?
+    Hive*  pHive_;            ///< [Building] Colony tube connection context.
   };
 
   int    actionTimer_;     ///< Time left to complete the current action.
