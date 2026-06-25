@@ -1,14 +1,20 @@
+/**
+ ***********************************************************************************************************************
+ * @file  Hive.h
+ * @brief Defines the HiveManager and Hive classes for sets of tube-connected buildings.
+ ***********************************************************************************************************************
+ */
 
 #pragma once
 
 #include "Tethys/Common/Memory.h"
+#include "Tethys/Game/MapObject.h"
 
 namespace Tethys {
 
-class MapObject;
-
-/// Internal manager for tube connection sets.
-class TubeConnectionManager : public OP2Class<TubeConnectionManager> {
+// =====================================================================================================================
+/// @internal  Manager for all Hives of building tube connection sets.
+class HiveManager : public OP2Class<HiveManager> {
 public:
   void Init()   { return Thunk<0x42FD20, &$::Init>();   }
   void Deinit() { return Thunk<0x42FCB0, &$::Deinit>(); }
@@ -22,7 +28,7 @@ public:
   static ibool FASTCALL GetTubeStatus(int tileX, int tileY)
     { return OP2Thunk<0x42ED90, &$::GetTubeStatus>(tileX, tileY); }
 
-  static TubeConnectionManager* GetInstance() { return OP2Mem<0x547390, TubeConnectionManager*>(); }
+  static HiveManager* GetInstance() { return OP2Mem<0x547390, HiveManager*>(); }
 
   // ** TODO more member functions
   // 0x4300B0
@@ -35,8 +41,10 @@ public:
   int    field_00;
 };
 
-/// Represents one contiguous set of tube-connected buildings.
-class TubeConnection : public OP2Class<TubeConnection> {
+
+// =====================================================================================================================
+/// @internal  Hive represents a contiguous set of tube-connected buildings.
+class Hive : public OP2Class<Hive> {
 public:
   /// Returns % prevented damage * 10000 (e.g. 2500 = 25% damage prevention)
   int CalculateDIRTDamagePrevention() { return Thunk<0x430050, &$::CalculateDIRTDamagePrevention>(); }
