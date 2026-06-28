@@ -258,9 +258,33 @@ public:
   bool GetLights() { return IsLive() && HasFlag(MoFlagVecHeadlights); }  ///< Vehicle's headlights are turned on?
 
   void DoSetLights(bool on);                                                  ///< Turns vehicle's headlights on or off.
-  void DoMove(Location where) { if (IsLive()) { const auto [x, y] = where.GetPixel(); GetMapObject()->CmdMove(x, y); } }
-  void DoDock(Unit at)                                                        ///< Docks this Unit at a structure.
-    { auto d = at.GetDockLocation();  if (IsLive() && d) { GetMapObject()->CmdDock(d.GetPixelX(), d.GetPixelY()); } }
+  /// Orders the unit to move to a location. Issued via the command-packet system (CommandType::Move),
+  /// not the raw GetMapObject()->CmdMove() thunk - that direct call crashes OP2's pathfinder (eip jumps
+  /// into the heap), whereas the packet path (the same one DoAttack / DoStandGround use) is safe.
+  void DoMove(Location where) {
+    if (IsLive()) {
+      CommandPacket packet = { CommandType::Move, sizeof(MoveCommand) };
+      packet.data.move.numUnits     = 1;
+      packet.data.move.unitID[0]    = id_;
+      packet.data.move.numWaypoints = 1;
+      packet.data.move.waypoint[0]  = where.AsWaypoint();
+      ProcessCommandPacket(packet);
+    }
+  }
+  /// Docks this Unit at a structure.  Issued via the command-packet system (CommandType::Dock, which
+  /// uses MoveCommand with the structure's dock tile as the waypoint), not the raw CmdDock thunk - that
+  /// direct call does not dock the unit (same class of bug as DoMove's raw CmdMove call).
+  void DoDock(Unit at) {
+    const auto d = at.GetDockLocation();
+    if (IsLive() && d) {
+      CommandPacket packet = { CommandType::Dock, sizeof(MoveCommand) };
+      packet.data.move.numUnits     = 1;
+      packet.data.move.unitID[0]    = id_;
+      packet.data.move.numWaypoints = 1;
+      packet.data.move.waypoint[0]  = d.AsWaypoint();
+      ProcessCommandPacket(packet);
+    }
+  }
   void DoDockAtGarage(Unit garage);                                           ///< Docks this Unit at a Garage.
   void DoBuild(Location  bottomRight);                                        ///< [ConVec] Build a structure.
   void DoDeploy(Location center);                                             ///< [Robo-Miner, GeoCon] Deploy building.
@@ -272,7 +296,7 @@ public:
   void DoDoze(MapRect area);                                                  ///< [Robo-Dozer]  Bulldoze an area.
   void DoMiningRoute(Unit mine, Unit smelter);                                ///< [Cargo Truck] Mine <-> Smelter route.
   void DoSalvage(MapRect  area, Unit gorf);                                   ///< [Cargo Truck] Salvage rubble.
-  void DoDumpCargo()   { if (IsLive()) { GetMapObject()->CmdDumpCargo(); } }  ///< [Cargo Truck] Dispose of cargo.
+  void DoDumpCargo()   { DoSimpleCommand(CommandType::DumpCargo);          }  ///< [Cargo Truck] Dispose of cargo.
   void DoLoadCargo()   { DoSimpleCommand(CommandType::LoadCargo);          }  ///< [Cargo Truck] Load truck cargo.
   void DoUnloadCargo() { DoSimpleCommand(CommandType::UnloadCargo);        }  ///< [Cargo Truck] Unload truck cargo.
 
@@ -351,8 +375,18 @@ public:
   void DoProduce(                                                  ///< [Factory] Issue a factory build command.
     MapID itemType, MapID weaponType = MapID::None, uint16 scGroupIndex = -1, bool recycleIfFull = false);
   void DoLaunch(Location target = { }, bool forceEnable = false);  ///< [Spaceport] Launch the rocket on launch pad.
-  void DoTransferCargo(int bay)                                    ///< [Factory, Garage] Move cargo to a bay.
-    { if (IsLive()) { GetMapObject()->CmdTransferCargo(bay); } }
+  /// Moves cargo to a bay.  Issued via the command-packet system (CommandType::TransferCargo),
+  /// not the raw CmdTransferCargo thunk - that direct call corrupts state and crashes the engine
+  /// a tick later (same class of bug as DoMove/DoDumpCargo).  [Factory, Garage]
+  void DoTransferCargo(int bay) {
+    if (IsLive()) {
+      CommandPacket packet = { CommandType::TransferCargo, sizeof(TransferCargoCommand) };
+      packet.data.transferCargo.unitID  = id_;
+      packet.data.transferCargo.bay     = bay;
+      packet.data.transferCargo.unknown = 0;
+      ProcessCommandPacket(packet);
+    }
+  }
   void DoResearch(int techID, int numScientists);                  ///< [Lab] Begin researching a technology.
   void DoTrainScientists(int numToTrain);                          ///< [University] Begin training new scientists.
 
@@ -612,8 +646,8 @@ inline void Unit::DoMiningRoute(
 {
   if (IsLive() && mine.IsLive() && smelter.IsLive()) {
     CommandPacket packet = { CommandType::CargoRoute, sizeof(CargoRouteCommand) };
-    packet.data.cargoRoute.numUnits  = id_;
-    packet.data.cargoRoute.unitID[1] = id_;
+    packet.data.cargoRoute.numUnits  = 1;
+    packet.data.cargoRoute.unitID[0] = id_;
 
     packet.data.cargoRoute.numWaypoints         = 3;
     packet.data.cargoRoute.waypoint[0]          = mine.GetDockLocation().AsWaypoint();
