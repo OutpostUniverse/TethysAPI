@@ -81,17 +81,17 @@ public:
     return Thunk<0x47A410, void(Location&, MapID, MapID, ScGroup&)>(where, unitType, cargoOrWeapon, produceGroup);
   }
 
-  void RecordTube(Location         where)                   { return Thunk<0x47A390, &$::RecordTube>(where);           }
-  void RecordConnectTubes(Location toWhere)                 { return Thunk<0x47A370, &$::RecordConnectTubes>(toWhere); }
-  void RecordWall(Location where, MapID type = MapID::Wall) { return Thunk<0x47A3B0, &$::RecordWall>(where, type);     }
+  void RecordTube(Location         where)                   { return Thunk<0x47A390, void(Location&)>(where);         }
+  void RecordConnectTubes(Location toWhere)                 { return Thunk<0x47A370, void(Location&)>(toWhere);       }
+  void RecordWall(Location where, MapID type = MapID::Wall) { return Thunk<0x47A3B0, void(Location&, MapID)>(where, type); }
 
   void RecordUnitBlock(const UnitBlock& units) { return Thunk<0x47A330, void(const UnitBlock&)>(units); }
   void RecordUnitBlock(const UnitBlock& units, ScGroup produceGroup)
     { return Thunk<0x47A350, void(const UnitBlock&, ScGroup&)>(units, produceGroup); }
 
   void RecordVehReinforceGroup(ScGroup targetGroup, int priority)  ///< 0 = lowest priority, 0xFFFF = highest
-    { return Thunk<0x47A440, &$::RecordVehReinforceGroup>(targetGroup, priority); }
-  void UnRecordVehGroup(ScGroup        targetGroup) { return Thunk<0x47A460, &$::UnRecordVehGroup>(targetGroup); }
+    { return Thunk<0x47A440, void(ScGroup&, int)>(targetGroup, priority); }
+  void UnRecordVehGroup(ScGroup        targetGroup) { return Thunk<0x47A460, void(ScGroup&)>(targetGroup); }
 };
 
 
@@ -159,9 +159,9 @@ struct MrRec {
 
 struct PWDef {
   PWDef(int x1_, int y1_, int x2_, int y2_, int x3_, int y3_, int x4_, int y4_, int t1, int t2, int t3)
-    : x1(x1_), y1(y1_), x2(x2_), y2(y2_), x3(x3_), x4(x4_), y4(y4_), time1(t1), time2(t2), time3(t3) { }
+    : x1(x1_), y1(y1_), x2(x2_), y2(y2_), x3(x3_), y3(y3_), x4(x4_), y4(y4_), time1(t1), time2(t2), time3(t3) { }
   PWDef()
-    : x1(-1), y1(0), x2(0), y2(0), x3(0), x4(0), y4(0), time1(-1), time2(-1), time3(-1) { }
+    : x1(-1), y1(0), x2(0), y2(0), x3(0), y3(0), x4(0), y4(0), time1(-1), time2(-1), time3(-1) { }
 
   int x1;     ///< -1 to terminate list
   int y1;

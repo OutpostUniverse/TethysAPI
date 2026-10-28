@@ -312,7 +312,7 @@ public:
   Unit GetUnitInGarage(int bay) const
     { return Unit((IsLive() && (bay >= 0) && (bay < 6)) ? GetMapObject<MapObj::Garage>()->pUnitInBay_[bay] : nullptr); }
   void PutInGarage(Unit garage, int bay)
-    { const Location dock = garage.GetDockLocation();  Thunk<0x476160, void(int, int, int)>(bay, dock.x, dock.y); }
+    { const Location loc = garage.GetLocation();  Thunk<0x476160, void(int, int, int)>(bay, loc.x, loc.y); }
   ///@}
 
   ///@{ [Spaceport]  Gets or sets the rocket type or cargo on the launch pad.

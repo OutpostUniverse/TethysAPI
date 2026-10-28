@@ -141,7 +141,7 @@ public:
   void  ResetChecks()             { return Thunk<0x4776E0, &$::ResetChecks>();          }
 
   /// Gets the default ScGroup units will be added to (for AI players).
-  ScGroup GetDefaultGroup() const { return Thunk<0x4775C0, &$::GetDefaultGroup>(); }
+  ScGroup GetDefaultGroup() const { ScGroup g;  Thunk<0x4775C0, ScGroup*(ScGroup*)>(&g);  return g; }
   /// Changes the default ScGroup units will be added to (for AI players).
   void SetDefaultGroup(const ScGroup& newDefaultGroup) { return Thunk<0x4775A0, &$::SetDefaultGroup>(newDefaultGroup); }
 

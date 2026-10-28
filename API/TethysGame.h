@@ -180,7 +180,7 @@ public:
   static void SetMusicPlayList(int numSongs, int repeatStartIndex, const SongID* pSongIDList)
     { return MusicManager::GetInstance()->SetMusicPlaylist(numSongs, repeatStartIndex, pSongIDList); }
   template <size_t N>  static void SetMusicPlayList(const SongID (&songIDList)[N], int repeatStartIndex = 0)
-    { return SetMusicPlaylist(int(N), repeatStartIndex, &songIDList[0]); }
+    { return SetMusicPlayList(int(N), repeatStartIndex, &songIDList[0]); }
 
   /// Search aligned 8x8 blocks, for the block with the greatest weight.
   /// @note The target location is at the block center (+3, +3)
@@ -190,7 +190,7 @@ public:
   ///       non-military units weigh 1.
   static Location FindEMPMissileTarget(const MapRect& searchArea, int targetPlayerNum) {
     return OP2Thunk<0x478480, Location FASTCALL(int, int, int, int, int)>(
-      searchArea.x1, searchArea.x2, searchArea.y1, searchArea.y2, targetPlayerNum);
+      searchArea.x1, searchArea.y1, searchArea.x2, searchArea.y2, targetPlayerNum);
   }
 
   /// Launches an EMP missile (owned by the specified player) and returns a Unit reference to it.

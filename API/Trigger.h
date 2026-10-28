@@ -256,7 +256,7 @@ inline Trigger CreateRectTrigger(
   const char* pTriggerFunction = nullptr, int playerNum = AllPlayers, bool oneShot = false, bool enabled = true)
 {
   return OP2Thunk<0x478FC0, Trigger FASTCALL(ibool, ibool, int, int, int, int, int, const char*)>(
-    enabled, oneShot, playerNum, area.x1, area.x2, area.Width(), area.Height(), pTriggerFunction);
+    enabled, oneShot, playerNum, area.x1, area.y1, area.Width(), area.Height(), pTriggerFunction);
 }
 
 /// Creates a rect trigger that filters based on the specified unit type (and cargo type/amount).

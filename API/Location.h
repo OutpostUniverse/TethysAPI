@@ -83,11 +83,11 @@ public:
 
   int      Width()  const { return Thunk<0x475AA0, &$::Width>();  }
   int      Height() const { return Thunk<0x475AE0, &$::Height>(); }
-  Location Size()   const { return Thunk<0x475C70, &$::Size>();   }
+  Location Size()   const { Location l;  Thunk<0x475C70, Location*(Location*)>(&l);  return l; }
 
   /// Checks if the point is in the rect  [handles x wrap around for rect coordinates]
   ibool    Contains(const Location& ptToCheck) const { return Thunk<0x475D50, &$::Contains>(ptToCheck); }
-  Location RandomPoint()                       const { return Thunk<0x475CC0, &$::RandomPoint>();       }
+  Location RandomPoint()                       const { Location l;  Thunk<0x475CC0, Location*(Location*)>(&l);  return l; }
 
   MapRect& Clip()                      { Thunk<0x475AF0>();                             return *this; }
   MapRect& Inflate(int wide, int high) { Thunk<0x475A60, void(int, int)>(wide, high);   return *this; }
