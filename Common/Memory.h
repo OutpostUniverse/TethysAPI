@@ -46,7 +46,7 @@ auto OP2Thunk(Args&&... args) { return OP2Mem<Address, decltype(Pfn)>()(std::for
 ///@{ OP2 cstdlib malloc(), calloc(), realloc(), and free() functions, using Outpost2.exe's memory allocation heap.
 inline void* CDECL OP2Alloc(size_t  size)                 { return OP2Thunk<0x4C21F0, &OP2Alloc>(size);            }
 inline void* CDECL OP2Calloc(size_t count,   size_t size) { return OP2Thunk<0x4C2CC0, &OP2Calloc>(count, size);    }
-inline void* CDECL OP2Realloc(void* pMemory, size_t size) { return OP2Thunk<0x4C21F0, &OP2Realloc>(pMemory, size); }
+inline void* CDECL OP2Realloc(void* pMemory, size_t size) { return OP2Thunk<0x4C29C0, &OP2Realloc>(pMemory, size); }
 inline void  CDECL OP2Free(void*    pMemory)              { return OP2Thunk<0x4C1380, &OP2Free>(pMemory);          }
 ///@}
 
