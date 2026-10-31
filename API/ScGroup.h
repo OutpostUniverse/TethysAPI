@@ -217,9 +217,9 @@ struct MrRec {
 
 struct PWDef {
   PWDef(int x1_, int y1_, int x2_, int y2_, int x3_, int y3_, int x4_, int y4_, int t1, int t2, int t3)
-    : x1(x1_), y1(y1_), x2(x2_), y2(y2_), x3(x3_), x4(x4_), y4(y4_), time1(t1), time2(t2), time3(t3) { }
+    : x1(x1_), y1(y1_), x2(x2_), y2(y2_), x3(x3_), y3(y3_), x4(x4_), y4(y4_), time1(t1), time2(t2), time3(t3) { }
   PWDef()
-    : x1(-1), y1(0), x2(0), y2(0), x3(0), x4(0), y4(0), time1(-1), time2(-1), time3(-1) { }
+    : x1(-1), y1(0), x2(0), y2(0), x3(0), y3(0), x4(0), y4(0), time1(-1), time2(-1), time3(-1) { }
 
   int x1;     ///< -1 to terminate list
   int y1;
