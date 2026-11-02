@@ -1511,6 +1511,12 @@ public:
 
   TETHYS_DEFINE_VTBL_GETTER(0x4D5F60);
 
+public:
+  PackedPlayerBitmask  sourcePlayerMask_;
+  uint8                field_6D;
+  PackedPlayerBitmask  playerMask_;
+  uint8                field_6F;
+
   static constexpr size_t ObjectSize = 0x70;
 };
 
