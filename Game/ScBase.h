@@ -198,11 +198,10 @@ public:
   // ** TODO More member functions
 
 public:
-  int            field_14;
-  TriggerImpl*   pNext_;
-  ibool          isOneShot_;
-  PlayerBitmask  hasFired_;
-  FuncReference* pFuncRef_;
+  ScBaseLinkedListInfo triggerListInfo_;
+  ibool                isOneShot_;
+  PlayerBitmask        hasFired_;
+  FuncReference*       pFuncRef_;
 };
 
 // =====================================================================================================================
@@ -275,7 +274,7 @@ public:
   UnitTypeTargetCount* pUnitTypeTargetCounts_;
   int                  groupScStubIndex_;
   int                  numUnitTypeTargetCounts_;
-  int                  field_10;
+  ibool                needsRecount_;
 };
 static_assert(sizeof(TargetCount) == 0x14, "Incorrect TargetCount size.");
 
@@ -314,7 +313,7 @@ public:
 
   ScBaseLinkedListInfo groupListInfo_;  ///< Links between groups (@note Group::GetLinkedListInfo, 0x42B100)
   int          lastFreeUnitNodeIndex_;  ///< (+= 1)
-  int          field_20;                ///< (+= 1)
+  int          numNodesAllocated_;      ///< (+= 1)
   UnitNode     unitNode_[32];           ///< Linked list storage for pointers for 32 units
   UnitNode*    pUnitByType_[size_t(UnitClassification::NotSet)]; ///< Indexed by UnitClassification
   TargetCount* pTargetCount_;           ///< Object to keep track of target counts
@@ -414,9 +413,9 @@ public:
   ScBaseLinkedListInfo fightGroupListInfo_;  ///< (@note CombatBaseFactory::GetLinkedListInfo, 0x428250)
   ibool    combineFire_;
   int      combineFireUnitIndex_;
-  int      field_310;              ///< Set to 0xFFF00000, related to game tick, possibly spider related?
+  int      lastTargetPickTick_;    ///< Set to 0xFFF00000, related to game tick, possibly spider related?
   int      numWaypoints_;
-  int      field_318;              ///< Set in SetWaypoints to unknown parameter, used in IssuePatrol?
+  int      patrolParam_;           ///< Set in SetWaypoints to unknown parameter, used in IssuePatrol?
   Waypoint waypointList_[8];
   int      patrolMode_;
   int      followMode_;
@@ -426,7 +425,7 @@ public:
   int      targetUnitIndex_;       ///< Initialized to -1
   int      numGuardedRects_;
   RECT     guardedRect_[8];
-  int      field_3E4;              ///< Index into a list of objects with 5 function pointers each
+  int      action_;                ///< Index into a list of objects with 5 function pointers each?
 };
 static_assert(sizeof(FightGroupImpl) == 0x3E8, "Incorrect CombatBase size.");
 
