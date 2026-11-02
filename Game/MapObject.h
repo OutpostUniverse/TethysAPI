@@ -360,14 +360,14 @@ public:
   };
 
   uint16 attackingUnitIndex_;   ///< [TankVehicle, GuardPost] Index of MapUnit to attack.
-  int    field_28;
+  int    lastAttackedTick_;
   uint8  unitTypeInstanceNum_;  ///< Unit type instance number, e.g. Tokamak #5-02's instance number is 2.
-  uint8  field_2D;
+  uint8  turretRotation_;
   uint16 reloadTimer_;          ///< [TankVehicle, GuardPost] Timer before weapon can fire again.
   uint8  scGroupIndex_;         ///< ScGroup this unit is assigned to, or -1 for none.
-  uint8  field_31;
-  uint8  field_32;
-  uint8  field_33;
+  uint8  groupNodeIndex_;
+  uint8  targetedByCount_;
+  uint8  frameIndexRelated_;    // ** TODO Related to frameIndex_?
 
   union {
     PathContext*    pPathContext_;     ///< [Vehicle, AirUnit] Data for path finder and movement.
@@ -471,8 +471,8 @@ public:
   int           parentIndex_;  ///< Owner MapObject index, e.g. the chassis unit.
   CommandTarget target_;       ///< Tile X/Y coordinates if ground-attacking, (unitID | 0xFFFF0000) if attacking a unit.
 
-  int field_50;  ///< Unused by this class (MapObject subclasses own 0x48-0x53).
-  int field_54;
+  int   field_50;  ///< Unused by this class (MapObject subclasses own 0x48-0x53).
+  ibool isAnimated_;
 
   static constexpr size_t ObjectSize = 0x58;
 };
@@ -706,7 +706,7 @@ public:
   uint16 timerEMP_;  ///< EMP timer remaining.
 
   int field_58;
-  int field_5C;
+  int developTime_;
 
   static constexpr size_t ObjectSize = 0x60;
 };
@@ -740,8 +740,8 @@ public:
   uint8  itemToProduce_;        ///< MapID item to produce.
   uint8  cargoBayContents_[6];  ///< MapID cargo bay contents' unit type.  @ref cargoBayCargoOrWeapon_ stores the weapon
   uint8  field_67;
-  int    field_68;
-  uint16 field_6C;
+  int    productionTime_;
+  uint16 scStubIndex_;
 
   static constexpr size_t ObjectSize = 0x6E;
 };
@@ -891,7 +891,7 @@ public:
 
   uint16 field_5A;
   int    cargoToLoad_;  ///< [CargoTruck, ...?] Cargo to load when animation has sufficiently progressed.
-  uint16 field_60;
+  uint16 effectStartTick_;
 
   // ** TODO these should be moved to child classes
   uint16 field_62;
@@ -1016,8 +1016,10 @@ public:
   int field_48;
   int field_4C;
   int field_50;
-  int field_54;
-  int field_58;
+
+  int strikeStartTick_;
+  int nextStrikeTick_;
+
   int field_5C;
   int field_60;
 
@@ -1083,16 +1085,16 @@ public:
   uint8  field_51;
   uint8  field_52;
   uint8  field_53;
-  int    field_54;
-  uint8  field_58;
-  uint8  field_59;
-  uint8  field_5A;
-  uint8  field_5B;
-  uint8  field_5C;
-  uint16 field_5D;
-  uint16 field_5F;
-  uint16 field_61;
-  uint16 field_63;
+
+  int    startTick_;
+
+  int    effectAnimStartTick_;  ///< @note Presumed? Might be uint8[4] unknown?
+
+  uint8  heading_;
+  uint16 subPixelX_;
+  uint16 subPixelY_;
+  uint16 tileX_;
+  uint16 tileY_;
 
   uint16 endTileX_;  ///< End map tile X (may not reach before timeout).  If -1, then gets initialized when triggered.
   uint16 endTileY_;  ///< End map tile Y (may not reach before timeout).  If -1, then gets initialized when triggered.
