@@ -193,7 +193,7 @@ public:
   TilesetMapping* pTilesetMappings_;
   int             field_08;
   int             numTerrainTypes_;     ///< Max = 12
-  TerrainType*    pTerrainTypes_;
+  TerrainType*    pTerrainTypes_[12];
 };
 
 
