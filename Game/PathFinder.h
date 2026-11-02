@@ -69,7 +69,8 @@ public:
   int sqDistance_;    ///< Squared distance (rangeTileX^2 + rangeTileY^2)
   int rangeTileX_;
   int rangeTileY_;
-  // ** TODO more fields  0x28 ...
+  int aStarGoalTileX_;
+  int aStarGoalTileY_;
 
   /// Lookup table of (dx, dy) pairs for PathContext::rotation values.  Corresponds to order of UnitDirection enum.
   static constexpr struct DirOffset {
