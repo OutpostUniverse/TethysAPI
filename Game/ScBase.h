@@ -138,11 +138,11 @@ public:
   static ScriptDataBlock* GetInstance(int index) { return static_cast<ScriptDataBlock*>(ScBase::GetInstance(index)); }
 
 public:
-  int   field_14;
-  int   field_18;
-  ibool useLevelModule_;
-  char* pFuncName_;
-  void* pFuncAddress_;
+  /// Links between ScriptDataBlocks (@note ScriptDataBlockFactory::GetLinkedListInfo, 0x475690)
+  ScBaseLinkedListInfo dataBlockListInfo_;
+  ibool                useLevelModule_;
+  char*                pFuncName_;
+  void*                pFuncAddress_;
 };
 
 // =====================================================================================================================
@@ -462,7 +462,11 @@ public:
 
   static ScStrategyImpl* GetScStrategyList() { return OP2Mem<0x4E413C, ScStrategyImpl*&>(); }
 
-  // ** TODO
+  // ** TODO More member functions?
+
+public:
+  /// Links between strategies (@note StrategyFactory::GetLinkedListInfo, 0x4841B0)
+  ScBaseLinkedListInfo strategyListInfo_;
 };
 
 // ** TODO More ScStubFactory subclasses
