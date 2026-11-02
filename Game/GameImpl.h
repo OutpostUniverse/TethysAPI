@@ -65,12 +65,7 @@ public:
   ibool fastProduction_;
   ibool showUnitPaths_;
   ibool allUnitsVisible_;
-  int   field_20;
-  int   field_24;
-  int   field_28;
-  int   field_2C;
-  int   field_30;
-  int   field_34;
+  ibool unusedDebugFlags_[6];  ///< Unused; possibly debug menu options from the pre-release demo.
   ibool forceDisableRCC_;
   ibool forceEnableRCC_;
 
