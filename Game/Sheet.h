@@ -30,10 +30,7 @@ public:
 
   static size_t NumMapObjTypes() { return OP2Mem<MapObjectType**&>(0x44675C) - GetMapObjTypeTable(); }  // 115
 
-public:
-  int field_00;
-  int field_04;
+  // No member variables;  member functions are called with a this pointer they don't use.
 };
-static_assert(8 == sizeof(Sheet), "Incorrect Sheet size.");
 
 } // Tethys
