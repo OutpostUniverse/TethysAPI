@@ -80,6 +80,7 @@ struct CellTypeInfo {
   ibool   blocksLineOfSight;
   int     blightSpeed;
   Rgb555  minimapTopographicColor;
+  uint16  field_22;
 };
 
 /// Defines information about each tile type index.
