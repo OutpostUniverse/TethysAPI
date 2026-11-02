@@ -42,10 +42,10 @@ public:
 
 public:
   int    currentPosition_;
-  int    field_08;         ///< Flags? Gets set to 0 by SetSpreadSpeed, gets XOR 1'd by TrySpread, bit 2 is used for ???
-  int    field_0C;
+  int    directionToggle_;   ///< Flags? Gets set to 0 by SetSpreadSpeed, gets XOR 1'd by TrySpread, bit 2 is used for ?
+  int    reservedSyncValue_; ///< Sync?
   int    spreadSpeed_;
-  uint32 virMask_[512];    ///< Inline mask buffer (@note GFXClippedSurface::DrawLightAdjustedTileBitmap, 0x4A8AEC)
+  uint32 virMask_[512];      ///< Inline mask buffer (@note GFXClippedSurface::DrawLightAdjustedTileBitmap, 0x4A8AEC)
 };
 
 /// Internal class managing lava spread.  @note Many of the virtual functions are called non-virtually.
