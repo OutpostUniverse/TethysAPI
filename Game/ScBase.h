@@ -59,6 +59,12 @@ public:
   using Derived = DerivedScStubFactory<SubStubType, SubInstanceAddress, DerivedScStubFactory>;
 };
 
+/// Links between ScStubs of the same type.
+struct ScBaseLinkedListInfo {
+  ScBase* pPrev;
+  ScBase* pNext;
+};
+
 // =====================================================================================================================
 /// Internal class for creating ScStubs.
 class ScStubFactory : public OP2Class<ScStubFactory> {
@@ -76,6 +82,12 @@ public:
   ScStubFactory* pParent_;
   const char*    pName_;
   uint32         elementSizeInBytes_;
+
+  ScBase*               (FASTCALL* pfnCreateStub_)(void* pMemory);
+  ScBaseLinkedListInfo* (FASTCALL* pfnGetLinkedListInfo_)(ScBase* pScStub);
+
+  ScBase* pLinkedListHead_;  ///< Newest ScStub of this type.
+  int     creatorIndex_;
 
   ScBase* (FASTCALL* pfnCreateStub_)(void* pMemory);
 };
@@ -103,10 +115,9 @@ public:
     { return ((index >= 0) && (index != ScStubList::NilIndex)) ? (*ScStubList::GetInstance())[index] : nullptr; }
 
 public:
-  int   index_;
-  ibool isEnabled_;
-  int   field_0C;
-  int   field_10;
+  int                   index_;
+  ibool                 isEnabled_;
+  ScBaseLinkedListInfo  linkedListInfo_;
 };
 
 
