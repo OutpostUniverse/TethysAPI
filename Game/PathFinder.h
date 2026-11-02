@@ -105,7 +105,7 @@ struct PathContext {
   PathContext* pNextDestination;
 
   int    field_3C;  ///< (0 = Move/Dock/DockEG/StandGround/CargoRoute/Patrol/Build, 3 = RemoveWall)
-  int    field_40;
+  int    numUnitsDiv8Plus1;  // ** TODO
   uint16 numPixelsMovedX;
   uint16 numPixelsMovedY;
 
@@ -114,16 +114,16 @@ struct PathContext {
   int dstTileX;     ///< Of current waypoint
   int dstTileY;     ///< Of current waypoint
 
-  uint16 field_58;
+  uint16 pixelsMovedY;
   uint16 numPixelsToMoveX;
-  uint16 field_5C;
+  uint16 pixelsTurned;
   uint16 numPixelsToMoveY;
 
   int rotationSpeed;
-  int field_64;       ///< Timer?
-  int field_68;       ///< Timer?
-  int field_6C;
-  int field_70;
+  int remainingStepsToCrossTile;  ///< Timer?
+  int remainingStepsToTurn;       ///< Timer?
+  int tryBumpCount;
+  int randRange;
 
   int numPathfinderPoints;
   int currentPathfinderPoint;
@@ -133,15 +133,14 @@ struct PathContext {
   ///        the next path fragment.
   uint8 direction[64];
 
-  int field_BC;
-  int field_C0;
-  int field_C4;
-  int field_C8;
-  int field_CC;  ///< Set to arg 3 of Unit.Pathfind (1 if there are player-defined waypoints) enum{0,1,2,3}
-  int distance;  ///< Set to arg 4 of Unit.Pathfind (2 if there are player-defined waypoints)
+  int packedRouteLength;
+  int packedRouteCursor;
+  int cursorTileX;
+  int cursorTileY;
+  int costMode;          ///< Set to arg 3 of Unit.Pathfind (1 if there are player-defined waypoints) enum{0,1,2,3}
+  int distance;          ///< Set to arg 4 of Unit.Pathfind (2 if there are player-defined waypoints)
 
-  // ** TODO more fields
-  uint8 field_D4[0x200 - 0xD4];
+  uint8 packedRoute[300];
 };
 static_assert(sizeof(PathContext) == 0x200, "Incorrect PathContext size.");
 
