@@ -11,6 +11,7 @@ namespace Tethys {
 class StreamIO;
 class GFXBitmap;
 class GFXTilesetBitmap;
+class GFXClippedSurface;
 class MapObject;
 union AnyMapObj;
 namespace TethysAPI { class InRangeEnumerator; }
@@ -129,9 +130,9 @@ struct TerrainType {
 
   uint16 lavaStart; ///< First lava tile index.
 
-  uint16 field_B6;
-  uint16 field_B8;
-  uint16 field_BA;
+  uint16 lavaAnimationLength;
+  uint16 lavaCenterAnimationLength;
+  uint16 lavaNumCenterTiles;
 
   ConnectedTileMapping tube; ///< Tube tile indices.
 
@@ -191,7 +192,7 @@ public:
 public:
   int             numTilesetMappings_;
   TilesetMapping* pTilesetMappings_;
-  int             field_08;
+  uint32*         pMiniMapTileColors_;  // ** TODO not Rgb555?
   int             numTerrainTypes_;     ///< Max = 12
   TerrainType*    pTerrainTypes_[12];
 };
@@ -327,7 +328,8 @@ public:
   }
 
 public:
-  int     field_00;
+  GFXClippedSurface* pDrawSurface_;
+
   uint32  pixelWidthMask_;
   int     pixelWidth_;
   uint32  tileXMask_;
@@ -350,7 +352,7 @@ public:
   MapObject*  pMapObjListEnd_;      ///< One past the end of pMapObjArray_.
 
   uint8              lightLevelAdjustTable_[1024];  ///< 512*2 by default, extended to 1024*2 by LargeMapPatch
-  uint32             field_45C;
+  uint32             lightLevelMax_;  // Presumed?
   char**             pTilesetNames_;
   TileData*          pTileArray_;
   GFXTilesetBitmap** ppTilesetBitmaps_;
