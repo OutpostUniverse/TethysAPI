@@ -2452,6 +2452,12 @@ public:
 
   int SetTruckCargo(TruckCargo type, int amount) { return Thunk<0x406CD0, &$::SetTruckCargo>(type, amount); }
 
+public:
+  PackedMapRect workRect_;
+  uint8         field_6A[2];
+  uint8         workDirectionFlags_;
+  uint8         isLoadingCargo_;
+
   static constexpr size_t ObjectSize = 0x6E;
 };
 
@@ -2472,6 +2478,10 @@ public:
     { return Thunk<0x423430, &$::DoBuild>(numWaypoints, pWaypoints, a); }
 
   TETHYS_DEFINE_VTBL_GETTER(0x4CF990);
+
+public:
+  PackedMapRect buildArea_;
+  int16         scStubIndex_;
 
   static constexpr size_t ObjectSize = 0x6C;
 };
@@ -2498,6 +2508,13 @@ public:
   TETHYS_DEFINE_VTBL_TYPE(OP2_MO_EARTHWORKER_VTBL, 0x4D0DC8);
 
   void FinishBuildingWall() { return Thunk<0x423700, &$::FinishBuildingWall>(); }
+
+public:
+  PackedMapRect workRect_;
+  uint8         field_6A[2];
+  int16         wallTileX_;
+  int16         wallTileY_;
+  uint8         wallFlags_;
 
   static constexpr size_t ObjectSize = 0x71;
 };
@@ -2533,6 +2550,10 @@ public:
 
   TETHYS_DEFINE_VTBL_GETTER(0x4D0AC8);
 
+public:
+  PackedMapRect buildArea_;
+  int16         scStubIndex_;
+
   static constexpr size_t ObjectSize = 0x6C;
 };
 
@@ -2566,6 +2587,10 @@ public:
 
   TETHYS_DEFINE_VTBL_GETTER(0x4CF7F8);
 
+public:
+  PackedMapRect workRect_;
+  uint8         dozeFlags_;
+
   static constexpr size_t ObjectSize = 0x6B;
 };
 
@@ -2583,6 +2608,10 @@ public:
     { return Thunk<0x4234C0, &$::DoBuild>(numWaypoints, pWaypoints, a); }
 
   TETHYS_DEFINE_VTBL_GETTER(0x4D0A10);
+
+public:
+  PackedMapRect buildArea_;
+  int16         scStubIndex_;
 
   static constexpr size_t ObjectSize = 0x62;
 };
@@ -2617,6 +2646,9 @@ public:
   void  DoEvent()                          override { return Thunk<0x474DB0, &$::DoEvent>();                }
 
   TETHYS_DEFINE_VTBL_GETTER(0x4D0B80);
+
+public:
+  int16 isEnemySighted_;
 
   static constexpr size_t ObjectSize = 0x64;
 };
