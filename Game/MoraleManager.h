@@ -102,6 +102,12 @@ struct MoraleModifier {
   int   field_08;
 };
 
+/// Morale bonuses for one morale level (a row of Morale.txt).
+struct MoraleLevelModifier {
+  char name[16];                                   ///< Morale level name
+  int  bonus[size_t(MoraleBonusModifier::Count)];  ///< Indexed by MoraleBonusModifier.
+};
+
 
 class MoraleManager : public OP2Class<MoraleManager> {
 public:
@@ -146,8 +152,14 @@ public:
   static auto& GetMoraleBonusModifierName(MoraleBonusModifier type) { return OP2Mem<0x4E2238, char**>()[size_t(type)]; }
 
 public:
-  // ** TODO member variables
-  int field_00;
+  MoraleLevelModifier  levelModifiers_[5];  ///< Indexed by MoraleLevel.
+
+  int  sumOfBestBaseModifiers_;
+  int  sumOfMedCenterModifiers_;
+  int  sumOfForumModifiers_;
+  int  sumOfRecCenterModifiers_;
+  int  sumOfDirtModifiers_;
+  int  maxConditionMorale_;
 };
 
 } // Tethys
