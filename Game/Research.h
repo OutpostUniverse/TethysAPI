@@ -142,12 +142,18 @@ public:
   TechInfo** ppTechInfos_;  ///< Sorted by tech ID (binary searchable).
   int        maxTechID_;    ///< (maxTechLevel * 1000) + 999.  Typically 12999 in non-campaign games.
 
+  int field_0C;
   int field_10;
   int field_14;
   int field_18;
   int field_1C;
   int field_20;
   int field_24;
+  int field_28;
+
+  int   numAvailableTopics_;
+  int*  pAvailableTopics_;
+  int   availableTopicsCategory_;
 };
 
 /// Convenience alias for the Research singleton object.
