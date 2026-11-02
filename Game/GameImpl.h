@@ -95,7 +95,7 @@ public:
 
   int tick_;
   int tickOfLastSetGameOpt_;  ///< If nonzero, "CHEATED GAME!" is displayed in the top left corner of the detail pane
-  int field_8C;
+  int santaActive_;           ///< Unused.
 
   int           localPlayer_;
   PlayerBitmask chatDstMask_;
@@ -103,9 +103,8 @@ public:
   int             startFadeOutTick_;
   GameTermReasons gameTermReasons_;
   ibool           skipProgressSave_;
-  GameStartInfo   gameStartInfo_;
-
-  int field_160[201];  // ** TODO
+  MissionResults  gameStartInfo_;     ///< Start info and campaign results (@note PrepareGame, 0x489818)
+  uint8           field_481[3];       // ** TODO
 
   PlayerImpl player_[MaxPlayers];
 
