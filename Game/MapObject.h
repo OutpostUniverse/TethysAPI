@@ -2212,8 +2212,9 @@ public:
   TETHYS_DEFINE_VTBL_GETTER(0x4D3478);
 
 public:
-  MapID objectOnPad_;  ///< Rocket type on launch pad.
-  MapID launchCargo_;  ///< Cargo type carried in rocket.
+  MapID  objectOnPad_;  ///< Rocket type on launch pad.
+  uint16 launchCargo_;  ///< MapID cargo type carried in rocket.
+  uint16 isRLVLanded_;  ///< Boolean indicating whether an RLV has landed on the pad.
 
   static constexpr size_t ObjectSize = 0x76;  // = MapObjectSize - 2
 };

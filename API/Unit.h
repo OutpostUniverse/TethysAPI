@@ -317,7 +317,8 @@ public:
 
   ///@{ [Spaceport]  Gets or sets the rocket type or cargo on the launch pad.
   MapID GetRocketOnPad() const { return IsBuilding() ? GetMapObject<MapObj::Spaceport>()->objectOnPad_ : MapID::None; }
-  MapID GetRocketCargo() const { return IsBuilding() ? GetMapObject<MapObj::Spaceport>()->launchCargo_ : MapID::None; }
+  MapID GetRocketCargo() const
+    { return IsBuilding() ? MapID(GetMapObject<MapObj::Spaceport>()->launchCargo_) : MapID::None; }
   void  SetRocketOnPad(MapID rocket, MapID cargo = MapID::None) {
     if (auto*const pMo = GetMapObject<MapObj::Spaceport>();  pMo != nullptr) {
       pMo->objectOnPad_ = rocket;
