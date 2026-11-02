@@ -162,8 +162,7 @@ public:
   static FuncReference* GetInstance(int index) { return static_cast<FuncReference*>(ScBase::GetInstance(index)); }
 
 public:
-  int field_28;
-  int field_2C;
+  ScBaseLinkedListInfo funcRefListInfo_;  ///< (@note FuncReferenceFactory::GetLinkedListInfo, 0x4758F0)
 };
 
 // =====================================================================================================================
@@ -313,22 +312,19 @@ public:
     UnitClassification classification;
   };
 
-  int          field_14;
-  int          field_18;
-  int          lastFreeUnitNodeIndex_;                           ///< (+= 1)
-  int          field_20;                                         ///< (+= 1)
-  UnitNode     unitNode_[32];                                    ///< Linked list storage for pointers for 32 units
+  ScBaseLinkedListInfo groupListInfo_;  ///< Links between groups (@note Group::GetLinkedListInfo, 0x42B100)
+  int          lastFreeUnitNodeIndex_;  ///< (+= 1)
+  int          field_20;                ///< (+= 1)
+  UnitNode     unitNode_[32];           ///< Linked list storage for pointers for 32 units
   UnitNode*    pUnitByType_[size_t(UnitClassification::NotSet)]; ///< Indexed by UnitClassification
-  TargetCount* pTargetCount_;                                    ///< Object to keep track of target counts
-  UnitNode*    pUnitListHead_;                                   ///< Sorted by UnitClassification; null terminated
-  UnitNode*    pUnitListTail_;                                   ///< Sorted by UnitClassification
-  int          numUnits_;                                        ///< Returned by TotalUnitCount()
-  int          ownerPlayerNum_;                                  ///< All units in group belong to this player
-  int          deleteWhenEmptyTick_;                             ///< Inited to -1
-                                                                 ///  Set to tick+10000 by SetDeleteWhenEmpty(true)
-  ibool        setLights_;                                       ///< Inited to  1 (on)
-  int          field_300;                                        ///< (Part of this class, or derived classes?)
-  int          field_304;                                        ///< (Part of this class, or derived classes?)
+  TargetCount* pTargetCount_;           ///< Object to keep track of target counts
+  UnitNode*    pUnitListHead_;          ///< Sorted by UnitClassification; null terminated
+  UnitNode*    pUnitListTail_;          ///< Sorted by UnitClassification
+  int          numUnits_;               ///< Returned by TotalUnitCount()
+  int          ownerPlayerNum_;         ///< All units in group belong to this player
+  int          deleteWhenEmptyTick_;    ///< Inited to -1
+                                        ///  Set to tick+10000 by SetDeleteWhenEmpty(true)
+  ibool        setLights_;              ///< Inited to  1 (on)
 };
 
 
@@ -383,15 +379,16 @@ public:
     { return static_cast<BuildingGroupImpl*>(ScBase::GetInstance(index)); }
 
 public:
-  int               numAllocatedRecordedBuildings_;   ///< Allocated in blocks of 8 entries
-  RecordedBuilding* pRecordedBuildings_;              ///< Allocated in blocks of 8 entries
-  int               numAllocatedRecordedMines_;       ///< Allocated in blocks of 4 entries
-  RecordedMine*     pRecordedMines_;                  ///< Allocated in blocks of 4 entries
-  int               numAllocatedRecordedTubesWalls_;  ///< Allocated in blocks of 8 entries
-  RecordedTubeWall* pRecordedTubesWalls_;             ///< Allocated in blocks of 8 entries
-  int               numAllocatedRecordedVehGroups_;   ///< Allocated in blocks of 4 entries
-  RecordedVehGroup* pRecordedVehGroups_;              ///< Allocated in blocks of 4 entries
-  RecordInfo        recordInfo_;
+  ScBaseLinkedListInfo buildingGroupListInfo_;           ///< (@note BuildGroupFactory::GetLinkedListInfo, 0x424BA0)
+  int                  numAllocatedRecordedBuildings_;   ///< Allocated in blocks of 8 entries
+  RecordedBuilding*    pRecordedBuildings_;              ///< Allocated in blocks of 8 entries
+  int                  numAllocatedRecordedMines_;       ///< Allocated in blocks of 4 entries
+  RecordedMine*        pRecordedMines_;                  ///< Allocated in blocks of 4 entries
+  int                  numAllocatedRecordedTubesWalls_;  ///< Allocated in blocks of 8 entries
+  RecordedTubeWall*    pRecordedTubesWalls_;             ///< Allocated in blocks of 8 entries
+  int                  numAllocatedRecordedVehGroups_;   ///< Allocated in blocks of 4 entries
+  RecordedVehGroup*    pRecordedVehGroups_;              ///< Allocated in blocks of 4 entries
+  RecordInfo           recordInfo_;
 };
 
 
@@ -414,6 +411,7 @@ public:
   static FightGroupImpl* GetInstance(int index) { return static_cast<FightGroupImpl*>(ScBase::GetInstance(index)); }
 
 public:
+  ScBaseLinkedListInfo fightGroupListInfo_;  ///< (@note CombatBaseFactory::GetLinkedListInfo, 0x428250)
   ibool    combineFire_;
   int      combineFireUnitIndex_;
   int      field_310;              ///< Set to 0xFFF00000, related to game tick, possibly spider related?
@@ -442,6 +440,7 @@ public:
   static MineGroupImpl* GetInstance(int index) { return static_cast<MineGroupImpl*>(ScBase::GetInstance(index)); }
 
 public:
+  ScBaseLinkedListInfo mineGroupListInfo_;  ///< (@note MineGroupFactory::GetLinkedListInfo, 0x429970)
   int   mineUnitIndex_;
   int   smelterUnitIndex_;
   int   minePixelX_;
