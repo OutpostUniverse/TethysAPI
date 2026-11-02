@@ -98,8 +98,8 @@ enum class MoraleModifierType : size_t {
 
 struct MoraleModifier {
   char* pName;     ///< Morale.txt field name
-  int   field_04;
-  int   field_08;
+  int   value;
+  int   shouldBeScaled;
 };
 
 /// Morale bonuses for one morale level (a row of Morale.txt).
