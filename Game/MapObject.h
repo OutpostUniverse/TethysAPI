@@ -471,7 +471,7 @@ public:
   int           parentIndex_;  ///< Owner MapObject index, e.g. the chassis unit.
   CommandTarget target_;       ///< Tile X/Y coordinates if ground-attacking, (unitID | 0xFFFF0000) if attacking a unit.
 
-  int field_50;
+  int field_50;  ///< Unused by this class (MapObject subclasses own 0x48-0x53).
   int field_54;
 
   static constexpr size_t ObjectSize = 0x58;
@@ -498,7 +498,11 @@ public:
 #define OP2_MO_ROCKET_VTBL($)  $(Launch)  $(ReEnter)  $(Land)
   TETHYS_DEFINE_VTBL_TYPE(OP2_MO_ROCKET_VTBL, 0x4D5ED8);
 
+public:
   // NOTE: Uses MapObject::targetPixelX_ and ::targetPixelY_.
+  int field_48;  ///< Unused by this class (MapObject subclasses own 0x48-0x53).
+  int field_4C;
+  int field_50;
 
   static constexpr size_t ObjectSize = 0x54;
 };
@@ -958,6 +962,14 @@ public:
 
   TETHYS_DEFINE_VTBL_GETTER(0x4CFB10);
 
+public:
+  int field_48;  ///< Unused by this class (MapObject subclasses own 0x48-0x53).
+  int field_4C;
+  int field_50;
+
+  int strength_;
+  int duration_;
+
   static constexpr size_t ObjectSize = 0x5C;
 };
 
@@ -975,6 +987,11 @@ public:
   void  DoEvent()                      override { return Thunk<0x4A8270, &$::DoEvent>();            }
 
   TETHYS_DEFINE_VTBL_GETTER(0x4D7430);
+
+public:
+  int field_48;  ///< Unused by this class (MapObject subclasses own 0x48-0x53).
+  int field_4C;
+  int field_50;
 
   static constexpr size_t ObjectSize = 0x54;
 };
@@ -1027,7 +1044,14 @@ public:
 
   TETHYS_DEFINE_VTBL_GETTER(0x4D4710);
 
+public:
   // Note: Uses MapObject::targetTileX_ and targetTileY_.
+  int field_48;  ///< Unused by this class (MapObject subclasses own 0x48-0x53).
+  int field_4C;
+  int field_50;
+
+  int animStartTick_;
+  int interceptorUnitIndex_;  ///< Unit (e.g. Meteor Defense) intercepting this meteor.
 
   static constexpr size_t ObjectSize = 0x5C;
 };
