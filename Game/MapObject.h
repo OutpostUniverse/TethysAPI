@@ -535,6 +535,14 @@ public:
   void DoFire(int pixelX, int pixelY) override { return Thunk<0x4A3B70, &$::DoFire>(pixelX, pixelY);       }
   int  GetSecondaryAnimationIndex()   override { return Thunk<0x4A2940, &$::GetSecondaryAnimationIndex>(); }
 
+public:
+  uint16 field_58;
+  uint16 field_5A;
+  int    field_5C;
+  int    field_60;
+  int    field_64;
+  int    field_68;
+
   static constexpr size_t ObjectSize = 0x6C;
 };
 
@@ -892,14 +900,6 @@ public:
   uint16 field_5A;
   int    cargoToLoad_;  ///< [CargoTruck, ...?] Cargo to load when animation has sufficiently progressed.
   uint16 effectStartTick_;
-
-  // ** TODO these should be moved to child classes
-  uint16 field_62;
-  int    field_64;
-  int    field_68;
-  uint16 field_6C;
-  int    field_6E;
-  int    field_72;
 
   static constexpr size_t ObjectSize = 0x62;
 };
@@ -2615,7 +2615,7 @@ public:
   PackedMapRect buildArea_;
   int16         scStubIndex_;
 
-  static constexpr size_t ObjectSize = 0x62;
+  static constexpr size_t ObjectSize = 0x6C;
 };
 
 // =====================================================================================================================
@@ -2800,7 +2800,6 @@ union AnyMapObj {
 
   uint8           raw_[MapObjectSize];  // Forces size to MapObjectSize
 };
-// ** TODO (133 == 120) size assert fails.  Fix field_48/4C/50?  Where is the extra +1 byte coming from?
 static_assert(sizeof(AnyMapObj) == MapObjectSize, "Incorrect MapObject size.");
 
 
