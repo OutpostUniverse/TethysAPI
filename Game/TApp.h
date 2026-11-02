@@ -167,9 +167,9 @@ public:
   int   nShowCmd_;
   ibool bShowShell_;
   char* pSavedGameName_;
-  int   field_14;
+  int   cmdLog_;            // ** TODO
   ibool playback_;
-  int   field_1C;
+  int   playbackView_;      // ** TODO
   char* pNetProtocolName_;
   MSG   msg_;
 
