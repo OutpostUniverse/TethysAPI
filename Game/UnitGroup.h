@@ -20,7 +20,7 @@ public:
      ???5                      0x47C150
      ???6                      0x47C220 */
 
-  static UnitSelectionHistory* GetInstance() { OP2Mem<0x56CA00, UnitSelectionHistory*>(); }
+  static UnitSelectionHistory* GetInstance() { return OP2Mem<0x56CA00, UnitSelectionHistory*>(); }
 
 public:
   // ** TODO member fields
@@ -42,7 +42,7 @@ public:
      SetGroup             0x47BC70
      SelectGroup          0x47BD50 */
 
-  static UnitHotKeyGroups* GetInstance() { OP2Mem<0x56C760, UnitHotKeyGroups*>(); }
+  static UnitHotKeyGroups* GetInstance() { return OP2Mem<0x56C760, UnitHotKeyGroups*>(); }
 
 public:
   // ** TODO member fields
