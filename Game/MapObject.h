@@ -2800,6 +2800,7 @@ union AnyMapObj {
 
   uint8           raw_[MapObjectSize];  // Forces size to MapObjectSize
 };
+// ** TODO (133 == 120) size assert fails.  Fix field_48/4C/50?  Where is the extra +1 byte coming from?
 static_assert(sizeof(AnyMapObj) == MapObjectSize, "Incorrect MapObject size.");
 
 
