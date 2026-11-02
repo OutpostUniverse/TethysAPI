@@ -112,9 +112,9 @@ public:
   void OnPopulationDeaths(PlayerImpl* pPlayer, int numDeadKids, int numDeadScientists, int numDeadWorkers)
     { return Thunk<0x44F230, &$::OnPopulationDeaths>(pPlayer, numDeadKids, numDeadScientists, numDeadWorkers); }
 
-  void OnNewScientists(PlayerImpl* pPlayer, int count) { return Thunk<0x44F440, &$::OnNewScientists>(count);       }
-  void OnNewKids(PlayerImpl*       pPlayer, int count) { return Thunk<0x44F520, &$::OnNewKids>(pPlayer, count);    }
-  void OnNewWorkers(PlayerImpl*    pPlayer, int count) { return Thunk<0x44F640, &$::OnNewWorkers>(pPlayer, count); }
+  void OnNewScientists(PlayerImpl* pPlayer, int count) { return Thunk<0x44F440, &$::OnNewScientists>(pPlayer, count); }
+  void OnNewKids(PlayerImpl*       pPlayer, int count) { return Thunk<0x44F520, &$::OnNewKids>(pPlayer, count);       }
+  void OnNewWorkers(PlayerImpl*    pPlayer, int count) { return Thunk<0x44F640, &$::OnNewWorkers>(pPlayer, count);    }
 
   void OnBuildingDestroyed(PlayerImpl* pPlayer, MapID type)
     { return Thunk<0x44F7E0, &$::OnBuildingDestroyed>(pPlayer, type); }
