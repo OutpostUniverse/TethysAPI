@@ -2,6 +2,7 @@
 #pragma once
 
 #include "Tethys/Common/Memory.h"
+#include <string_view>
 
 namespace Tethys {
 
@@ -18,8 +19,8 @@ public:
     }
   }
 
-  ibool OpenFile(const char* pFilename, ibool writeAccess = false)
-    { return Thunk<0x484590, &$::OpenFile>(pFilename, writeAccess); }
+  ibool OpenFile(std::string_view filename, ibool writeAccess = false)
+    { return Thunk<0x484590, ibool(const char*, ibool)>(filename.data(), writeAccess); }
 
   ibool Flush() { return Thunk<0x4847A0, &$::Flush>(); }
 

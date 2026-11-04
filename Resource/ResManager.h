@@ -3,6 +3,7 @@
 
 #include "Tethys/Common/Memory.h"
 #include "Tethys/Resource/StreamIO.h"
+#include <string_view>
 
 namespace Tethys {
 
@@ -13,15 +14,17 @@ public:
   void InitInstalledDir() { return Thunk<0x471850, &$::InitInstalledDir>(); }
   void ShutDown()         { return Thunk<0x471140, &$::ShutDown>();         }
 
-  ibool GetFilePath(const char* pFilename, char* pPath) { return Thunk<0x471590, &$::GetFilePath>(pFilename, pPath); }
+  ibool GetFilePath(std::string_view filename, char* pPath)
+    { return Thunk<0x471590, ibool(const char*, char*)>(filename.data(), pPath); }
 
   /// OpenStream (and ChecksumStream) will first call GetFilePath, then search in VOLs.
-  StreamIO* OpenStream(const char*     pFilename)           { return Thunk<0x471170, &$::OpenStream>(pFilename);       }
-  StreamIO* CreateStream(const char*   pFilename)           { return Thunk<0x471B60, &$::CreateStream>(pFilename);     }
-  void      ReleaseStream(StreamIO* pStream)                { return Thunk<0x4713D0, &$::ReleaseStream>(pStream);      }
-  void*     LockStream(const char* pFilename, size_t* pLen) { return Thunk<0x471430, &$::LockStream>(pFilename, pLen); }
-  void      UnlockStream(void* a)                           { return Thunk<0x471490, &$::UnlockStream>(a);             }
-  uint32    ChecksumStream(const char* pFilename)           { return Thunk<0x4712A0, &$::ChecksumStream>(pFilename);   }
+  StreamIO* OpenStream(std::string_view   filename) { return Thunk<0x471170, StreamIO*(const char*)>(filename.data()); }
+  StreamIO* CreateStream(std::string_view filename) { return Thunk<0x471B60, StreamIO*(const char*)>(filename.data()); }
+  void      ReleaseStream(StreamIO* pStream)        { return Thunk<0x4713D0, &$::ReleaseStream>(pStream);              }
+  void*     LockStream(std::string_view filename, size_t* pLen)
+    { return Thunk<0x471430, void*(const char*, size_t*)>(filename.data(), pLen); }
+  void      UnlockStream(void* a) { return Thunk<0x471490, &$::UnlockStream>(a);  }
+  uint32    ChecksumStream(std::string_view filename) { return Thunk<0x4712A0, uint32(const char*)>(filename.data()); }
 
   int  FindCDRoot(char*      pPath) { return Thunk<0x4714A0, &$::FindCDRoot>(pPath);      }
   void GetCDDir(char*        pPath) { return Thunk<0x471AA0, &$::GetCDDir>(pPath);        }
@@ -32,7 +35,7 @@ public:
   static ResManager* GetInstance() { return OP2Mem<0x56C028, ResManager*>(); }
 
   /// @note This does not check VOLs.
-  bool FileExists(const char* pFilename) { char path[MAX_PATH];  return GetFilePath(pFilename, &path[0]); }
+  bool FileExists(std::string_view filename) { char path[MAX_PATH];  return GetFilePath(filename, &path[0]); }
 
 public:
   char installedDir_[MAX_PATH];

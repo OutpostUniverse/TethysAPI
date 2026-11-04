@@ -60,7 +60,7 @@ public:
   //SoundBufferInfo soundBufferInfo_[1];  // 0xC **
 
   // 0x8FC
-  // 
+  //
   //int   field_90C;       // 0x90C **
   //int   field_910;       // 0x910 **
   //int   soundVolume_;    // 0x914 [Game: SoundVol]

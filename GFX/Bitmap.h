@@ -1,7 +1,7 @@
 
 #pragma once
 
-#include "Tethys/Resource/GFXPalette.h"
+#include "Tethys/GFX/Palette.h"
 
 namespace Tethys {
 

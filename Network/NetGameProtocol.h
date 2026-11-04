@@ -53,12 +53,12 @@ public:
 
 #define OP2_NETGAMESEARCHPROTOCOL_VTBL($)  \
   $(Destroy)  $(Func1)  $(Func2)  $(GetLocalAddressString)  $(SearchForGames)  $(SetupHostedGame)  $(RequestJoinGame)
-  DEFINE_VTBL_TYPE(OP2_NETGAMESEARCHPROTOCOL_VTBL, 0x4CFA60);
+  TETHYS_DEFINE_VTBL_TYPE(OP2_NETGAMESEARCHPROTOCOL_VTBL, 0x4CFA60);
 };
 
 class TCPGameSearchProtocol : public NetGameSearchProtocol {
 public:
-  DEFINE_VTBL_GETTER(0x4D64F8);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D64F8);
 
 public:
   int              field_04;           // ** TODO Does this belong in the parent?

@@ -13,7 +13,8 @@ namespace Tethys {
 namespace MapIDImpl { enum MapID : int; }
 using MapID = MapIDImpl::MapID;
 
-constexpr int AllPlayers = -1;
+enum PlayerNum : int;
+constexpr PlayerNum AllPlayers{-1};
 
 constexpr size_t CommandPacketSize     = 113;
 constexpr size_t CommandPacketDataSize = CommandPacketSize - 0x0E;
@@ -22,11 +23,11 @@ BEGIN_PACKED
 
 /// Command packet types.  @note int in some contexts (CommandPacket), uint8 in others (MapObject)
 enum class CommandType : int {
-  Nop = 0x00,       ///< 'ctNop'
+  Nop = 0x00,       ///< 'ctNop';  Sent by human players every game cycle if no other command is sent
   Doze,             ///< 'ctMoDoze'
   Move,             ///< 'ctMoMove'
   Dock,             ///< 'ctMoDock'
-  DockEG,           ///< 'ctMoDockEG';  Garage-specific dock command.
+  DockEG,           ///< 'ctMoDockEG';  Garage-specific dock command
   Stop,             ///< 'ctMoStop'
   Build,            ///< 'ctMoBuild'
   BuildWall,        ///< 'ctMoBuildWall'
@@ -63,19 +64,19 @@ enum class CommandType : int {
   StandGround,      ///< 'ctMoStandGround'
   CargoRoute,       ///< 'ctMoCargoRoute'
   Patrol,           ///< 'ctMoPatrol'
-  MapChange,        ///< 'ctMapChange';  Unused.
+  MapChange,        ///< 'ctMapChange';  Unused
   Poof,             ///< 'ctMoPoof'
   GameOpt,          ///< 'ctGameOpt'
-  GodWeapon,        ///< 'ctGodWeapon';  Unused.
-  ChatText,         ///< 'ctChatText';   Unused.
-  ChatSFX,          ///< 'ctChatSFX';    Unused.
+  GodWeapon,        ///< 'ctGodWeapon';  Unused
+  ChatText,         ///< 'ctChatText';   Unused
+  ChatSFX,          ///< 'ctChatSFX';    Unused
   Death,            ///< 'ctMoDeath'
   Chat,             ///< 'ctChat'
   Quit,             ///< 'ctQuit'
   Ally,             ///< 'ctAlly'
   GoAI,             ///< 'ctGoAI'
   MachineSettings,  ///< 'ctMachineSettings'
-  InvalidCommand,   ///< 'ctInvalidCommand'
+  InvalidCommand,   ///< 'ctInvalidCommand';  Sent by AI players every game cycle if no other command is sent
 
   Count
 };
@@ -210,6 +211,16 @@ struct MoveCommand : public SimpleCommand {
   Waypoint waypoint[1];  ///< In pixels
 };
 
+/// Used with ctMoCargoRoute
+struct CargoRouteCommand : public SimpleCommand {
+  uint16   numWaypoints;          ///< 3
+  Waypoint waypoint[3];           ///< In pixels.  Mine -> smelter -> mine again
+  uint16   mineWaypointIndex;
+  uint16   smelterWaypointIndex;
+  uint16   mineUnitId;
+  uint16   smelterUnitId;
+};
+
 /// Used with ctMoDoze
 struct DozeCommand : public SimpleCommand {
   PackedMapRect rect;  ///< In tiles (inclusive)
@@ -275,7 +286,7 @@ struct LaunchCommand : public SingleUnitSimpleCommand {
 
 /// Used with ctMoRepairObj, ctMoReprogram, ctMoDismantle
 struct RepairCommand : public SimpleCommand {
-  uint16        unknown1;      ///< 0
+  uint16        unknown1;    ///< 0
   CommandTarget target;
 };
 
@@ -368,6 +379,7 @@ union CommandPacketData {
   CreateCommand           create;
   LightToggleCommand      lightToggle;
   AttackCommand           attack;
+  CargoRouteCommand       cargoRoute;
   GameOptCommand          gameOpt;
   ChatCommand             chat;
   QuitCommand             quit;
@@ -379,7 +391,7 @@ union CommandPacketData {
 
 struct CommandPacket {
   CommandType       type;        ///< Type of command
-  uint16            dataLength;  ///< Length of dataBuff
+  uint16            dataLength;  ///< Length of message data
   int               timeStamp;   ///< Game tick (only used for network traffic)
   int               netID;       ///< Player net ID (only used for network traffic)
   CommandPacketData data;        ///< Message data, dependent on type
@@ -431,7 +443,7 @@ OP2_CMD_PACKET_DATA_FOR_DEF(CommandType::LightToggle,     LightToggleCommand);
 OP2_CMD_PACKET_DATA_FOR_DEF(CommandType::Attack,          AttackCommand);
 OP2_CMD_PACKET_DATA_FOR_DEF(CommandType::Guard,           AttackCommand);
 OP2_CMD_PACKET_DATA_FOR_DEF(CommandType::StandGround,     MoveCommand);
-OP2_CMD_PACKET_DATA_FOR_DEF(CommandType::CargoRoute,      MoveCommand);
+OP2_CMD_PACKET_DATA_FOR_DEF(CommandType::CargoRoute,      CargoRouteCommand);
 OP2_CMD_PACKET_DATA_FOR_DEF(CommandType::Patrol,          MoveCommand);
 OP2_CMD_PACKET_DATA_FOR_DEF(CommandType::Poof,            SingleUnitSimpleCommand);
 OP2_CMD_PACKET_DATA_FOR_DEF(CommandType::GameOpt,         GameOptCommand);
@@ -445,7 +457,7 @@ OP2_CMD_PACKET_DATA_FOR_DEF(CommandType::Ally,            AllyCommand);
 OP2_CMD_PACKET_DATA_FOR_DEF(CommandType::GoAI,            void);
 OP2_CMD_PACKET_DATA_FOR_DEF(CommandType::MachineSettings, MachineSettingsCommand);
 OP2_CMD_PACKET_DATA_FOR_DEF(CommandType::InvalidCommand,  void);
-}  // Impl
+}  // TethysImpl
 
 /// Template alias to get the command packet data class associated with the given CommandType.
 template <CommandType Command>  using CmdPacketDataFor = typename TethysImpl::CmdPacketDataForImpl<Command>::Type;

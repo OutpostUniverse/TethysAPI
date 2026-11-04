@@ -35,7 +35,7 @@ public:
 #define OP2_BLIGHTMANAGER_VTBL($)  \
   $(TrySpread)      $(Init)  $(Spread)  $(SetOnTile)  $(ToggleOnTile)  $(ClearFromTile)  $(Save)  $(Load)  \
   $(DrawOnMiniMap)  $(SetSpreadSpeed)
-  DEFINE_VTBL_TYPE(OP2_BLIGHTMANAGER_VTBL, 0x4D6A88);
+  TETHYS_DEFINE_VTBL_TYPE(OP2_BLIGHTMANAGER_VTBL, 0x4D6A88);
 
   /// Gets the global BlightManager instance.
   static BlightManager* GetInstance() { return OP2Mem<0x57B7D8, BlightManager*>(); }
@@ -68,7 +68,7 @@ public:
   /// Gets the global LavaManager instance.
   static LavaManager* GetInstance() { return OP2Mem<0x54EFE0, LavaManager*>(); }
 
-  DEFINE_VTBL_GETTER(0x4D0360);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D0360);
 };
 
 END_PACKED

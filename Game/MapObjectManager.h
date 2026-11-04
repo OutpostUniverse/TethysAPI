@@ -26,9 +26,10 @@ public:
 
   static MapObjectManager* GetInstance() { return OP2Mem<0x55B780, MapObjectManager*>(); }
 
-  static MapObjectType** GetMapObjTypeTable() { return OP2Mem<MapObjectType**&>(0x446743); }  // 0x4E1348
+  static auto** GetMapObjTypeTable()    { return OP2Mem<MapObjectType**&>(0x446743); }  // 0x4E1348
+  static auto** GetMapObjTypeTableEnd() { return OP2Mem<MapObjectType**&>(0x44675C); }  // 0x4E1514
 
-  static size_t NumMapObjTypes() { return OP2Mem<MapObjectType**&>(0x44675C) - GetMapObjTypeTable(); }  // 115
+  static size_t NumMapObjTypes() { return GetMapObjTypeTableEnd() - GetMapObjTypeTable(); }  // 115
 
 public:
   int field_00;

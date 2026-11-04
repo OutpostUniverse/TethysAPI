@@ -21,8 +21,8 @@ public:
   ~ScStub() { Thunk<0x478C50>(); }
 
   ///@{ Allow conversion from ScBase pointers/references.
-  explicit ScStub(ScBase* pStub) : id_((pStub != nullptr) ? pStub->index_ : NilIndex) { }
-  explicit ScStub(ScBase&  stub) : id_(stub.index_) { }
+  ScStub(ScBase* pStub) : id_((pStub != nullptr) ? pStub->index_ : NilIndex) { }
+  ScStub(ScBase&  stub) : id_(stub.index_) { }
   ///@}
 
   bool IsValid()  const { return (id_ >= 0) && (id_ != NilIndex); } // (0x478CB0) ///< This ScStub is a valid reference?

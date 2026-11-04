@@ -8,6 +8,7 @@ namespace Tethys {
 namespace TethysAPI { enum class MissionType : int; }
 
 BEGIN_PACKED
+
 enum class GameTermReasons : int {
   Running = 0,          ///< Game still running
   U1,
@@ -27,7 +28,7 @@ enum class GameTermReasons : int {
 struct StartupFlags {
   uint32 disastersEnabled   : 1;
   uint32 dayNightEnabled    : 1;
-  uint32 moraleEnabled      : 1;
+  uint32 moraleSteady       : 1;
   uint32 isCampaign         : 1;
   uint32 isMultiplayer      : 1;
   uint32 cheatsEnabled      : 1;
@@ -144,7 +145,7 @@ struct MissionResults : public GameStartInfo {
   GameTermReasons        gameTermReason;
   uint32                 field_BE;
   PlayerEndInfo          playerEndInfo[6];
-  TethysAPI::MissionType missionType;       ///< Mission type (negative values) or campaign mission number (positive values)
+  TethysAPI::MissionType missionType;       ///< Mission type (negative values) or campaign mission number (positive)
   PlayerStartInfo        playerStartInfo;   ///< Start info for local player
   uint8                  localPlayerID;
   int                    tick;

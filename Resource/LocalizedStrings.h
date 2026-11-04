@@ -9,6 +9,7 @@ namespace Tethys {
 
 namespace LocalizedString {
 /// Enum to index into the Outpost2.exe localized string table.  @see GetStringTable().
+/// @note Many UI strings use "&x" (where x is any character) to specify the interface's associated hotkey.
 enum StringIndex : size_t {
   _LANGUAGE                                         =   0, ///< " ENGLISH"
   ResourcesReport                                   =   1, ///< "Resources Report"

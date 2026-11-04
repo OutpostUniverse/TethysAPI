@@ -2,6 +2,9 @@
 #pragma once
 
 #include "Tethys/Common/Memory.h"
+#include <string_view>
+
+struct IDirectDraw;
 
 namespace Tethys {
 
@@ -11,7 +14,6 @@ struct GameStartInfo;
 struct MissionResults;
 struct CommandPacket;
 
-class IDirectDraw;
 class DirectDrawWindow;
 class IDlgWnd;
 class TFileDialog;
@@ -22,11 +24,38 @@ class UIState;
 class NetTransportLayer;
 class GurManager;
 
+// =====================================================================================================================
+/// Structure containing the game version (major.minor.stepping).
+struct GameVersion {
+  constexpr GameVersion(int major = 0, int minor = 0, int stepping = 0)
+    : stepping(stepping), unused(0), minor(minor), major(major) { }
+  constexpr GameVersion(uint32 version)
+    : stepping(version & 0xFF), unused(0), minor((version >> (8 * 2)) & 0xFF), major(version >> (8 * 3)) { }
+
+  constexpr operator uint32() const { return (major << (8 * 3)) | (minor << (8 * 2)) | stepping; }
+
+  uint32 stepping : 8;
+  uint32 unused   : 8;
+  uint32 minor    : 8;
+  uint32 major    : 8;
+};
+
+/// Game identifier hash/GUID type.
+union GameIdentifier {
+  GUID   guid;
+  uint8  u8[16];
+  uint16 u16[8];
+  uint32 u32[4];
+  uint64 u64[2];
+};
+
+
+// =====================================================================================================================
 /// Exported API controlling the main game instance.
 class TApp : public OP2Class<TApp> {
 public:
-  uint32 GetVersion()           { return Thunk<0x488200, &$::GetVersion>();     }
-  void   GetAppDesc(char* pBuf) { return Thunk<0x487A40, &$::GetAppDesc>(pBuf); }
+  GameVersion GetVersion()           { return Thunk<0x488200, uint32()>();           }
+  void        GetAppDesc(char* pBuf) { return Thunk<0x487A40, &$::GetAppDesc>(pBuf); }
 
   int  Init()                           { return Thunk<0x485B20, &$::Init>();                     }
   int  InitForDirectDraw()              { return Thunk<0x485EC0, &$::InitForDirectDraw>();        }
@@ -38,8 +67,8 @@ public:
   int  ActivateShell(GameTermReasons gameTermReasons, MissionResults* pMissionResults)
     { return Thunk<0x486DB0, &$::ActivateShell>(gameTermReasons, pMissionResults); }
 
-  ibool AppActive() const { return Thunk<0x401d60, &$::AppActive>(); }
-  ibool AppPaused() const { return Thunk<0x401d70, &$::AppPaused>(); }
+  ibool AppActive() const { return Thunk<0x401D60, &$::AppActive>(); }
+  ibool AppPaused() const { return Thunk<0x401D70, &$::AppPaused>(); }
 
   void BeginWaitCursor() { return Thunk<0x487150, &$::BeginWaitCursor>(); }
   void EndWaitCursor()   { return Thunk<0x487180, &$::EndWaitCursor>();   }
@@ -58,24 +87,26 @@ public:
 
   void  NewGame()                                      { return Thunk<0x4871A0, &$::NewGame>();                       }
   int   StartSingleGame(GameStartInfo* pGameStartInfo) { return Thunk<0x487F80, &$::StartSingleGame>(pGameStartInfo); }
-  int   LoadGame(const char* pFilename)                { return Thunk<0x4878F0, &$::LoadGame>(pFilename);             }
+  int   LoadGame(std::string_view filename)            { return Thunk<0x4878F0, int(const char*)>(filename.data());   }
   int   GetLoadName()                                  { return Thunk<0x487430, &$::GetLoadName>();                   }
-  void  SaveGame(const char* pFilename, TFileDialog* pSaveDialog = nullptr)
-    { return Thunk<0x4877E0, &$::SaveGame>(pFilename, pSaveDialog); }
-  ibool NetActive()                                    { return Thunk<0x401D10, &$::NetActive>();                     }
-  int   DoNetGame(int a, const char* pFilename)        { return Thunk<0x487C20, &$::DoNetGame>(a, pFilename);         }
-  void  NetShutdown(int a)                             { return Thunk<0x487E30, &$::NetShutdown>(a);                  }
-  ibool LobbyActive()                                  { return Thunk<0x401D20, &$::LobbyActive>();                   }
-  void  SetLobby(TLobby* pLobby)                       { return Thunk<0x401D30, &$::SetLobby>(pLobby);                }
-  void  LobbyShutdown()                                { return Thunk<0x487F60, &$::LobbyShutdown>();                 }
+  void  SaveGame(std::string_view filename, TFileDialog* pSaveDialog = nullptr)
+    { return Thunk<0x4877E0, void(const char*, TFileDialog*)>(filename.data(), pSaveDialog); }
 
-  void OnActivateApp(int a)                { return Thunk<0x4862F0, &$::OnActivateApp>(a);        }
-  void OnPauseGame(int a)                  { return Thunk<0x486330, &$::OnPauseGame>(a);          }
-  void OnLoadScript(const char* pFilename) { return Thunk<0x487590, &$::OnLoadScript>(pFilename); }
-  void OnSaveSlot()                        { return Thunk<0x4871D0, &$::OnSaveSlot>();            }
-  int  OnLoadSlot()                        { return Thunk<0x487300, &$::OnLoadSlot>();            }
-  void OnSaveGame()                        { return Thunk<0x4874E0, &$::OnSaveGame>();            }
-  int  OnLoadGame()                        { return Thunk<0x4874F0, &$::OnLoadGame>();            }
+  ibool NetActive()                                    { return Thunk<0x401D10, &$::NetActive>();      }
+  int   DoNetGame(int a, std::string_view filename)
+    { return Thunk<0x487C20, int(int, const char*)>(a, filename.data()); }
+  void  NetShutdown(int a)                             { return Thunk<0x487E30, &$::NetShutdown>(a);   }
+  ibool LobbyActive()                                  { return Thunk<0x401D20, &$::LobbyActive>();    }
+  void  SetLobby(TLobby* pLobby)                       { return Thunk<0x401D30, &$::SetLobby>(pLobby); }
+  void  LobbyShutdown()                                { return Thunk<0x487F60, &$::LobbyShutdown>();  }
+
+  void OnActivateApp(int a)                    { return Thunk<0x4862F0, &$::OnActivateApp>(a);               }
+  void OnPauseGame(int a)                      { return Thunk<0x486330, &$::OnPauseGame>(a);                 }
+  void OnLoadScript(std::string_view filename) { return Thunk<0x487590, void(const char*)>(filename.data()); }
+  void OnSaveSlot()                            { return Thunk<0x4871D0, &$::OnSaveSlot>();                   }
+  int  OnLoadSlot()                            { return Thunk<0x487300, &$::OnLoadSlot>();                   }
+  void OnSaveGame()                            { return Thunk<0x4874E0, &$::OnSaveGame>();                   }
+  int  OnLoadGame()                            { return Thunk<0x4874F0, &$::OnLoadGame>();                   }
 
   int HandleCommand(uint32 a)                           { return Thunk<0x486810, &$::HandleCommand>(a);               }
   int PlaybackCommand(CommandPacket* pCmdPacket, int a) { return Thunk<0x4864A0, &$::PlaybackCommand>(pCmdPacket, a); }
@@ -96,22 +127,38 @@ public:
 
   static long STDCALL F1DetectHook(int m, uint32 w, long l) { return OP2Thunk<0x488420, &$::F1DetectHook>(m, w, l); }
 
-  static TApp* GetInstance() { return OP2Mem<0x56E868, TApp*>(); }
+  static TApp* GetInstance() { return OP2Mem<0x56E868, TApp*>(); }  ///< Returns the global TApp singleton object.
 
-  static GUID* GetGameIdentifier() { return OP2Mem<0x4E9B18, GUID*>(); }  // {5A55CF11-B841-11CE-9210-00AA006C4972}
-  
+  /// ID determines if multiplayer games are visible to who others.  {5A55CF11-B841-11CE-9210-00AA006C4972} by default.
+  static GameIdentifier* GetGameIdentifier() { return OP2Mem<0x4E9B18, GameIdentifier*>(); }
+
+  /// Shuffle game GUID.  Used to prevent incompatible saved game loads, or wrong clients trying to connect in netplay.
+  /// Shuffling should only be done when optional non-clientside mods/settings are used.
+  template <typename T = const int&, typename = std::enable_if_t<(sizeof(T) <= sizeof(GameIdentifier))>>
+  static void ShuffleGameIdentifier(T&& value) {
+    auto*const pGameId = reinterpret_cast<T*>(GetGameIdentifier());
+    for (int i = 0; i < (sizeof(GameIdentifier) / sizeof(T)); pGameId[i++] ^= value);  // xor all 128 bits against value
+  }
+
   // Helpers for calling other global functions
-  static int FASTCALL OP2MessageBox(HWND hOwnerWnd, const char* pMsg, const char* pTitle, uint32 flags)
-    { return OP2Thunk<0x41E0E0, &$::OP2MessageBox>(hOwnerWnd, pMsg, pTitle, flags); }
+
+  static int OP2MessageBox(HWND hOwnerWnd, std::string_view msg, std::string_view title, uint32 flags) {
+    return OP2Thunk<0x41E0E0, int FASTCALL(HWND, const char*, const char*, uint32)>(
+      hOwnerWnd, msg.data(), title.data(), flags);
+  }
 
   static uint32 FASTCALL ChecksumData(const void* pMemory, size_t size)
     { return OP2Thunk<0x40C050, &$::ChecksumData>(pMemory, size); }
-  static ibool  FASTCALL ChecksumScript(const char* pFilename, int pOut[14])
-    { return OP2Thunk<0x44FFE0, ibool FASTCALL(int*, const char*)>(&pOut[0], pFilename); }
-  static uint32 FASTCALL ChecksumGameState()               { return OP2Thunk<0x40C0B0, &$::ChecksumGameState>(); }
-  static void   SetDebugMsgOnChecksumGameState(bool state) { OP2Mem<0x4DF1A0, ibool&>() = state;                 }
 
-  template <typename T>  static uint32 Checksum(const T& data) { return ChecksumData(&data, sizeof(data)); }
+  /// Checksum function used for multiplayer game start; returns 14 checksums, where the last is a checksum-of-checksums
+  static ibool  ChecksumScript(std::string_view filename, int pOut[14])
+    { return OP2Thunk<0x44FFE0, ibool FASTCALL(int*, const char*)>(&pOut[0], filename.data()); }
+
+  static uint32 Checksum(const auto& data) { return ChecksumData(&data, sizeof(data)); }
+
+  static uint32 FASTCALL ChecksumGameState() { return OP2Thunk<0x40C0B0, &$::ChecksumGameState>(); }
+
+  static void SetDebugMsgOnChecksumGameState(bool on) { OP2Mem<0x4DF1A0, ibool&>() = on; }
 
 public:
   HINSTANCE hInstance_;

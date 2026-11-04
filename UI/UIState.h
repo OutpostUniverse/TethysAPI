@@ -15,7 +15,7 @@ public:
   virtual void Enable(int a)              { return Thunk<0x49CD30, &$::Enable>(a);      }
 
 #define OP2_UISTATE_VTBL($)  $(SetText)  $(SetCheck)  $(Enable)
-  DEFINE_VTBL_TYPE(OP2_UISTATE_VTBL, 0x4D6138);
+  TETHYS_DEFINE_VTBL_TYPE(OP2_UISTATE_VTBL, 0x4D6138);
 
 public:
   uint32 controlID_;
@@ -28,7 +28,7 @@ public:
 
   void Enable(int a) override { return Thunk<0x41C640, &$::Enable>(a); }
 
-  DEFINE_VTBL_GETTER(0x4CFC90);
+  TETHYS_DEFINE_VTBL_GETTER(0x4CFC90);
 };
 
 
@@ -41,7 +41,7 @@ public:
   void SetCheck(int a)            override { return Thunk<0x49CDB0, &$::SetCheck>(a);    }
   void Enable(int a)              override { return Thunk<0x49CDE0, &$::Enable>(a);      }
 
-  DEFINE_VTBL_GETTER(0x4D6148);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D6148);
 
 public:
   HMENU hMenu_;

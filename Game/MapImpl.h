@@ -4,6 +4,7 @@
 #include "Tethys/Common/Memory.h"
 #include "Tethys/Game/MapObjectType.h"
 #include "Tethys/API/Location.h"
+#include "Tethys/GFX/Palette.h"
 
 namespace Tethys {
 
@@ -12,6 +13,7 @@ class GFXBitmap;
 class GFXTilesetBitmap;
 class MapObject;
 union AnyMapObj;
+namespace TethysAPI { class InRangeEnumerator; }
 
 /// All MapObject instances are this size (in bytes), regardless of type.
 constexpr size_t MapObjectSize = 120;
@@ -73,11 +75,11 @@ union TileData {
 
 /// Defines information about each cell type.  @see CellType.
 struct CellTypeInfo {
-  char* pName;
-  int   trackSpeed[size_t(TrackType::Count)];
-  int   field_18;                              // ** TODO lava related?
-  int   blightSpeed;
-  int   field_20;
+  char*   pName;
+  int     trackSpeed[size_t(TrackType::Count)];
+  ibool   blocksLineOfSight;
+  int     blightSpeed;
+  Rgb555  minimapTopographicColor;
 };
 
 /// Defines information about each tile type index.
@@ -148,7 +150,42 @@ static_assert(sizeof(TerrainType) == 0x108, "Incorrect TerrainType size.");
 /// Internal terrain type manager.
 class TerrainManager : public OP2Class<TerrainManager> {
 public:
-  // ** TODO member functions
+   TerrainManager() { InternalCtor<0x48B340>(); }
+  ~TerrainManager() { Thunk<0x48B370>();        }
+
+  void CalcMiniMapColors()                 { return Thunk<0x48B3B0, &$::CalcMiniMapColors>();             }
+  void CalcMiniMapTileColor(int tileIndex) { return Thunk<0x48B3F0, &$::CalcMiniMapTileColor>(tileIndex); }
+
+  ibool Save(StreamIO* pSavedGame) { return Thunk<0x48B670, &$::Save>(pSavedGame); }
+  ibool Load(StreamIO* pSavedGame) { return Thunk<0x48B4E0, &$::Load>(pSavedGame); }
+
+  void SetNumTilesetMappings(int count) { return Thunk<0x48B730, &$::SetNumTilesetMappings>(count); }
+
+  int GetBulldozedTileIndex(int    tileIndex) { return Thunk<0x48B770, &$::GetBulldozedTileIndex>(tileIndex);    }
+  int GetScorchMarkTileIndex(int   tileIndex) { return Thunk<0x48B7C0, &$::GetScorchMarkTileIndex>(tileIndex);   }
+  int GetCommonRubbleTileIndex(int tileIndex) { return Thunk<0x48B870, &$::GetCommonRubbleTileIndex>(tileIndex); }
+  int GetRareRubbleTileIndex(int   tileIndex) { return Thunk<0x48B8D0, &$::GetRareRubbleTileIndex>(tileIndex);   }
+
+  int GetTubeTileIndex(int tileIndex, int a = 0)  { return Thunk<0x48B8D0, &$::GetTubeTileIndex>(tileIndex, a);    }
+  int GetWallTileIndex(int tileIndex, MapID type) { return Thunk<0x48B8D0, &$::GetWallTileIndex>(tileIndex, type); }
+
+  int GetLavaTileIndex(int tileIndex) { return Thunk<0x48B8D0, &$::GetLavaTileIndex>(tileIndex);    }
+  int GetLavaAnimationLength()        { return Thunk<0x48BA50, &$::GetLavaAnimationLength>();       }
+  int GetLavaCenterAnimationLength()  { return Thunk<0x48BA90, &$::GetLavaCenterAnimationLength>(); }
+  int GetLavaNumCenterTiles()         { return Thunk<0x48BAD0, &$::GetLavaNumCenterTiles>();        }
+
+  ibool IsBulldozedTileIndex(int  tileIndex) { return Thunk<0x48BB10, &$::IsBulldozedTileIndex>(tileIndex);  }
+  ibool IsScorchMarkTileIndex(int tileIndex) { return Thunk<0x48BB60, &$::IsScorchMarkTileIndex>(tileIndex); }
+
+  ibool HasScorchMarkTransformation(int tileIndex)
+    { return Thunk<0x48BBB0, &$::HasScorchMarkTransformation>(tileIndex); }
+  ibool HasCommonRubbleTransformation(int tileIndex)
+    { return Thunk<0x48BC50, &$::HasCommonRubbleTransformation>(tileIndex); }
+  ibool HasRareRubbleTransformation(int tileIndex)
+    { return Thunk<0x48BCA0, &$::HasRareRubbleTransformation>(tileIndex); }
+
+  ibool IsLavaTileIndex(int       tileIndex) { return Thunk<0x48BCF0, &$::IsLavaTileIndex>(tileIndex);       }
+  ibool IsLavaCenterTileIndex(int tileIndex) { return Thunk<0x48BE30, &$::IsLavaCenterTileIndex>(tileIndex); }
 
 public:
   int             numTilesetMappings_;
@@ -168,7 +205,7 @@ public:
   ibool EnableDayNight(ibool on) { return Thunk<0x41FA30, &$::EnableDayNight>(on); }
 
   ibool Save(StreamIO* pSavedGame) { return Thunk<0x4206A0, &$::Save>(pSavedGame); }
-  ibool Load(StreamIO* pSavedGame) { return Thunk<0x420760, &$::Save>(pSavedGame); }
+  ibool Load(StreamIO* pSavedGame) { return Thunk<0x420760, &$::Load>(pSavedGame); }
 
   void CheckSetViewToMiniMapPosition() { return Thunk<0x41FB00, &$::CheckSetViewToMiniMapPosition>(); }
 
@@ -228,6 +265,11 @@ public:
   void        SetTile(Location where, int tileIndex) { return Thunk<0x435430, &$::SetTile>(where, tileIndex); }
   void InitialSetTile(Location where, int tileIndex) { return Thunk<0x4354A0, &$::SetTile>(where, tileIndex); }
 
+  ibool FindFirstUnitInRange(int pixelX, int pixelY, int maxPixelDistance, TethysAPI::InRangeEnumerator* pEnumerator)
+    { return Thunk<0x437B90, &$::FindFirstUnitInRange>(pixelX, pixelY, maxPixelDistance, pEnumerator); }
+  ibool FindNextUnitInRange(TethysAPI::InRangeEnumerator* pEnumerator)
+    { return Thunk<0x437BF0, &$::FindNextUnitInRange>(pEnumerator); }
+
   // ** TODO more member functions
   /* GetTileCoordinates?   0x437FB0
      GetNextClosest        0x437D10
@@ -271,6 +313,8 @@ public:
 
   /// Damages a wall.  Damage state change is based on RNG.
   static void FASTCALL DamageWall(int x, int y, int damage) { return OP2Thunk<0x4A24C0, &$::DamageWall>(x, y, damage); }
+  /// Destroys a wall.
+  static void FASTCALL DestroyWall(int x, int y) { return OP2Thunk<0x4A26C0, &$::DestroyWall>(x, y); }
 
   /// Gets the internal map instance.
   static MapImpl* GetInstance() { return OP2Mem<0x54F7F8, MapImpl*>(); }
@@ -278,7 +322,7 @@ public:
   /// Gets internal cell type info.
   static CellTypeInfo* GetCellTypeInfo(CellType cellType) {
     const auto index = size_t(cellType);
-    return ((index >= 0) && (cellType < CellType::Count)) ? &OP2Mem<0x4DEBA8, CellTypeInfo*>()[index] : nullptr;
+    return (cellType < CellType::Count) ? &OP2Mem<0x4DEBA8, CellTypeInfo*>()[index] : nullptr;
   }
 
 public:
@@ -304,7 +348,7 @@ public:
   MapObject*  pMapObjListBegin_;    ///< Top-most map object linked list (sorted ascending by pixelY).  Head == [0].
   MapObject*  pMapObjListEnd_;      ///< One past the end of pMapObjArray_.
 
-  uint8              lightLevelAdjustTable_[1024];
+  uint8              lightLevelAdjustTable_[1024];  ///< 512*2 by default, extended to 1024*2 by LargeMapPatch
   uint32             field_45C;
   char**             pTilesetNames_;
   TileData*          pTileArray_;

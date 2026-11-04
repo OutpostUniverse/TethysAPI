@@ -16,7 +16,7 @@ public:
     { return Thunk<0x412A30, &$::GetHostAddressString>(bufferSize, pOut); }
 
 #define OP2_NETGAMESESSION_VTBL($)  $(Destroy)  $(GetPingTime)  $(GetHostAddressString)
-  DEFINE_VTBL_TYPE(OP2_NETGAMESESSION_VTBL, 0x4CFAB8);
+  TETHYS_DEFINE_VTBL_TYPE(OP2_NETGAMESESSION_VTBL, 0x4CFAB8);
 
 public:
   int   field_04;
@@ -39,7 +39,7 @@ public:
   int  GetHostAddressString(int bufferSize, char* pOut) override
     { return Thunk<0x491C40, &$::GetHostAddressString>(bufferSize, pOut); }
 
-  DEFINE_VTBL_GETTER(0x4D6518);
+  TETHYS_DEFINE_VTBL_GETTER(0x4D6518);
 
 public:
   int  field_24;            // ** TODO Not sure if this field belongs here or the parent

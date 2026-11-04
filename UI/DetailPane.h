@@ -26,6 +26,8 @@ public:
 
   void CenterViewOn(int pixelX, int pixelY) { return Thunk<0x408210, &$::CenterViewOn>(pixelX, pixelY); }
 
+  void HandleScrolling() { return Thunk<0x407B00, &$::HandleScrolling>(); }
+
   // ** TODO more member functions
   /* ?                              0x407880
      CenterOnBookmarkedLocation     0x408510

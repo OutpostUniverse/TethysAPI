@@ -18,6 +18,18 @@
 
 namespace Tethys {
 
+/// Defines initial unit rotations and path-finding directions.
+enum class UnitDirection : int {
+  East = 0,
+  SouthEast,
+  South,
+  SouthWest,
+  West,
+  NorthWest,
+  North,
+  NorthEast,
+};
+
 /// Enum specifying unit type classifications.  Used by AI and UnitBlock-related interfaces.
 enum class UnitClassification : int {
   Attack           = 0x00,  ///< Lynx, Panther, Tiger, Scorpion (excludes ESG, EMP, Stickyfoam)
@@ -44,39 +56,23 @@ enum class UnitClassification : int {
 
 namespace TethysAPI {
 
+using UnitDirection      = Tethys::UnitDirection;
 using UnitClassification = Tethys::UnitClassification;
 
-/// Contains information about a ConVec's or factory's cargo bay contents.
-struct CargoKit {
-  constexpr operator MapID() const { return unitType; }  ///< Allows comparison operators, etc.  Assignment disallowed.
-
-  MapID unitType;
-  MapID cargoOrWeaponType;
-};
-
-/// Contains information about a Cargo Truck's contents.
-struct TruckCargo {
-  constexpr operator CargoType&()       { return cargoType; }  ///< Allows assignment and comparison operators, etc.
-  constexpr operator CargoType()  const { return cargoType; }  ///< Allows assignment and comparison operators, etc.
-
-  CargoType cargoType;
-  int       amount;
-};
-
-
+// =====================================================================================================================
 /// Exported interface wrapping a reference to a MapObject instance.
 class Unit : public OP2Class<Unit> {
 public:
   constexpr Unit()           : id_(0)      { }
   explicit  Unit(int unitID) : id_(unitID) { }
-  Unit& operator=(const Unit& unit) = default;
+  Unit& operator=(const Unit& unit) = default;  // ** TODO is this even needed?  Might actually be counter-productive!
 
   bool operator==(const Unit& unit) const { return id_ == unit.id_; }
 
   ///@{ Allow conversion from MapObject pointers/references.
-  explicit Unit(MapObject* pMapObject) : id_((pMapObject != nullptr) ? pMapObject->index_         : 0) { }
-  explicit Unit(AnyMapObj* pMapObject) : id_((pMapObject != nullptr) ? pMapObject->object_.index_ : 0) { }
-  explicit Unit(MapObject&  mapObject) : id_(mapObject.index_) { }
+  Unit(const MapObject* pMapObject) : id_((pMapObject != nullptr) ? pMapObject->index_         : 0) { }
+  Unit(const AnyMapObj* pMapObject) : id_((pMapObject != nullptr) ? pMapObject->object_.index_ : 0) { }
+  Unit(const MapObject&  mapObject) : id_(mapObject.index_) { }
   ///@}
 
   int  GetID() const        { return id_;      }  ///< Get internal unit ID of this Unit wrapper instance.
@@ -86,21 +82,24 @@ public:
   operator bool() const { return IsValid(); }  ///< Converts to true if IsValid()
 
   ///@{ Get the underlying MapObject that this Unit is a proxy for.
-  template <typename T = MapObject>  T* GetMapObject() { return IsValid() ? T::GetInstance(size_t(id_)) : nullptr; }
-  template <typename T = MapObject>
-  const T* GetMapObject() const { return IsValid() ? T::GetInstance(size_t(id_)) : nullptr; }
+  template <typename T = MapObject>       T* GetMapObject()      { return IsValid() ? T::GetInstance(size_t(id_)) : 0; }
+  template <typename T = MapObject> const T* GetMapObject()const { return IsValid() ? T::GetInstance(size_t(id_)) : 0; }
+  template <MapID I>       auto* GetMapObject()       { return IsValid() ? MapObjFor<I>::GetInstance(size_t(id_)) : 0; }
+  template <MapID I> const auto* GetMapObject() const { return IsValid() ? MapObjFor<I>::GetInstance(size_t(id_)) : 0; }
   ///@}
 
-  ///@{ Get the internal MapObjectType that this unit is managed by.  (Returns MaxObjectType if !IsValid())
+  ///@{ Get the internal MapObjectType, which defines the type of unit this is an instance of.
         MapEntityType* GetMapObjectType()       { return MapEntityType::GetInstance(GetType()); }
   const MapEntityType* GetMapObjectType() const { return MapEntityType::GetInstance(GetType()); }
   ///@}
+  // ** TODO this + GetType() + GetTypeID() need to be cleaned up somehow
 
   int GetOwner()       const { return IsValid() ? GetMapObject()->ownerNum_            : -1; } ///< Owner player ID.
   int GetCreator()     const { return IsValid() ? GetMapObject()->creatorNum_          : -1; } ///< Creator player ID.
   int GetInstanceNum() const { return IsValid() ? GetMapObject()->unitTypeInstanceNum_ :  0; } ///< Type instance #.
 
   MapID GetType()     const { return IsValid() ? GetMapObject()->GetTypeID() : MapID::None; } ///< Unit type ID.
+  MapID GetTypeID()   const { return IsValid() ? GetMapObject()->GetTypeID() : MapID::None; } ///< Unit type ID.
   bool  IsLive()      const { return IsValid()    && GetMapObject()->IsLive();              } ///< Unit is alive?
   bool  IsBuilding()  const { return IsLive()     && HasFlag(MoFlagBuilding);               } ///< Unit is a structure?
   bool  IsFactory()   const { return IsBuilding() && HasFlag(MoFlagBldFactory);             } ///< Unit is a factory?
@@ -120,8 +119,8 @@ public:
 
   int  GetMaxHitpoints() const { return IsLive() ? GetPlayerUnitStats().hp : 0; } ///< Gets the unit's max hitpoints.
   int  GetDamage()       const { return IsLive() ? GetMapObject()->damage_ : 0; } ///< Gets the unit's damage amount.
-  void AddDamage(int damage)   { SetDamage(GetDamage() + damage);               } ///< Sets the unit's damage amount.
-  void SetDamage(int damage)                                                      ///< Adds to the unit's damage amount.
+  void AddDamage(int damage)   { SetDamage(GetDamage() + damage);               } ///< Adds to the unit's damage amount.
+  void SetDamage(int damage)                                                      ///< Sets the unit's damage amount.
     { if (IsLive() && ((GetMapObject()->damage_ = damage) >= GetMaxHitpoints())) { DoDeath(); } }
 
   /// Returns true if the target Unit is hostile to this Unit.
@@ -142,12 +141,12 @@ public:
   void DoTransfer(int toPlayerNum);                                        ///< Transfer unit to another player.
 
   ///@{ Gets the Unit's command or action status.
-   CommandType GetCommand()     const { return CommandType(IsValid() ? GetMapObject()->command_ : 0);        }
+  CommandType GetCommand()     const { return CommandType(IsValid() ? GetMapObject()->command_ : 0);        }
   ActionType  GetAction()      const { return IsValid() ?  GetMapObject()->action_      : ActionType::Done; }
   int         GetActionTimer() const { return IsValid() ?  GetMapObject()->actionTimer_ : 0;                }
   bool        IsBusy()         const { return IsValid() && GetMapObject()->isBusy_;                         }
   ///@}
-  
+
   ///@{ Gets or sets the Unit's EMPed status.
   int  GetEMPTimer() const
     { return IsBuilding() ? GetMapObject<Building>()->timerEMP_ : IsVehicle() ? GetMapObject<Vehicle>()->timerEMP_ :0; }
@@ -223,7 +222,7 @@ public:
   void DoAttack(Location where);                                                  ///< Orders unit to attack the ground
   void DoGuard(Unit what);                                                        ///< [TankVehicle]
   void DoStandGround(Location where);                                             ///< [TankVehicle]
-  
+
   ///@{ Gets or sets 2x fire rate mode for this Unit (normally applied to Tigers).
   bool HasDoubleFireRate() const  { return IsLive() && HasFlag(MoFlagDoubleFireRate);       }
   void SetDoubleFireRate(bool on) {    if (IsLive()) { SetFlag(MoFlagDoubleFireRate, on); } }
@@ -231,10 +230,11 @@ public:
 
   // ---------------------------------------------- Specific to vehicles -----------------------------------------------
 
+  // ** TODO can these be overloads cleaned up using a type-erasure wrapper?
   ///@{ [ConVec]  Gets or sets ConVec cargo.
   CargoKit GetConVecCargo() const {
-    return IsVehicle() ? 
-      CargoKit{ MapID(GetMapObject<Vehicle>()->cargo_), MapID(GetMapObject<Vehicle>()->weaponOfCargo_) } : CargoKit{};
+    auto*const p = GetMapObject<Vehicle>();
+    return IsVehicle() ? CargoKit{ MapID(p->cargo_), MapID(p->weaponOfCargo_) } : CargoKit{};
   }
   void SetCargo(MapID cargo, MapID weapon)
     { if (IsVehicle()) { auto*const p = GetMapObject<Vehicle>();  p->weapon_ = cargo;  p->weaponOfCargo_ = weapon; } }
@@ -256,7 +256,7 @@ public:
   ///@}
 
   bool GetLights() { return IsLive() && HasFlag(MoFlagVecHeadlights); }  ///< Vehicle's headlights are turned on?
-  
+
   void DoSetLights(bool on);                                                  ///< Turns vehicle's headlights on or off.
   void DoMove(Location where) { if (IsLive()) { const auto [x, y] = where.GetPixel(); GetMapObject()->CmdMove(x, y); } }
   void DoDock(Unit at)                                                        ///< Docks this Unit at a structure.
@@ -264,15 +264,14 @@ public:
   void DoDockAtGarage(Unit garage);                                           ///< Docks this Unit at a Garage.
   void DoBuild(Location  bottomRight);                                        ///< [ConVec] Build a structure.
   void DoDeploy(Location center);                                             ///< [Robo-Miner, GeoCon] Deploy building.
-  void DoDismantle(Unit what);                                                ///< [ConVec] Dismantle a structure.
-   void DoRepair(Unit    what)                                                 ///< Repair a structure or vehicle.
-    { if (IsLive()) { GetMapObject()->CmdRepair(what.id_); }    }
-   void DoReprogram(Unit what)                                                 ///< [Spider] Reprogram a vehicle.
-    { if (IsLive()) { GetMapObject()->CmdReprogram(what.id_); } }
+  void DoDismantle(Unit what) { DoRepairHelper<CommandType::Dismantle>(what); } ///< [ConVec] Dismantle a structure.
+  void DoRepair(Unit    what) { DoRepairHelper<CommandType::RepairObj>(what); } ///< Repair a structure or vehicle.
+  void DoReprogram(Unit what) { DoRepairHelper<CommandType::Reprogram>(what); } ///< [Spider] Reprogram a vehicle.
   void DoBuildWall(MapID tubeWallType, MapRect area);                         ///< [Earthworker] Build walls in an area.
   void DoRemoveWall(MapRect area);                                            ///< [Earthworker] Remove walls in an area
   void DoDoze(MapRect area);                                                  ///< [Robo-Dozer]  Bulldoze an area.
-   void DoSalvage(MapRect area, Unit gorf);                                    ///< [Cargo Truck] Salvage rubble.
+  void DoMiningRoute(Unit mine, Unit smelter);                                ///< [Cargo Truck] Mine <-> Smelter route.
+  void DoSalvage(MapRect  area, Unit gorf);                                   ///< [Cargo Truck] Salvage rubble.
   void DoDumpCargo()   { if (IsLive()) { GetMapObject()->CmdDumpCargo(); } }  ///< [Cargo Truck] Dispose of cargo.
   void DoLoadCargo()   { DoSimpleCommand(CommandType::LoadCargo);          }  ///< [Cargo Truck] Load truck cargo.
   void DoUnloadCargo() { DoSimpleCommand(CommandType::UnloadCargo);        }  ///< [Cargo Truck] Unload truck cargo.
@@ -280,6 +279,7 @@ public:
   // ---------------------------------------------- Specific to buildings ----------------------------------------------
 
   ///@{ [Factory]  Gets or sets factory cargo in the specified cargo bay.
+  // ** TODO let bay=-1 mean "select first empty bay"?
   CargoKit GetFactoryCargo(int bay) const {
     auto*const pMo = (IsFactory() && (bay >= 0) && (bay < 6)) ? GetMapObject<FactoryBuilding>() : nullptr;
     return (pMo != nullptr) ? CargoKit{ MapID(pMo->cargoBayContents_[bay]), MapID(pMo->cargoBayCargoOrWeapon_[bay]) }
@@ -342,29 +342,38 @@ public:
   bool IsDisabled() const           ///< Building is disabled?
     { return IsBuilding() && (IsUnderConstruction() == false) && (GetMapObject<Building>()->IsEnabled() == false); }
   bool IsIdled()    const { return IsBuilding() && (HasFlag(MoFlagBldActive)    == false); }  ///< Building is idled?
-  bool IsEnabled()  const { return IsBuilding() && ((IsIdled() || IsDisabled()) == false); }  ///< Buidling is enabled?
+  bool IsEnabled()  const { return IsBuilding() && ((IsIdled() || IsDisabled()) == false); }  ///< Building is enabled?
   bool IsInfected() const { return IsBuilding() &&  HasFlag(MoFlagBldInfected);            }  ///< Building is infected?
 
   void DoIdle()   { DoSimpleCommand(CommandType::Idle);   }        ///< Idle the building.
   void DoUnidle() { DoSimpleCommand(CommandType::Unidle); }        ///< Unidle the building.
   void DoInfect() { Thunk<0x476B90, &$::DoInfect>();      }        ///< Set building to Blight-infected.
   void DoProduce(                                                  ///< [Factory] Issue a factory build command.
-    MapID itemType, MapID weaponType = MapID::None, uint16 scGroupIndex = -1)
-      { if (IsLive()) { GetMapObject()->CmdProduce(itemType, weaponType, scGroupIndex); } }
+    MapID itemType, MapID weaponType = MapID::None, uint16 scGroupIndex = -1, bool recycleIfFull = false);
   void DoLaunch(Location target = { }, bool forceEnable = false);  ///< [Spaceport] Launch the rocket on launch pad.
   void DoTransferCargo(int bay)                                    ///< [Factory, Garage] Move cargo to a bay.
     { if (IsLive()) { GetMapObject()->CmdTransferCargo(bay); } }
-   void DoResearch(int techID, int numScientists);                  ///< [Lab] Begin researching a technology.
-   void DoTrainScientists(int numToTrain);                          ///< [University] Begin training new scientists.
+  void DoResearch(int techID, int numScientists);                  ///< [Lab] Begin researching a technology.
+  void DoTrainScientists(int numToTrain);                          ///< [University] Begin training new scientists.
 
 protected:
   bool ProcessCommandPacket(const CommandPacket& packet) const
     { auto*const p = GameImpl::GetInstance()->GetPlayer(GetOwner());  return p && p->ProcessCommandPacket(packet); }
 
+  template <CommandType Cmd>  // CommandType::RepairObj, Reprogram, Dismantle
+  void DoRepairHelper(Unit what);
+
+  // ** TODO clean up DoLaunch using this
+  using BldEnableRestoreState = std::pair<uint32, int16>;  // flags, damage
+  BldEnableRestoreState ForceEnable(bool on = true);
+  void ResetForceEnable(const BldEnableRestoreState& state);
+
 public:
   int id_;
 };
 
+
+// =====================================================================================================================
 /// Info passed to OnCreateUnit() user callback.  (1.4.0)
 struct OnCreateUnitArgs {
   size_t structSize;  ///< Size of this structure.
@@ -375,6 +384,23 @@ struct OnCreateUnitArgs {
 struct OnDestroyUnitArgs {
   size_t structSize;  ///< Size of this structure.
   Unit   unit;        ///< Unit that was destroyed.
+};
+
+/// Info passed to OnDamageUnit() user callback.  (1.4.2)
+struct OnDamageUnitArgs {
+  size_t structSize;  ///< Size of this structure.
+  Unit   sourceUnit;  ///< Attacking unit.
+  Unit   targetUnit;  ///< Target unit.
+  int    damage;      ///< Amount of damage (or EMP time) applied.
+  // ** TODO add empDuration, stickyDuration, esgDuration?
+};
+
+/// Info passed to OnTransferUnit() user callback.  (1.4.2)
+struct OnTransferUnitArgs {
+  size_t structSize;     ///< Size of this structure.
+  Unit   unit;           ///< Unit being transferred.
+  int    fromPlayerNum;  ///< Original owner player number.
+  int    toPlayerNum;    ///< New owner player number.
 };
 
 
@@ -565,15 +591,40 @@ inline void Unit::DoRemoveWall(
 }
 
 // =====================================================================================================================
-inline void Unit::DoDismantle(
+template <CommandType Cmd>
+void Unit::DoRepairHelper(
   Unit what)
 {
   if (IsLive() && what.IsLive()) {
-    CommandPacket packet = { CommandType::Dismantle, sizeof(RepairCommand) };
+    CommandPacket packet = { Cmd, sizeof(RepairCommand) };
     packet.data.repair.numUnits  = 1;
     packet.data.repair.unitID[0] = id_;
     packet.data.repair.unknown1  = 0;
     packet.data.repair.target    = { uint16(what.id_), UINT16_MAX };
+    ProcessCommandPacket(packet);
+  }
+}
+
+// =====================================================================================================================
+inline void Unit::DoMiningRoute(
+  Unit mine,
+  Unit smelter)
+{
+  if (IsLive() && mine.IsLive() && smelter.IsLive()) {
+    CommandPacket packet = { CommandType::CargoRoute, sizeof(CargoRouteCommand) };
+    packet.data.cargoRoute.numUnits  = id_;
+    packet.data.cargoRoute.unitID[1] = id_;
+
+    packet.data.cargoRoute.numWaypoints         = 3;
+    packet.data.cargoRoute.waypoint[0]          = mine.GetDockLocation().AsWaypoint();
+    packet.data.cargoRoute.waypoint[1]          = smelter.GetDockLocation().AsWaypoint();
+    packet.data.cargoRoute.waypoint[2]          = mine.GetDockLocation().AsWaypoint();
+    packet.data.cargoRoute.mineWaypointIndex    = 0;
+    packet.data.cargoRoute.smelterWaypointIndex = 1;
+
+    packet.data.cargoRoute.mineUnitId    = mine.GetID();
+    packet.data.cargoRoute.smelterUnitId = smelter.GetID();
+
     ProcessCommandPacket(packet);
   }
 }
@@ -593,11 +644,33 @@ inline void Unit::DoSalvage(
 }
 
 // =====================================================================================================================
+inline void Unit::DoProduce(
+  MapID  itemType,
+  MapID  weaponType,
+  uint16 scGroupIndex,
+  bool   recycleIfFull)
+{
+  if (recycleIfFull) {
+    GetMapObject()->CmdProduce(itemType, weaponType, scGroupIndex);
+  }
+  else if (IsLive()) {
+    CommandPacket packet = { CommandType::Produce, sizeof(ProduceCommand) };
+    packet.data.produce.unitID        = id_;
+    packet.data.produce.itemToProduce = itemType;
+    packet.data.produce.weaponType    = weaponType;
+    packet.data.produce.scGroupIndex  = scGroupIndex;
+    ProcessCommandPacket(packet);
+  }
+}
+
+// =====================================================================================================================
 inline void Unit::DoLaunch(
   Location target,
   bool     forceEnable)
 {
   if (IsLive()) {
+    // ForceEnable requires us to force off all disable flags, DoLaunch, then set them back.
+    // ** TODO Can this be done in a better way?
     constexpr uint32 SetMask   = (MoFlagBldActive | MoFlagBldCmdCenterConnected | MoFlagBldEnabledPower |
                                   MoFlagBldEnabledWorkers | MoFlagBldEnabledScientists);
     constexpr uint32 UnsetMask = MoFlagEMPed | MoFlagBldInfected;

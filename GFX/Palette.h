@@ -2,6 +2,7 @@
 #pragma once
 
 #include "Tethys/Common/Memory.h"
+#include "Tethys/Resource/StreamIO.h"
 
 namespace Tethys {
 

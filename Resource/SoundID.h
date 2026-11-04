@@ -167,7 +167,7 @@ enum class SoundID : int {
   Savnt100     = 158,   ///< "Can not comply"
   /// "Commander, a volcanic eruption is imminent.  Evacuate the colony and rendezvous at the mining beacon north of our
   ///  location."
-  Savnt101     = 159,   
+  Savnt101     = 159,
   Savnt201     = 160,   ///< "Data transmitted"
   Savnt203     = 161,   ///< "Structures disabled"
   Savnt205     = 162,   ///< "Reinforcements ready"

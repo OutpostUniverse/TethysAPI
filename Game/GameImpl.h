@@ -12,7 +12,7 @@ class TFileDialog;
 class GameNetLayer;
 class StreamIO;
 
-/// Internal game manager class (wrapped by TethysGame).
+/// Internal game manager class (wrapped by Game).
 class GameImpl : public OP2Class<GameImpl> {
 public:
    GameImpl() { InternalCtor<0x489130>(); }
@@ -45,6 +45,8 @@ public:
 
   ibool LoadDebugMap()   { return Thunk<0x489170, &$::LoadDebugMap>();   }
   void  InitDebugFlags() { return Thunk<0x422AE0, &$::InitDebugFlags>(); }
+
+  static void ProcessUnits() { return OP2Thunk<0x43AD30>(); }
 
   PlayerImpl* GetPlayerArray() { return (this == GetInstance()) ? OP2Mem<PlayerImpl*&>(0x4890C3) : &player_[0]; }
 

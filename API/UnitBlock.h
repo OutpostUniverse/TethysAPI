@@ -5,6 +5,8 @@
  ***********************************************************************************************************************
  */
 
+// ** TOOD This should only be used for legacy map support
+
 #pragma once
 
 #include "Tethys/API/Unit.h"
@@ -12,6 +14,7 @@
 namespace Tethys::TethysAPI {
 
 struct UnitRecord {
+  // ** TODO auto-fill cls?
   constexpr UnitRecord(
     MapID type, int x, int y, int a, int rot, MapID weapon, UnitClassification cls, uint16 cargo, uint16 amount)
     : unitType(type), x(x), y(y), field_0C(a), rotation(rot), weaponType(weapon), unitClassification(cls),
@@ -22,7 +25,7 @@ struct UnitRecord {
   MapID              unitType;
   int                x;
   int                y;
-  int                field_0C;
+  int                field_0C;  // ** TODO
   int                rotation;
   MapID              weaponType;
   UnitClassification unitClassification;
